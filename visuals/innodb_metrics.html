@@ -1,0 +1,602 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>InnoDB Metrics Viewer</title>
+<script>
+  function loadPlotly(cb) {
+    var s = document.createElement('script');
+    s.src = 'https://cdn.plot.ly/plotly-2.30.0.min.js';
+    s.onload = cb;
+    s.onerror = function () {
+      var s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.30.0/plotly.min.js';
+      s2.onload = cb;
+      s2.onerror = function () {
+        document.getElementById('chart').innerHTML =
+          '<p style="color:#b00;padding:20px">Could not load Plotly (offline?). Table view still works.</p>';
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  }
+</script>
+<style>
+  :root {
+    --accent: #1a73e8;
+    --border: #ddd;
+    --bg-soft: #f7f9fc;
+  }
+  body { font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin: 14px; }
+  h1 { margin: 0 0 10px; font-size: 18px; }
+  .wrap { display: grid; grid-template-columns: 360px 1fr; gap: 14px; align-items: start; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: #fff; }
+  .card h2 { margin: 0 0 10px; font-size: 14px; color: #333; }
+  label { font-weight: 600; font-size: 12.5px; color: #444; display: block; margin: 8px 0 4px; }
+  input[type=text], input[type=search] {
+    width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 7px; font-size: 13px;
+    box-sizing: border-box;
+  }
+  button {
+    padding: 6px 10px; border: 1px solid #ccc; border-radius: 7px;
+    background: #f3f3f3; cursor: pointer; font-size: 12.5px;
+  }
+  button:hover { background: #e9e9e9; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.primary:hover { background: #1566d1; }
+  .btnrow { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .files ul { list-style: none; padding: 0; margin: 4px 0 0; font-size: 12px; max-height: 120px; overflow: auto; }
+  .files li { padding: 3px 6px; border: 1px solid #eee; border-radius: 5px; margin-bottom: 3px;
+              display: flex; align-items: center; gap: 6px; background: var(--bg-soft); }
+  .files li .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .files li .lbl { flex: 1; font-family: monospace; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .files li button { padding: 1px 6px; font-size: 11px; }
+  .metric-list {
+    border: 1px solid #e0e0e0; border-radius: 7px; max-height: 500px; overflow: auto;
+    padding: 4px; background: var(--bg-soft); font-size: 12px;
+  }
+  .metric-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 6px; border-radius: 4px;
+  }
+  .metric-row:hover { background: #eef3fa; }
+  .metric-row label { margin: 0; font-weight: 400; font-size: 11.5px;
+                      display: inline-flex; align-items: center; gap: 6px; cursor: pointer; flex: 1; min-width: 0; }
+  .metric-row .name { font-family: monospace; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .metric-row input[type=checkbox] { margin: 0; flex-shrink: 0; }
+  .tiny { font-size: 11px; color: #777; }
+  .selected-summary {
+    padding: 5px 8px; background: #eaf3ff; border: 1px solid #c4def4; border-radius: 6px;
+    font-size: 12px; margin-top: 8px;
+  }
+  #chart { height: 360px; margin-top: 10px; }
+  .tablewrap { overflow: auto; max-height: 650px; border: 1px solid #e0e0e0; border-radius: 7px; margin-top: 10px; }
+  table { border-collapse: collapse; font-family: monospace; font-size: 11.5px; min-width: 100%; }
+  th, td { padding: 3px 7px; border-bottom: 1px solid #eee; text-align: right; white-space: nowrap; }
+  th { background: #f1f3f6; position: sticky; top: 0; z-index: 1; border-bottom: 2px solid #ccc; text-align: center; }
+  th.group { background: #dfe6ef; border-right: 2px solid #bbb; }
+  td.ts { text-align: left; color: #555; background: #fafafa; position: sticky; left: 0; }
+  th.ts { text-align: left; background: #e2e5ea; position: sticky; left: 0; z-index: 2; }
+  tr:nth-child(even) td { background: #fdfdfd; }
+  tr:nth-child(even) td.ts { background: #f5f5f5; }
+  .null { color: #bbb; }
+  .tabs { display: flex; gap: 4px; margin: 10px 0 4px; }
+  .tab { padding: 6px 12px; border: 1px solid #ccc; border-radius: 6px 6px 0 0; border-bottom: none;
+         background: #eee; cursor: pointer; font-size: 12.5px; }
+  .tab.active { background: #fff; font-weight: 600; color: var(--accent); }
+  .empty { color: #888; font-style: italic; padding: 20px; text-align: center; }
+  .file-color-0 { background: #1a73e8; }
+  .file-color-1 { background: #e8711a; }
+  .file-color-2 { background: #2b9e3f; }
+  .file-color-3 { background: #b92b8e; }
+  .file-color-4 { background: #8a4fd8; }
+  .file-color-5 { background: #c9361a; }
+</style>
+</head>
+<body>
+<h1>InnoDB Metrics Viewer</h1>
+<p class="tiny">Load one or more <code>Tier&lt;N&gt;G_RW_&lt;M&gt;th.innodb.txt</code> files, pick metrics, inspect as table or chart. Runs entirely in your browser.</p>
+
+<div class="wrap">
+  <div class="card" style="position: sticky; top: 8px;">
+    <h2>1. Load files</h2>
+    <input type="file" id="fileInput" multiple accept=".txt,.csv"/>
+    <div class="btnrow">
+      <button id="clearFiles">Clear all</button>
+    </div>
+    <div class="files">
+      <ul id="fileList"></ul>
+    </div>
+
+    <h2 style="margin-top:14px">2. Pick metrics</h2>
+    <input type="search" id="search" placeholder="Filter metrics (substring match)…"/>
+    <div class="btnrow">
+      <button id="selectAllVisible">Select all visible</button>
+      <button id="clearSelection">Clear</button>
+    </div>
+    <div id="metricList" class="metric-list" style="margin-top:6px">
+      <div class="empty">Load a file to list available metrics.</div>
+    </div>
+    <div id="selectedSummary" class="selected-summary" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" data-tab="table">Table</div>
+      <div class="tab" data-tab="chart">Chart</div>
+    </div>
+
+    <div id="tabTable">
+      <div class="btnrow">
+        <button id="exportCsv">Export CSV</button>
+        <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;margin:0 0 0 8px">
+          <input type="checkbox" id="relTime" checked/> <span class="tiny">Show relative time (s from start of each file)</span>
+        </label>
+        <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;margin:0 0 0 8px">
+          <input type="checkbox" id="deltaMode"/> <span class="tiny">Per-second deltas</span>
+        </label>
+      </div>
+      <div id="tableWrap" class="tablewrap">
+        <div class="empty">Load files and select at least one metric to build the table.</div>
+      </div>
+    </div>
+
+    <div id="tabChart" style="display:none">
+      <div class="tiny" style="margin:6px 0">Chart plots the selected metrics as lines. Toggle delta mode in the Table tab to switch between raw counts and per-second rates.</div>
+      <div id="chart"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- State ----------
+  var files = []; // { name, headers, rows, tsCol, metrics: {name -> colIdx}, firstTs }
+  var selection = {}; // key = metric name -> true
+  var colorIdx = 0;
+
+  var fileInput = document.getElementById('fileInput');
+  var fileList = document.getElementById('fileList');
+  var clearFilesBtn = document.getElementById('clearFiles');
+  var search = document.getElementById('search');
+  var metricList = document.getElementById('metricList');
+  var selectAllVisibleBtn = document.getElementById('selectAllVisible');
+  var clearSelectionBtn = document.getElementById('clearSelection');
+  var tableWrap = document.getElementById('tableWrap');
+  var selectedSummary = document.getElementById('selectedSummary');
+  var exportCsvBtn = document.getElementById('exportCsv');
+  var relTime = document.getElementById('relTime');
+  var deltaMode = document.getElementById('deltaMode');
+
+  // ---------- Tabs ----------
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.remove('active'); });
+      t.classList.add('active');
+      var which = t.getAttribute('data-tab');
+      document.getElementById('tabTable').style.display = which === 'table' ? '' : 'none';
+      document.getElementById('tabChart').style.display = which === 'chart' ? '' : 'none';
+      if (which === 'chart') renderChart();
+    });
+  });
+
+  // ---------- File loading ----------
+  fileInput.addEventListener('change', function (e) {
+    var list = e.target.files;
+    if (!list || !list.length) return;
+    var pending = list.length;
+    for (var i = 0; i < list.length; i++) {
+      (function (f) {
+        var r = new FileReader();
+        r.onload = function () {
+          try {
+            var parsed = parseInnodbCsv(r.result);
+            parsed.name = f.name;
+            parsed.color = colorIdx++ % 6;
+            files.push(parsed);
+          } catch (err) {
+            alert('Failed to parse ' + f.name + ': ' + err.message);
+          }
+          pending--;
+          if (pending === 0) afterLoad();
+        };
+        r.onerror = function () {
+          alert('Could not read ' + f.name);
+          pending--;
+          if (pending === 0) afterLoad();
+        };
+        r.readAsText(f);
+      })(list[i]);
+    }
+    fileInput.value = ''; // allow re-selecting same file
+  });
+
+  clearFilesBtn.addEventListener('click', function () {
+    files = [];
+    selection = {};
+    colorIdx = 0;
+    afterLoad();
+  });
+
+  function afterLoad() {
+    renderFileList();
+    renderMetricList();
+    renderTable();
+  }
+
+  function parseInnodbCsv(text) {
+    var lines = text.split(/\r?\n/);
+    while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
+    if (lines.length < 2) throw new Error('file is empty or header-only');
+
+    var headers = lines[0].split(',');
+    var tsCol = headers.indexOf('timestamp');
+    if (tsCol < 0) throw new Error('no "timestamp" column in header');
+
+    // Each non-timestamp column is a metric
+    var metrics = {};
+    for (var i = 0; i < headers.length; i++) {
+      if (i === tsCol) continue;
+      metrics[headers[i]] = i;
+    }
+
+    var rows = [];
+    for (var j = 1; j < lines.length; j++) {
+      var cells = lines[j].split(',');
+      if (cells.length !== headers.length) continue; // skip malformed
+      var row = new Array(headers.length);
+      for (var k = 0; k < cells.length; k++) {
+        var v = cells[k];
+        if (k === tsCol) {
+          row[k] = parseFloat(v);
+        } else if (v === 'NULL' || v === '') {
+          row[k] = null;
+        } else {
+          var n = parseFloat(v);
+          row[k] = isNaN(n) ? v : n;
+        }
+      }
+      rows.push(row);
+    }
+    if (!rows.length) throw new Error('no data rows');
+
+    return {
+      headers: headers,
+      rows: rows,
+      tsCol: tsCol,
+      metrics: metrics,
+      firstTs: rows[0][tsCol]
+    };
+  }
+
+  // ---------- File list ----------
+  function renderFileList() {
+    fileList.innerHTML = '';
+    files.forEach(function (f, idx) {
+      var li = document.createElement('li');
+      var dot = document.createElement('span');
+      dot.className = 'dot file-color-' + f.color;
+      var lbl = document.createElement('span');
+      lbl.className = 'lbl';
+      lbl.textContent = f.name + ' (' + f.rows.length + ' samples, ' + Object.keys(f.metrics).length + ' metrics)';
+      var btn = document.createElement('button');
+      btn.textContent = '✕';
+      btn.title = 'Remove';
+      btn.onclick = function () {
+        files.splice(idx, 1);
+        afterLoad();
+      };
+      li.appendChild(dot);
+      li.appendChild(lbl);
+      li.appendChild(btn);
+      fileList.appendChild(li);
+    });
+  }
+
+  // ---------- Metric list (union of names across loaded files) ----------
+  function unionMetrics() {
+    var u = {};
+    files.forEach(function (f) {
+      Object.keys(f.metrics).forEach(function (m) { u[m] = true; });
+    });
+    return u;
+  }
+
+  function renderMetricList() {
+    var u = unionMetrics();
+    var names = Object.keys(u).sort();
+    if (names.length === 0) {
+      metricList.innerHTML = '<div class="empty">Load a file to list available metrics.</div>';
+      updateSelectedSummary();
+      return;
+    }
+
+    var q = (search.value || '').toLowerCase().trim();
+    metricList.innerHTML = '';
+    var visibleCount = 0;
+
+    names.forEach(function (name) {
+      if (q && name.toLowerCase().indexOf(q) < 0) return;
+      visibleCount++;
+
+      var row = document.createElement('div');
+      row.className = 'metric-row';
+      row.dataset.name = name;
+
+      var lab = document.createElement('label');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!selection[name];
+      cb.addEventListener('change', function () {
+        if (cb.checked) selection[name] = true;
+        else delete selection[name];
+        updateSelectedSummary();
+        renderTable();
+      });
+      var span = document.createElement('span');
+      span.className = 'name';
+      span.textContent = name;
+      span.title = name;
+
+      lab.appendChild(cb);
+      lab.appendChild(span);
+      row.appendChild(lab);
+      metricList.appendChild(row);
+    });
+
+    if (visibleCount === 0) {
+      metricList.innerHTML = '<div class="empty">No metrics match "' + q + '".</div>';
+    }
+    updateSelectedSummary();
+  }
+
+  function updateSelectedSummary() {
+    var keys = Object.keys(selection);
+    if (!keys.length) {
+      selectedSummary.style.display = 'none';
+      return;
+    }
+    selectedSummary.style.display = '';
+    selectedSummary.textContent = keys.length + ' metric(s) selected · ' + files.length + ' file(s) loaded';
+  }
+
+  search.addEventListener('input', renderMetricList);
+
+  selectAllVisibleBtn.addEventListener('click', function () {
+    var rows = metricList.querySelectorAll('.metric-row');
+    rows.forEach(function (r) {
+      var name = r.dataset.name;
+      var cb = r.querySelector('input[type=checkbox]');
+      cb.checked = true;
+      selection[name] = true;
+    });
+    updateSelectedSummary();
+    renderTable();
+  });
+
+  clearSelectionBtn.addEventListener('click', function () {
+    selection = {};
+    renderMetricList();
+    renderTable();
+  });
+
+  // ---------- Table ----------
+  function selectedKeys() {
+    return Object.keys(selection).sort();
+  }
+
+  // Align rows by sample index across files (they're all ~1Hz).
+  function buildTableData() {
+    var keys = selectedKeys();
+    if (!keys.length || !files.length) return null;
+
+    var maxRows = 0;
+    files.forEach(function (f) { if (f.rows.length > maxRows) maxRows = f.rows.length; });
+    if (!maxRows) return null;
+
+    // Columns: one per (file × key)
+    var cols = [];
+    files.forEach(function (f) {
+      keys.forEach(function (name) {
+        cols.push({
+          file: f,
+          name: name,
+          colIdx: f.metrics[name],
+          header: f.name + ' · ' + name
+        });
+      });
+    });
+
+    var useRel = relTime.checked;
+    var useDelta = deltaMode.checked;
+
+    var rows = [];
+    for (var i = 0; i < maxRows; i++) {
+      var tsDisplay = '';
+      for (var fi = 0; fi < files.length; fi++) {
+        var f = files[fi];
+        if (i < f.rows.length) {
+          var ts = f.rows[i][f.tsCol];
+          if (useRel) {
+            tsDisplay = (ts - f.firstTs).toFixed(3) + ' s';
+          } else {
+            tsDisplay = new Date(ts * 1000).toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, '');
+          }
+          break;
+        }
+      }
+
+      var row = { ts: tsDisplay, cells: [] };
+      cols.forEach(function (c) {
+        if (c.colIdx === undefined || i >= c.file.rows.length) {
+          row.cells.push(null);
+          return;
+        }
+        var v = c.file.rows[i][c.colIdx];
+        if (useDelta && i > 0) {
+          var prev = c.file.rows[i - 1][c.colIdx];
+          var tPrev = c.file.rows[i - 1][c.file.tsCol];
+          var tNow = c.file.rows[i][c.file.tsCol];
+          if (v == null || prev == null || tNow === tPrev) {
+            row.cells.push(null);
+          } else {
+            row.cells.push((v - prev) / (tNow - tPrev));
+          }
+        } else if (useDelta && i === 0) {
+          row.cells.push(null);
+        } else {
+          row.cells.push(v);
+        }
+      });
+      rows.push(row);
+    }
+
+    return { cols: cols, rows: rows };
+  }
+
+  function formatNum(v) {
+    if (v == null) return '<span class="null">–</span>';
+    if (typeof v !== 'number') return String(v);
+    if (v === 0) return '0';
+    var abs = Math.abs(v);
+    if (abs >= 1e12) return (v / 1e12).toFixed(2) + 'T';
+    if (abs >= 1e9) return (v / 1e9).toFixed(2) + 'G';
+    if (abs >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+    if (abs >= 1e3) return v.toFixed(0);
+    if (abs >= 1) return v.toFixed(3).replace(/\.?0+$/, '');
+    return v.toExponential(2);
+  }
+
+  function renderTable() {
+    var data = buildTableData();
+    if (!data) {
+      tableWrap.innerHTML = '<div class="empty">Load files and select at least one metric to build the table.</div>';
+      return;
+    }
+
+    var html = ['<table>'];
+    // Header row 1: file groupings
+    html.push('<tr><th class="ts" rowspan="2">timestamp</th>');
+    var groups = [];
+    var lastFile = null, startIdx = 0;
+    data.cols.forEach(function (c, i) {
+      if (c.file !== lastFile) {
+        if (lastFile) groups.push({ file: lastFile, start: startIdx, end: i });
+        lastFile = c.file;
+        startIdx = i;
+      }
+    });
+    groups.push({ file: lastFile, start: startIdx, end: data.cols.length });
+    groups.forEach(function (g) {
+      html.push('<th class="group" colspan="' + (g.end - g.start) + '">' + escapeHtml(g.file.name) + '</th>');
+    });
+    html.push('</tr>');
+    // Header row 2: metric name
+    html.push('<tr>');
+    data.cols.forEach(function (c) {
+      html.push('<th title="' + escapeHtml(c.name) + '">' + escapeHtml(c.name) + '</th>');
+    });
+    html.push('</tr>');
+
+    data.rows.forEach(function (r) {
+      html.push('<tr><td class="ts">' + escapeHtml(r.ts) + '</td>');
+      r.cells.forEach(function (v) {
+        html.push('<td>' + formatNum(v) + '</td>');
+      });
+      html.push('</tr>');
+    });
+    html.push('</table>');
+    tableWrap.innerHTML = html.join('');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  relTime.addEventListener('change', function () {
+    renderTable();
+    if (document.getElementById('tabChart').style.display !== 'none') renderChart();
+  });
+  deltaMode.addEventListener('change', function () {
+    renderTable();
+    if (document.getElementById('tabChart').style.display !== 'none') renderChart();
+  });
+
+  // ---------- CSV export ----------
+  exportCsvBtn.addEventListener('click', function () {
+    var data = buildTableData();
+    if (!data) { alert('Nothing to export.'); return; }
+    var out = [];
+    out.push(['timestamp'].concat(data.cols.map(function (c) { return c.file.name + ':' + c.name; })).join(','));
+    data.rows.forEach(function (r) {
+      var cells = [r.ts].concat(r.cells.map(function (v) { return v == null ? '' : v; }));
+      out.push(cells.join(','));
+    });
+    var blob = new Blob([out.join('\n')], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'innodb_metrics_selection.csv';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  // ---------- Chart ----------
+  var plotlyReady = false;
+  function renderChart() {
+    if (!plotlyReady) {
+      loadPlotly(function () { plotlyReady = true; renderChart(); });
+      return;
+    }
+    var keys = selectedKeys();
+    if (!keys.length || !files.length) {
+      if (window.Plotly) Plotly.purge('chart');
+      document.getElementById('chart').innerHTML = '<div class="empty">Select at least one metric to chart.</div>';
+      return;
+    }
+    var useRel = relTime.checked;
+    var useDelta = deltaMode.checked;
+
+    var traces = [];
+    files.forEach(function (f) {
+      keys.forEach(function (name) {
+        var colIdx = f.metrics[name];
+        if (colIdx === undefined) return;
+        var xs = [], ys = [];
+        for (var i = 0; i < f.rows.length; i++) {
+          var ts = f.rows[i][f.tsCol];
+          var x = useRel ? (ts - f.firstTs) : new Date(ts * 1000);
+          var v = f.rows[i][colIdx];
+          if (useDelta) {
+            if (i === 0 || v == null || f.rows[i - 1][colIdx] == null) { xs.push(x); ys.push(null); continue; }
+            var dt = ts - f.rows[i - 1][f.tsCol];
+            ys.push(dt > 0 ? (v - f.rows[i - 1][colIdx]) / dt : null);
+            xs.push(x);
+          } else {
+            xs.push(x);
+            ys.push(v);
+          }
+        }
+        traces.push({
+          x: xs, y: ys, mode: 'lines',
+          name: f.name + ' · ' + name,
+          line: { width: 1.5 }
+        });
+      });
+    });
+
+    Plotly.newPlot('chart', traces, {
+      margin: { t: 20, r: 20, b: 40, l: 60 },
+      xaxis: { title: useRel ? 'seconds since start' : 'time' },
+      yaxis: { title: useDelta ? 'per-second rate' : 'value' },
+      legend: { orientation: 'h', y: -0.2 }
+    }, { responsive: true, displaylogo: false });
+  }
+})();
+</script>
+</body>
+</html>
