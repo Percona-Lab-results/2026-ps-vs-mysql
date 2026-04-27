@@ -1,5 +1,13 @@
 # Performance Analysis: Percona Server vs MySQL 8.4.8 @ 64 Threads
 
+## Interactive Tools
+
+- **[Sysbench Results - Average View](https://percona-lab-results.github.io/2026-ps-vs-mysql/sysbench_ps_mysql_average.html)** - Compare average performance across runs
+- **[Sysbench Results - Individual Runs](https://percona-lab-results.github.io/2026-ps-vs-mysql/sysbench_ps_mysql_individual.html)** - View detailed per-run results
+- **[InnoDB Metrics Analyzer](https://percona-lab-results.github.io/2026-ps-vs-mysql/innodb_metrics_report.html)** - Interactive tool for deep-dive metric analysis
+
+---
+
 ## Executive Summary
 
 Percona Server 8.4.8-8 is **14% slower** than MySQL 8.4.8 at 64 threads (5,865 TPS vs 6,847 TPS).

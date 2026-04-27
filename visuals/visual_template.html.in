@@ -375,28 +375,33 @@ function showDownloadModal(server, mem_gb, threads, tps, qps) {
 
   // Extract run number if server name includes it (e.g., "run2-mysql-8.4.8")
   const runMatch = server.match(/^run(\d+)-/);
-  const runNum = runMatch ? runMatch[1] : '1'; // default to run1 if not specified
+  const isIndividualRun = !!runMatch;
+  const runNum = runMatch ? runMatch[1] : '1';
 
   // Clean server name for display
   const displayServer = server.replace(/^run\d+-/, '');
 
   document.getElementById('dlTitle').textContent = displayServer;
   document.getElementById('dlSubtitle').textContent =
-    `Run: ${runNum}  ·  Memory: ${mem_gb}G  ·  Threads: ${threads}  ·  TPS: ${tps.toLocaleString()}  ·  QPS: ${qps.toLocaleString()}`;
+    isIndividualRun
+      ? `Run: ${runNum}  ·  Memory: ${mem_gb}G  ·  Threads: ${threads}  ·  TPS: ${tps.toLocaleString()}  ·  QPS: ${qps.toLocaleString()}`
+      : `Memory: ${mem_gb}G  ·  Threads: ${threads}  ·  Average TPS: ${tps.toLocaleString()}  ·  Average QPS: ${qps.toLocaleString()}`;
   const list = document.getElementById('dlLinks');
   list.innerHTML = '';
 
-  // Show files only for this specific run
-  const fileBase = `run${runNum}_Tier${mem_gb}G_RW_${threads}th`;
+  // For individual runs, show run-specific files; for average view, only show per-tier files
+  if (isIndividualRun) {
+    const fileBase = `run${runNum}_Tier${mem_gb}G_RW_${threads}th`;
 
-  // Standard log files
-  LOG_EXTS.forEach(ext => {
-    const fname = `${fileBase}.${ext}`;
-    const url = `${baseUrl}/${path}/${fname}`;
-    list.appendChild(makeListItem(ext, fname, url, false));
-  });
+    // Standard log files
+    LOG_EXTS.forEach(ext => {
+      const fname = `${fileBase}.${ext}`;
+      const url = `${baseUrl}/${path}/${fname}`;
+      list.appendChild(makeListItem(ext, fname, url, false));
+    });
+  }
 
-  // Per-tier files
+  // Per-tier files (always shown)
   ["status.txt", "vars.txt", "cnf.txt", "errlog.txt", "pt-mysql-summary.txt"].forEach(ext => {
     const fname = ext === "pt-mysql-summary.txt" ? `Tier${mem_gb}G-${ext}` : `Tier${mem_gb}G.${ext}`;
     const url = `${baseUrl}/${path}/${fname}`;
