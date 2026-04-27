@@ -327,8 +327,11 @@ const CUSTOM_BASE = "https://percona-lab-results.github.io/2026-interactive-metr
 const LOG_EXTS = ["sysbench.txt", "iostat.txt", "mpstat.txt", "vmstat.txt", "dstat.txt", "innodb.txt"];
 
 function serverToPath(server) {
-  const idx = server.indexOf(' ');
-  return server.slice(0, idx) + '/' + server.slice(idx + 1);
+  // Handle both "mysql 8.4.8" and "run2-mysql-8.4.8" formats
+  // Remove run prefix if present: "run2-mysql-8.4.8" -> "mysql 8.4.8"
+  let cleanServer = server.replace(/^run\d+-/, '');
+  const idx = cleanServer.indexOf(' ');
+  return cleanServer.slice(0, idx) + '/' + cleanServer.slice(idx + 1);
 }
 
 // Removed buildFileBase - now constructing filenames directly per run
@@ -357,27 +360,27 @@ function showDownloadModal(server, mem_gb, threads, tps, qps) {
   const path = serverToPath(server);
   const baseUrl = getBaseUrlForServer(server);
 
-  document.getElementById('dlTitle').textContent = server;
+  // Extract run number if server name includes it (e.g., "run2-mysql-8.4.8")
+  const runMatch = server.match(/^run(\d+)-/);
+  const runNum = runMatch ? runMatch[1] : '1'; // default to run1 if not specified
+
+  // Clean server name for display
+  const displayServer = server.replace(/^run\d+-/, '');
+
+  document.getElementById('dlTitle').textContent = displayServer;
   document.getElementById('dlSubtitle').textContent =
-    `Memory: ${mem_gb}G  ·  Threads: ${threads}  ·  TPS: ${tps.toLocaleString()}  ·  QPS: ${qps.toLocaleString()}`;
+    `Run: ${runNum}  ·  Memory: ${mem_gb}G  ·  Threads: ${threads}  ·  TPS: ${tps.toLocaleString()}  ·  QPS: ${qps.toLocaleString()}`;
   const list = document.getElementById('dlLinks');
   list.innerHTML = '';
 
-  // Show files for all runs (run1, run2, run3)
-  [1, 2, 3].forEach(runNum => {
-    const fileBase = `run${runNum}_Tier${mem_gb}G_RW_${threads}th`;
+  // Show files only for this specific run
+  const fileBase = `run${runNum}_Tier${mem_gb}G_RW_${threads}th`;
 
-    // Add run header
-    const runHeader = document.createElement('li');
-    runHeader.innerHTML = `<div style="font-weight: 600; margin-top: 10px; color: #333;">Run ${runNum}</div>`;
-    list.appendChild(runHeader);
-
-    // Standard log files for this run
-    LOG_EXTS.forEach(ext => {
-      const fname = `${fileBase}.${ext}`;
-      const url = `${baseUrl}/${path}/${fname}`;
-      list.appendChild(makeListItem(ext, fname, url, false));
-    });
+  // Standard log files
+  LOG_EXTS.forEach(ext => {
+    const fname = `${fileBase}.${ext}`;
+    const url = `${baseUrl}/${path}/${fname}`;
+    list.appendChild(makeListItem(ext, fname, url, false));
   });
 
   // Per-tier files
