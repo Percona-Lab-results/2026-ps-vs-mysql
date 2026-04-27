@@ -35,13 +35,23 @@ def parse_innodb_file(path: str) -> Optional[Dict]:
     version = parts[-2]
     filename = parts[-1]
 
-    # Extract run number
+    # Extract run number and thread count
+    # Expected format: run{N}_Tier{M}G_RW_{T}th.innodb.txt
     run_match = os.path.basename(filename).split('_')[0]
     if not run_match.startswith('run'):
         print(f"  Warning: Cannot parse run number from filename: {filename}")
         return None
 
     run_number = run_match.replace('run', '')
+
+    # Extract thread count
+    import re
+    thread_match = re.search(r'_(\d+)th\.', filename)
+    if not thread_match:
+        print(f"  Warning: Cannot parse thread count from filename: {filename}")
+        return None
+
+    threads = thread_match.group(1)
     server = f"{db_type} {version}"
 
     # Read CSV file
@@ -76,6 +86,7 @@ def parse_innodb_file(path: str) -> Optional[Dict]:
     return {
         'server': server,
         'run': run_number,
+        'threads': threads,
         'filename': filename,
         'metrics': header,
         'data': data_rows
@@ -114,6 +125,7 @@ def main():
     all_metrics = set()
     all_servers = set()
     all_runs = set()
+    all_threads = set()
 
     for filepath in files:
         result = parse_innodb_file(str(filepath))
@@ -122,6 +134,7 @@ def main():
             all_metrics.update(result['metrics'])
             all_servers.add(result['server'])
             all_runs.add(result['run'])
+            all_threads.add(result['threads'])
 
     if len(parsed_files) == 0:
         print("Error: No valid data could be parsed from the files found.")
@@ -130,11 +143,13 @@ def main():
     # Sort for consistent ordering
     servers_sorted = sorted(all_servers)
     runs_sorted = sorted(all_runs, key=lambda x: int(x))
+    threads_sorted = sorted(all_threads, key=lambda x: int(x))
     metrics_sorted = sorted(all_metrics)
 
     print(f"Parsed {len(parsed_files)} files")
     print(f"  Servers: {', '.join(servers_sorted)}")
     print(f"  Runs: {', '.join(runs_sorted)}")
+    print(f"  Threads: {', '.join(threads_sorted)}")
     print(f"  Metrics: {len(metrics_sorted)}")
 
     # Create data directory for JSON files
@@ -142,15 +157,16 @@ def main():
     data_dir = output_dir / "innodb_data"
     data_dir.mkdir(exist_ok=True)
 
-    # Write separate JSON files for each server+run
+    # Write separate JSON files for each server+run+threads
     data_manifest = {}
     for pf in parsed_files:
         server = pf['server']
         run = pf['run']
-        key = f"{server}||{run}"
+        threads = pf['threads']
+        key = f"{server}||{run}||{threads}"
 
         # Create safe filename
-        safe_name = f"{sanitize_filename(server)}_run{run}.json"
+        safe_name = f"{sanitize_filename(server)}_run{run}_{threads}th.json"
         json_path = data_dir / safe_name
 
         # Write JSON file
@@ -158,6 +174,7 @@ def main():
             json.dump({
                 'server': server,
                 'run': run,
+                'threads': threads,
                 'filename': pf['filename'],
                 'metrics': pf['metrics'],
                 'data': pf['data']
@@ -199,7 +216,7 @@ def main():
         }}
         .controls {{
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }}
@@ -540,6 +557,13 @@ def main():
             </div>
 
             <div class="control-group">
+                <label for="threadSelect">Threads</label>
+                <select id="threadSelect" multiple size="5">
+                    {chr(10).join(f'<option value="{t}">{t} threads</option>' for t in threads_sorted)}
+                </select>
+            </div>
+
+            <div class="control-group">
                 <label for="metricSearch">Metrics (searchable, multi-select)</label>
                 <div class="metric-multiselect">
                     <input type="text" id="metricSearch" class="metric-search" placeholder="Search metrics..." autocomplete="off">
@@ -737,6 +761,7 @@ def main():
         async function generateData() {{
             const serverSelect = document.getElementById('serverSelect');
             const runSelect = document.getElementById('runSelect');
+            const threadSelect = document.getElementById('threadSelect');
             const errorMsg = document.getElementById('errorMsg');
             const tableContent = document.getElementById('tableContent');
             const statsContainer = document.getElementById('statsContainer');
@@ -746,6 +771,7 @@ def main():
             // Get selected values
             const selectedServers = Array.from(serverSelect.selectedOptions).map(o => o.value);
             const selectedRuns = Array.from(runSelect.selectedOptions).map(o => o.value);
+            const selectedThreads = Array.from(threadSelect.selectedOptions).map(o => o.value);
             const selectedMetricsList = Array.from(selectedMetrics);
 
             // Validation
@@ -757,6 +783,11 @@ def main():
             }}
             if (selectedRuns.length === 0) {{
                 errorMsg.textContent = 'Please select at least one run.';
+                errorMsg.style.display = 'block';
+                return;
+            }}
+            if (selectedThreads.length === 0) {{
+                errorMsg.textContent = 'Please select at least one thread count.';
                 errorMsg.style.display = 'block';
                 return;
             }}
@@ -776,10 +807,12 @@ def main():
 
             for (const server of selectedServers) {{
                 for (const run of selectedRuns) {{
-                    const key = `${{server}}||${{run}}`;
-                    if (DATA_MANIFEST[key]) {{
-                        combinations.push({{ server, run, key }});
-                        loadPromises.push(loadData(key));
+                    for (const threads of selectedThreads) {{
+                        const key = `${{server}}||${{run}}||${{threads}}`;
+                        if (DATA_MANIFEST[key]) {{
+                            combinations.push({{ server, run, threads, key }});
+                            loadPromises.push(loadData(key));
+                        }}
                     }}
                 }}
             }}
@@ -803,7 +836,7 @@ def main():
             for (let i = 0; i < combinations.length; i++) {{
                 if (loadedData[i]) {{
                     validCombinations.push({{ ...combinations[i], data: loadedData[i] }});
-                    html += `<th colspan="${{selectedMetricsList.length}}">${{combinations[i].server}}<br/>Run ${{combinations[i].run}}</th>`;
+                    html += `<th colspan="${{selectedMetricsList.length}}">${{combinations[i].server}}<br/>Run ${{combinations[i].run}}<br/>${{combinations[i].threads}} threads</th>`;
                 }}
             }}
 
@@ -844,7 +877,7 @@ def main():
                         const avg = sum / values.length;
                         const min = Math.min(...values);
                         const max = Math.max(...values);
-                        const key = `${{combo.server}} Run ${{combo.run}} - ${{metric}}`;
+                        const key = `${{combo.server}} Run ${{combo.run}} (${{combo.threads}}th) - ${{metric}}`;
                         stats[key] = {{ avg, min, max }};
                     }}
                 }}
@@ -1024,7 +1057,7 @@ def main():
 
                 // Per-second dataset (thin line)
                 datasets.push({{
-                    label: `${{combo.server}} Run ${{combo.run}} (per second)`,
+                    label: `${{combo.server}} Run ${{combo.run}} ${{combo.threads}}th (per second)`,
                     data: perSecondData,
                     borderColor: color,
                     backgroundColor: 'transparent',
@@ -1048,7 +1081,7 @@ def main():
                 }});
 
                 datasets.push({{
-                    label: `${{combo.server}} Run ${{combo.run}} (minute avg)`,
+                    label: `${{combo.server}} Run ${{combo.run}} ${{combo.threads}}th (minute avg)`,
                     data: minuteAvgData,
                     borderColor: color,
                     backgroundColor: 'transparent',
@@ -1061,7 +1094,7 @@ def main():
                 }});
 
                 legendItems.push({{
-                    label: `${{combo.server}} Run ${{combo.run}}`,
+                    label: `${{combo.server}} Run ${{combo.run}} ${{combo.threads}}th`,
                     color: color
                 }});
             }});
