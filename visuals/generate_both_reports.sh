@@ -9,11 +9,11 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
 echo "Generating averaged report..."
-python3 visuals/throughput_report.py benchmark_logs sysbench_average.html "OLTP Read-Write" average
+python3 visuals/throughput_report.py benchmark_logs sysbench_ps_mysql_average.html "OLTP Read-Write" average
 
 echo ""
 echo "Generating individual runs report..."
-python3 visuals/throughput_report.py benchmark_logs sysbench_individual.html "OLTP Read-Write" individual
+python3 visuals/throughput_report.py benchmark_logs sysbench_ps_mysql_individual.html "OLTP Read-Write" individual
 
 echo ""
 echo "Done! Generated reports:"
