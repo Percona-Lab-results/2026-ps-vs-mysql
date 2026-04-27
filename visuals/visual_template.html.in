@@ -327,10 +327,23 @@ const CUSTOM_BASE = "https://percona-lab-results.github.io/2026-interactive-metr
 const LOG_EXTS = ["sysbench.txt", "iostat.txt", "mpstat.txt", "vmstat.txt", "dstat.txt", "innodb.txt"];
 
 function serverToPath(server) {
-  // Handle both "mysql 8.4.8" and "run2-mysql-8.4.8" formats
-  // Remove run prefix if present: "run2-mysql-8.4.8" -> "mysql 8.4.8"
+  // Handle formats: "mysql 8.4.8", "run2-mysql-8.4.8", "mysql-8.4.8"
+  // Remove run prefix if present: "run2-mysql-8.4.8" -> "mysql-8.4.8"
   let cleanServer = server.replace(/^run\d+-/, '');
-  const idx = cleanServer.indexOf(' ');
+
+  // Split by space (if present) or by last hyphen before version number
+  let idx = cleanServer.indexOf(' ');
+  if (idx === -1) {
+    // No space, look for hyphen before version (starts with digit)
+    // "mysql-8.4.8" -> "mysql" + "/" + "8.4.8"
+    // "percona-server-8.4.8-8" -> "percona-server" + "/" + "8.4.8-8"
+    const match = cleanServer.match(/^(.+?)-(\d+\.\d+\..+)$/);
+    if (match) {
+      return match[1] + '/' + match[2];
+    }
+    // Fallback: split on first hyphen
+    idx = cleanServer.indexOf('-');
+  }
   return cleanServer.slice(0, idx) + '/' + cleanServer.slice(idx + 1);
 }
 
