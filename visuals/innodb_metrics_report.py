@@ -338,6 +338,98 @@ def main():
             font-size: 13px;
             color: #2e7d32;
         }}
+        .metric-multiselect {{
+            position: relative;
+        }}
+        .metric-search {{
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }}
+        .metric-search:focus {{
+            outline: none;
+            border-color: #007bff;
+        }}
+        .metric-dropdown {{
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #007bff;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }}
+        .metric-dropdown.show {{
+            display: block;
+        }}
+        .metric-option {{
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+        .metric-option:hover {{
+            background: #f0f0f0;
+        }}
+        .metric-option input[type="checkbox"] {{
+            cursor: pointer;
+        }}
+        .metric-option.hidden {{
+            display: none;
+        }}
+        .selected-metrics {{
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 24px;
+        }}
+        .metric-tag {{
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }}
+        .metric-tag-remove {{
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+        }}
+        .metric-tag-remove:hover {{
+            color: #ffcccc;
+        }}
+        .select-all-container {{
+            padding: 8px 12px;
+            border-bottom: 2px solid #ddd;
+            background: #f8f9fa;
+            font-weight: 600;
+            cursor: pointer;
+        }}
+        .select-all-container:hover {{
+            background: #e9ecef;
+        }}
+        .no-results {{
+            padding: 12px;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }}
     </style>
 </head>
 <body>
@@ -350,8 +442,9 @@ def main():
         </div>
 
         <div class="info">
-            <strong>Instructions:</strong> Select one or more servers, one or more runs, and a metric to display.
+            <strong>Instructions:</strong> Select one or more servers, one or more runs, and one or more metrics to display.
             The table will show the selected metric values over time for each server+run combination.
+            Use the search box to filter metrics by name.
         </div>
 
         <div class="error" id="errorMsg"></div>
@@ -372,11 +465,20 @@ def main():
             </div>
 
             <div class="control-group">
-                <label for="metricSelect">Metric</label>
-                <select id="metricSelect">
-                    <option value="">-- Select a metric --</option>
-                    {chr(10).join(f'<option value="{m}">{m}</option>' for m in metrics_sorted)}
-                </select>
+                <label for="metricSearch">Metrics (searchable, multi-select)</label>
+                <div class="metric-multiselect">
+                    <input type="text" id="metricSearch" class="metric-search" placeholder="Search metrics..." autocomplete="off">
+                    <div id="metricDropdown" class="metric-dropdown">
+                        <div class="select-all-container" onclick="toggleSelectAll()">
+                            <input type="checkbox" id="selectAllCheckbox"> Select All / Deselect All
+                        </div>
+                        <div id="metricOptions">
+                            {chr(10).join(f'<div class="metric-option" data-metric="{m}"><input type="checkbox" value="{m}" id="metric_{i}" onchange="updateSelectedMetrics()"><label for="metric_{i}">{m}</label></div>' for i, m in enumerate(metrics_sorted))}
+                        </div>
+                        <div id="noResults" class="no-results" style="display: none;">No metrics found</div>
+                    </div>
+                    <div id="selectedMetrics" class="selected-metrics"></div>
+                </div>
             </div>
         </div>
 
@@ -389,7 +491,7 @@ def main():
 
         <div class="table-container">
             <div id="tableContent" class="no-data">
-                Select servers, runs, and a metric, then click "Generate Table" to view data.
+                Select servers, runs, and one or more metrics, then click "Generate Table" to view data.
             </div>
         </div>
     </div>
@@ -400,6 +502,117 @@ def main():
 
         // Cache for loaded data
         const dataCache = {{}};
+
+        // Metric multiselect state
+        let selectedMetrics = new Set();
+
+        // Initialize metric search and dropdown
+        document.addEventListener('DOMContentLoaded', function() {{
+            const metricSearch = document.getElementById('metricSearch');
+            const metricDropdown = document.getElementById('metricDropdown');
+
+            // Show dropdown when search box is focused
+            metricSearch.addEventListener('focus', function() {{
+                metricDropdown.classList.add('show');
+            }});
+
+            // Filter metrics on input
+            metricSearch.addEventListener('input', function() {{
+                filterMetrics(this.value);
+            }});
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {{
+                if (!e.target.closest('.metric-multiselect')) {{
+                    metricDropdown.classList.remove('show');
+                }}
+            }});
+        }});
+
+        function filterMetrics(searchTerm) {{
+            const options = document.querySelectorAll('.metric-option');
+            const noResults = document.getElementById('noResults');
+            let visibleCount = 0;
+
+            searchTerm = searchTerm.toLowerCase();
+
+            options.forEach(option => {{
+                const metricName = option.dataset.metric.toLowerCase();
+                if (metricName.includes(searchTerm)) {{
+                    option.classList.remove('hidden');
+                    visibleCount++;
+                }} else {{
+                    option.classList.add('hidden');
+                }}
+            }});
+
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }}
+
+        function updateSelectedMetrics() {{
+            const checkboxes = document.querySelectorAll('.metric-option input[type="checkbox"]');
+            selectedMetrics.clear();
+
+            checkboxes.forEach(cb => {{
+                if (cb.checked) {{
+                    selectedMetrics.add(cb.value);
+                }}
+            }});
+
+            displaySelectedMetrics();
+            updateSelectAllCheckbox();
+        }}
+
+        function displaySelectedMetrics() {{
+            const container = document.getElementById('selectedMetrics');
+            container.innerHTML = '';
+
+            if (selectedMetrics.size === 0) {{
+                container.innerHTML = '<span style="color: #999; font-size: 12px;">No metrics selected</span>';
+                return;
+            }}
+
+            Array.from(selectedMetrics).sort().forEach(metric => {{
+                const tag = document.createElement('div');
+                tag.className = 'metric-tag';
+                tag.innerHTML = `
+                    <span>${{metric}}</span>
+                    <span class="metric-tag-remove" onclick="removeMetric('${{metric}}')">&times;</span>
+                `;
+                container.appendChild(tag);
+            }});
+        }}
+
+        function removeMetric(metric) {{
+            selectedMetrics.delete(metric);
+            const checkbox = document.querySelector(`.metric-option input[value="${{metric}}"]`);
+            if (checkbox) {{
+                checkbox.checked = false;
+            }}
+            displaySelectedMetrics();
+            updateSelectAllCheckbox();
+        }}
+
+        function toggleSelectAll() {{
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const visibleCheckboxes = document.querySelectorAll('.metric-option:not(.hidden) input[type="checkbox"]');
+            const allChecked = selectAllCheckbox.checked;
+
+            visibleCheckboxes.forEach(cb => {{
+                cb.checked = !allChecked;
+            }});
+
+            selectAllCheckbox.checked = !allChecked;
+            updateSelectedMetrics();
+        }}
+
+        function updateSelectAllCheckbox() {{
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const visibleCheckboxes = document.querySelectorAll('.metric-option:not(.hidden) input[type="checkbox"]');
+            const checkedCount = Array.from(visibleCheckboxes).filter(cb => cb.checked).length;
+
+            selectAllCheckbox.checked = checkedCount === visibleCheckboxes.length && visibleCheckboxes.length > 0;
+        }}
 
         async function loadData(key) {{
             if (dataCache[key]) {{
@@ -428,7 +641,6 @@ def main():
         async function generateTable() {{
             const serverSelect = document.getElementById('serverSelect');
             const runSelect = document.getElementById('runSelect');
-            const metricSelect = document.getElementById('metricSelect');
             const errorMsg = document.getElementById('errorMsg');
             const tableContent = document.getElementById('tableContent');
             const statsContainer = document.getElementById('statsContainer');
@@ -438,7 +650,7 @@ def main():
             // Get selected values
             const selectedServers = Array.from(serverSelect.selectedOptions).map(o => o.value);
             const selectedRuns = Array.from(runSelect.selectedOptions).map(o => o.value);
-            const selectedMetric = metricSelect.value;
+            const selectedMetricsList = Array.from(selectedMetrics);
 
             // Validation
             errorMsg.style.display = 'none';
@@ -452,8 +664,8 @@ def main():
                 errorMsg.style.display = 'block';
                 return;
             }}
-            if (!selectedMetric) {{
-                errorMsg.textContent = 'Please select a metric.';
+            if (selectedMetricsList.length === 0) {{
+                errorMsg.textContent = 'Please select at least one metric.';
                 errorMsg.style.display = 'block';
                 return;
             }}
@@ -487,15 +699,24 @@ def main():
             const loadedData = await Promise.all(loadPromises);
             generateBtn.disabled = false;
 
-            // Build table
+            // Build table with multi-metric support
             let html = '<table><thead><tr>';
-            html += '<th>Timestamp</th>';
+            html += '<th rowspan="2">Timestamp</th>';
 
             const validCombinations = [];
             for (let i = 0; i < combinations.length; i++) {{
                 if (loadedData[i]) {{
                     validCombinations.push({{ ...combinations[i], data: loadedData[i] }});
-                    html += `<th>${{combinations[i].server}}<br/>Run ${{combinations[i].run}}</th>`;
+                    html += `<th colspan="${{selectedMetricsList.length}}">${{combinations[i].server}}<br/>Run ${{combinations[i].run}}</th>`;
+                }}
+            }}
+
+            html += '</tr><tr>';
+
+            // Add metric headers for each combination
+            for (const combo of validCombinations) {{
+                for (const metric of selectedMetricsList) {{
+                    html += `<th style="font-size: 11px;">${{metric}}</th>`;
                 }}
             }}
 
@@ -514,19 +735,22 @@ def main():
                 if (rows > maxRows) maxRows = rows;
             }}
 
-            // Calculate statistics
+            // Calculate statistics for each metric
             const stats = {{}};
             for (const combo of validCombinations) {{
-                const values = combo.data.data
-                    .map(row => parseFloat(row[selectedMetric]))
-                    .filter(v => !isNaN(v));
+                for (const metric of selectedMetricsList) {{
+                    const values = combo.data.data
+                        .map(row => parseFloat(row[metric]))
+                        .filter(v => !isNaN(v));
 
-                if (values.length > 0) {{
-                    const sum = values.reduce((a, b) => a + b, 0);
-                    const avg = sum / values.length;
-                    const min = Math.min(...values);
-                    const max = Math.max(...values);
-                    stats[`${{combo.server}} Run ${{combo.run}}`] = {{ avg, min, max }};
+                    if (values.length > 0) {{
+                        const sum = values.reduce((a, b) => a + b, 0);
+                        const avg = sum / values.length;
+                        const min = Math.min(...values);
+                        const max = Math.max(...values);
+                        const key = `${{combo.server}} Run ${{combo.run}} - ${{metric}}`;
+                        stats[key] = {{ avg, min, max }};
+                    }}
                 }}
             }}
 
@@ -544,15 +768,17 @@ def main():
                 }}
                 html += `<td class="timestamp">${{timestamp}}</td>`;
 
-                // Add metric values for each combination
+                // Add metric values for each combination and metric
                 for (const combo of validCombinations) {{
                     const row = combo.data.data[i];
-                    if (row && row[selectedMetric] !== undefined) {{
-                        const value = parseFloat(row[selectedMetric]);
-                        const displayValue = isNaN(value) ? row[selectedMetric] : value.toLocaleString();
-                        html += `<td class="metric-value">${{displayValue}}</td>`;
-                    }} else {{
-                        html += '<td class="metric-value">-</td>';
+                    for (const metric of selectedMetricsList) {{
+                        if (row && row[metric] !== undefined) {{
+                            const value = parseFloat(row[metric]);
+                            const displayValue = isNaN(value) ? row[metric] : value.toLocaleString();
+                            html += `<td class="metric-value">${{displayValue}}</td>`;
+                        }} else {{
+                            html += '<td class="metric-value">-</td>';
+                        }}
                     }}
                 }}
 
