@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InnoDB Metrics Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -260,6 +261,80 @@
             text-align: center;
             color: #999;
             font-style: italic;
+        }
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .view-toggle button {
+            margin-top: 0;
+        }
+        .view-toggle button.active {
+            background: #0056b3;
+        }
+        .chart-container {
+            margin-top: 30px;
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chart-container.show {
+            display: block;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 600px;
+            margin-bottom: 40px;
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .legend-custom {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        .legend-color {
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        .legend-color.thick {
+            height: 5px;
+        }
+        .chart-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .chart-controls label {
+            margin: 0;
+        }
+        .chart-controls select {
+            padding: 6px 10px;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -634,17 +709,32 @@
             </div>
         </div>
 
-        <button id="generateBtn" onclick="generateTable()">Generate Table</button>
+        <button id="generateBtn" onclick="generateData()">Generate Report</button>
+
+        <div class="view-toggle" id="viewToggle" style="display: none;">
+            <button id="tableViewBtn" class="active" onclick="switchView('table')">Table View</button>
+            <button id="chartViewBtn" onclick="switchView('chart')">Chart View</button>
+        </div>
 
         <div id="statsContainer" style="display: none;">
             <h3 style="margin-top: 30px;">Statistics</h3>
             <div class="stats" id="stats"></div>
         </div>
 
-        <div class="table-container">
+        <div class="table-container" id="tableView">
             <div id="tableContent" class="no-data">
-                Select servers, runs, and one or more metrics, then click "Generate Table" to view data.
+                Select servers, runs, and one or more metrics, then click "Generate Report" to view data.
             </div>
+        </div>
+
+        <div class="chart-container" id="chartView">
+            <div class="chart-controls">
+                <label for="chartMetricSelect">Select Metric for Chart:</label>
+                <select id="chartMetricSelect" onchange="updateChart()">
+                    <option value="">-- Select metric --</option>
+                </select>
+            </div>
+            <div id="chartsContainer"></div>
         </div>
     </div>
 
@@ -657,6 +747,12 @@
 
         // Metric multiselect state
         let selectedMetrics = new Set();
+
+        // Chart state
+        let chartInstances = {};
+        let currentView = 'table';
+        let loadedCombinations = [];
+        let currentStats = {};
 
         // Initialize metric search and dropdown
         document.addEventListener('DOMContentLoaded', function() {
@@ -790,7 +886,7 @@
             }
         }
 
-        async function generateTable() {
+        async function generateData() {
             const serverSelect = document.getElementById('serverSelect');
             const runSelect = document.getElementById('runSelect');
             const errorMsg = document.getElementById('errorMsg');
@@ -955,12 +1051,263 @@
             }
             statsDiv.innerHTML = statsHtml;
             statsContainer.style.display = 'block';
+            currentStats = stats;
+
+            // Store loaded combinations for chart generation
+            loadedCombinations = validCombinations;
+
+            // Populate chart metric selector
+            const chartMetricSelect = document.getElementById('chartMetricSelect');
+            chartMetricSelect.innerHTML = '<option value="">-- Select metric --</option>';
+            selectedMetricsList.forEach(metric => {
+                const option = document.createElement('option');
+                option.value = metric;
+                option.textContent = metric;
+                chartMetricSelect.appendChild(option);
+            });
+
+            // Show view toggle
+            document.getElementById('viewToggle').style.display = 'flex';
+        }
+
+        function switchView(view) {
+            currentView = view;
+            const tableView = document.getElementById('tableView');
+            const chartView = document.getElementById('chartView');
+            const tableBtn = document.getElementById('tableViewBtn');
+            const chartBtn = document.getElementById('chartViewBtn');
+
+            if (view === 'table') {
+                tableView.style.display = 'block';
+                chartView.classList.remove('show');
+                tableBtn.classList.add('active');
+                chartBtn.classList.remove('active');
+            } else {
+                tableView.style.display = 'none';
+                chartView.classList.add('show');
+                tableBtn.classList.remove('active');
+                chartBtn.classList.add('active');
+                if (document.getElementById('chartMetricSelect').value) {
+                    updateChart();
+                }
+            }
+        }
+
+        function calculateMinuteAverages(dataPoints) {
+            const minuteData = {};
+
+            dataPoints.forEach((point, index) => {
+                const minute = Math.floor(index / 60);
+                if (!minuteData[minute]) {
+                    minuteData[minute] = [];
+                }
+                minuteData[minute].push(point);
+            });
+
+            const averages = [];
+            Object.keys(minuteData).sort((a, b) => a - b).forEach(minute => {
+                const values = minuteData[minute].filter(v => v !== null && !isNaN(v));
+                if (values.length > 0) {
+                    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                    averages.push({ minute: parseInt(minute), value: avg });
+                }
+            });
+
+            return averages;
+        }
+
+        function generateColorPalette(count) {
+            const colors = [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
+            ];
+            const palette = [];
+            for (let i = 0; i < count; i++) {
+                palette.push(colors[i % colors.length]);
+            }
+            return palette;
+        }
+
+        function updateChart() {
+            const selectedMetric = document.getElementById('chartMetricSelect').value;
+            if (!selectedMetric || loadedCombinations.length === 0) {
+                return;
+            }
+
+            // Clear existing charts
+            Object.values(chartInstances).forEach(chart => chart.destroy());
+            chartInstances = {};
+
+            const chartsContainer = document.getElementById('chartsContainer');
+            chartsContainer.innerHTML = '';
+
+            const colors = generateColorPalette(loadedCombinations.length);
+
+            // Create one chart for the selected metric showing all server+run combinations
+            const chartWrapper = document.createElement('div');
+            chartWrapper.className = 'chart-wrapper';
+
+            const chartTitle = document.createElement('div');
+            chartTitle.className = 'chart-title';
+            chartTitle.textContent = selectedMetric;
+
+            const canvas = document.createElement('canvas');
+            canvas.id = `chart_${selectedMetric}`;
+
+            chartWrapper.appendChild(chartTitle);
+            chartWrapper.appendChild(canvas);
+            chartsContainer.appendChild(chartWrapper);
+
+            const datasets = [];
+            const legendItems = [];
+
+            loadedCombinations.forEach((combo, idx) => {
+                const color = colors[idx];
+                const data = combo.data.data;
+
+                // Extract per-second data
+                const perSecondData = data.map((row, index) => {
+                    const value = parseFloat(row[selectedMetric]);
+                    return isNaN(value) ? null : value;
+                });
+
+                // Calculate minute averages
+                const minuteAverages = calculateMinuteAverages(perSecondData);
+
+                // Per-second dataset (thin line)
+                datasets.push({
+                    label: `${combo.server} Run ${combo.run} (per second)`,
+                    data: perSecondData,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHoverRadius: 3,
+                    tension: 0.1,
+                    spanGaps: true
+                });
+
+                // Minute average dataset (thick line)
+                const minuteAvgData = new Array(perSecondData.length).fill(null);
+                minuteAverages.forEach(item => {
+                    const index = item.minute * 60;
+                    if (index < minuteAvgData.length) {
+                        // Fill the entire minute with the average value
+                        for (let i = 0; i < 60 && index + i < minuteAvgData.length; i++) {
+                            minuteAvgData[index + i] = item.value;
+                        }
+                    }
+                });
+
+                datasets.push({
+                    label: `${combo.server} Run ${combo.run} (minute avg)`,
+                    data: minuteAvgData,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 4,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    tension: 0,
+                    spanGaps: true,
+                    borderDash: [5, 5]
+                });
+
+                legendItems.push({
+                    label: `${combo.server} Run ${combo.run}`,
+                    color: color
+                });
+            });
+
+            const ctx = canvas.getContext('2d');
+            chartInstances[selectedMetric] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: datasets[0].data.length }, (_, i) => i),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const seconds = context[0].label;
+                                    const minutes = Math.floor(seconds / 60);
+                                    const secs = seconds % 60;
+                                    return `Time: ${minutes}m ${secs}s`;
+                                },
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y;
+                                    return `${label}: ${value !== null ? value.toLocaleString() : 'N/A'}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Time (seconds)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    const minutes = Math.floor(value / 60);
+                                    return `${minutes}m`;
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Add custom legend
+            const legend = document.createElement('div');
+            legend.className = 'legend-custom';
+            legendItems.forEach(item => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="legend-color" style="background: ${item.color};"></div>
+                            <span>${item.label} (per second)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="legend-color thick" style="background: ${item.color}; opacity: 0.8; border: 2px dashed ${item.color}; background: transparent;"></div>
+                            <span>${item.label} (minute avg)</span>
+                        </div>
+                    </div>
+                `;
+                legend.appendChild(legendItem);
+            });
+            chartWrapper.appendChild(legend);
         }
 
         // Allow Enter key to trigger generation
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                generateTable();
+                generateData();
             }
         });
     </script>
