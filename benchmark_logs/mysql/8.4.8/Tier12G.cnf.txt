@@ -24,6 +24,8 @@ connect_timeout                 = 60
 
 # --- InnoDB - Buffer pool Tier -------------------------------------------------
 innodb_buffer_pool_size         = 12G
+innodb_buffer_pool_load_at_startup  = OFF
+innodb_buffer_pool_dump_at_shutdown = OFF
 
 # --- InnoDB – I/O (NVMe can saturate many threads) ----------------------------
 innodb_io_capacity              = 10000

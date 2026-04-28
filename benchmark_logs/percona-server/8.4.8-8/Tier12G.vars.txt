@@ -157,14 +157,14 @@ innodb_api_trx_level	0
 innodb_autoextend_increment	64
 innodb_autoinc_lock_mode	2
 innodb_buffer_pool_chunk_size	134217728
-innodb_buffer_pool_dump_at_shutdown	ON
+innodb_buffer_pool_dump_at_shutdown	OFF
 innodb_buffer_pool_dump_now	OFF
 innodb_buffer_pool_dump_pct	25
 innodb_buffer_pool_filename	ib_buffer_pool
 innodb_buffer_pool_in_core_file	OFF
 innodb_buffer_pool_instances	2
 innodb_buffer_pool_load_abort	OFF
-innodb_buffer_pool_load_at_startup	ON
+innodb_buffer_pool_load_at_startup	OFF
 innodb_buffer_pool_load_now	OFF
 innodb_buffer_pool_size	12884901888
 innodb_change_buffer_max_size	25
@@ -577,7 +577,7 @@ select_into_disk_sync	OFF
 select_into_disk_sync_delay	0
 server_id	1
 server_id_bits	32
-server_uuid	b1d80d04-3fed-11f1-ba36-ac1f6bc846a9
+server_uuid	5eceaec7-423e-11f1-bfe9-ac1f6bc846a9
 session_track_gtids	OFF
 session_track_schema	ON
 session_track_state_change	OFF
@@ -679,7 +679,7 @@ thread_pool_stall_limit	500
 thread_stack	524288
 thread_statistics	OFF
 time_zone	SYSTEM
-timestamp	1777042578.580049
+timestamp	1777297130.846630
 tls_certificates_enforced_validation	OFF
 tls_ciphersuites	
 tls_version	TLSv1.2,TLSv1.3

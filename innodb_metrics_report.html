@@ -361,6 +361,7 @@
                 <select id="serverSelect" multiple size="5">
                     <option value="mysql 8.4.8">mysql 8.4.8</option>
 <option value="percona-server 8.4.8-8">percona-server 8.4.8-8</option>
+<option value="percona-server 8.4.8-8-legacy">percona-server 8.4.8-8-legacy</option>
                 </select>
             </div>
 
@@ -376,8 +377,7 @@
             <div class="control-group">
                 <label for="threadSelect">Threads</label>
                 <select id="threadSelect" multiple size="5">
-                    <option value="16">16 threads</option>
-<option value="32">32 threads</option>
+                    <option value="32">32 threads</option>
 <option value="64">64 threads</option>
                 </select>
             </div>
@@ -749,7 +749,7 @@
 
     <script>
         // Manifest mapping server+run keys to JSON file paths
-        const DATA_MANIFEST = {"percona-server 8.4.8-8||2||64":"innodb_data/percona-server_8_4_8-8_run2_64th.json","percona-server 8.4.8-8||1||64":"innodb_data/percona-server_8_4_8-8_run1_64th.json","percona-server 8.4.8-8||3||32":"innodb_data/percona-server_8_4_8-8_run3_32th.json","percona-server 8.4.8-8||1||32":"innodb_data/percona-server_8_4_8-8_run1_32th.json","percona-server 8.4.8-8||2||16":"innodb_data/percona-server_8_4_8-8_run2_16th.json","percona-server 8.4.8-8||2||32":"innodb_data/percona-server_8_4_8-8_run2_32th.json","percona-server 8.4.8-8||3||16":"innodb_data/percona-server_8_4_8-8_run3_16th.json","percona-server 8.4.8-8||3||64":"innodb_data/percona-server_8_4_8-8_run3_64th.json","percona-server 8.4.8-8||1||16":"innodb_data/percona-server_8_4_8-8_run1_16th.json","mysql 8.4.8||2||64":"innodb_data/mysql_8_4_8_run2_64th.json","mysql 8.4.8||1||64":"innodb_data/mysql_8_4_8_run1_64th.json","mysql 8.4.8||3||32":"innodb_data/mysql_8_4_8_run3_32th.json","mysql 8.4.8||1||32":"innodb_data/mysql_8_4_8_run1_32th.json","mysql 8.4.8||2||16":"innodb_data/mysql_8_4_8_run2_16th.json","mysql 8.4.8||2||32":"innodb_data/mysql_8_4_8_run2_32th.json","mysql 8.4.8||3||16":"innodb_data/mysql_8_4_8_run3_16th.json","mysql 8.4.8||3||64":"innodb_data/mysql_8_4_8_run3_64th.json","mysql 8.4.8||1||16":"innodb_data/mysql_8_4_8_run1_16th.json"};
+        const DATA_MANIFEST = {"percona-server 8.4.8-8||2||64":"innodb_data/percona-server_8_4_8-8_run2_64th.json","percona-server 8.4.8-8||1||64":"innodb_data/percona-server_8_4_8-8_run1_64th.json","percona-server 8.4.8-8||3||32":"innodb_data/percona-server_8_4_8-8_run3_32th.json","percona-server 8.4.8-8||1||32":"innodb_data/percona-server_8_4_8-8_run1_32th.json","percona-server 8.4.8-8||2||32":"innodb_data/percona-server_8_4_8-8_run2_32th.json","percona-server 8.4.8-8||3||64":"innodb_data/percona-server_8_4_8-8_run3_64th.json","percona-server 8.4.8-8-legacy||2||64":"innodb_data/percona-server_8_4_8-8-legacy_run2_64th.json","percona-server 8.4.8-8-legacy||1||64":"innodb_data/percona-server_8_4_8-8-legacy_run1_64th.json","percona-server 8.4.8-8-legacy||3||32":"innodb_data/percona-server_8_4_8-8-legacy_run3_32th.json","percona-server 8.4.8-8-legacy||1||32":"innodb_data/percona-server_8_4_8-8-legacy_run1_32th.json","percona-server 8.4.8-8-legacy||2||32":"innodb_data/percona-server_8_4_8-8-legacy_run2_32th.json","percona-server 8.4.8-8-legacy||3||64":"innodb_data/percona-server_8_4_8-8-legacy_run3_64th.json","mysql 8.4.8||2||64":"innodb_data/mysql_8_4_8_run2_64th.json","mysql 8.4.8||1||64":"innodb_data/mysql_8_4_8_run1_64th.json","mysql 8.4.8||3||32":"innodb_data/mysql_8_4_8_run3_32th.json","mysql 8.4.8||1||32":"innodb_data/mysql_8_4_8_run1_32th.json","mysql 8.4.8||2||32":"innodb_data/mysql_8_4_8_run2_32th.json","mysql 8.4.8||3||64":"innodb_data/mysql_8_4_8_run3_64th.json"};
 
         // Cache for loaded data
         const dataCache = {};

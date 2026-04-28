@@ -196,10 +196,10 @@
   </div>
 
 <script>
-const DATA = [{"server": "mysql 8.4.8", "mem_gb": 12, "threads": 16, "tps": 2822.81, "qps": 56456.26}, {"server": "mysql 8.4.8", "mem_gb": 12, "threads": 32, "tps": 4696.89, "qps": 93937.89}, {"server": "mysql 8.4.8", "mem_gb": 12, "threads": 64, "tps": 6776.29, "qps": 135525.77}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 16, "tps": 2641.71, "qps": 52834.31}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 32, "tps": 4146.65, "qps": 82932.93}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 64, "tps": 5841.04, "qps": 116820.89}];
-const SERVERS = ["mysql 8.4.8", "percona-server 8.4.8-8"];
+const DATA = [{"server": "mysql 8.4.8", "mem_gb": 12, "threads": 32, "tps": 4698.0, "qps": 93960.09}, {"server": "mysql 8.4.8", "mem_gb": 12, "threads": 64, "tps": 6894.32, "qps": 137886.43}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 32, "tps": 4164.44, "qps": 83288.9}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 64, "tps": 5866.57, "qps": 117331.46}, {"server": "percona-server 8.4.8-8-legacy", "mem_gb": 12, "threads": 32, "tps": 4165.18, "qps": 83303.67}, {"server": "percona-server 8.4.8-8-legacy", "mem_gb": 12, "threads": 64, "tps": 5873.05, "qps": 117461.06}];
+const SERVERS = ["mysql 8.4.8", "percona-server 8.4.8-8", "percona-server 8.4.8-8-legacy"];
 const MEMS = [12];
-const THREADS = [16, 32, 64];
+const THREADS = [32, 64];
 
 function el(id) { return document.getElementById(id); }
 

@@ -1,16 +1,16 @@
 # Percona Toolkit MySQL Summary Report #######################
-              System time | 2026-04-24 12:25:15 UTC (local TZ: UTC +0000)
+              System time | 2026-04-27 11:53:33 UTC (local TZ: UTC +0000)
 # Instances ##################################################
   Port  Data Directory             Nice OOM Socket
   ===== ========================== ==== === ======
 # MySQL Executable ###########################################
 # Report On Port 3306 ########################################
                      User | root@%
-                     Time | 2026-04-24 12:25:15 (UTC)
+                     Time | 2026-04-27 11:53:33 (UTC)
                  Hostname | beast-node8.tp.int.percona.com
                   Version | 8.4.8 MySQL Community Server - GPL
                  Built On | Linux x86_64
-                  Started | 2026-04-24 12:23 (up 0+00:01:50)
+                  Started | 2026-04-27 11:51 (up 0+00:01:51)
                 Databases | 5
                   Datadir | /var/lib/mysql/
                 Processes | 1 connected, 2 running
@@ -62,7 +62,7 @@ Connections                               60000                       1
 Created_tmp_files                        300000           3            
 Created_tmp_tables                         4000                        
 Error_log_buffered_bytes               50000000         600            
-Error_log_buffered_events                450000           5            
+Error_log_buffered_events                400000           4            
 Error_log_latest_write              1500000000000000000 15000000000000            
 Flush_commands                             2250                        
 Handler_commit                         60000000         700            
@@ -75,36 +75,36 @@ Handler_read_next                       4000000          45           6
 Handler_read_rnd_next                   3500000          45         100
 Handler_update                           500000           5            
 Handler_write                       80000000000      900000          50
-Innodb_buffer_pool_bytes_data       10000000000000   100000000      125000
-Innodb_buffer_pool_bytes_dirty      70000000000      900000    -8513722
-Innodb_buffer_pool_pages_flushed     1000000000       12500         500
+Innodb_buffer_pool_bytes_data       9000000000000   100000000      125000
+Innodb_buffer_pool_bytes_dirty       2500000000       30000     -280017
+Innodb_buffer_pool_pages_flushed     1000000000       12500          20
 Innodb_buffer_pool_read_ahead         600000000        7000            
-Innodb_buffer_pool_read_ahead_evicted      200000           2            
+Innodb_buffer_pool_read_ahead_evicted      250000           3            
 Innodb_buffer_pool_read_requests    350000000000     4000000          50
 Innodb_buffer_pool_reads               50000000         600           7
 Innodb_buffer_pool_wait_free               9000                        
-Innodb_buffer_pool_write_requests   150000000000     1750000          10
-Innodb_data_fsyncs                   1500000000       17500          30
+Innodb_buffer_pool_write_requests   150000000000     1750000          15
+Innodb_data_fsyncs                   1500000000       17500           4
 Innodb_data_read                    10000000000000   125000000      125000
 Innodb_data_reads                     900000000       10000           7
-Innodb_data_writes                  12500000000      150000         500
-Innodb_data_written                 50000000000000   600000000     9000000
-Innodb_dblwr_pages_written           1000000000       12500         500
-Innodb_dblwr_writes                     9000000         100           4
-Innodb_redo_log_uuid                 4000000000       45000            
-Innodb_redo_log_checkpoint_lsn      20000000000000   225000000   125000000
-Innodb_redo_log_current_lsn         20000000000000   250000000         250
-Innodb_redo_log_flushed_to_disk_lsn 20000000000000   250000000         250
-Innodb_redo_log_logical_size        1250000000000    12500000  -136263680
-Innodb_redo_log_physical_size       2500000000000    30000000            
+Innodb_data_writes                  12500000000      150000          20
+Innodb_data_written                 50000000000000   600000000      300000
+Innodb_dblwr_pages_written           1000000000       12500          20
+Innodb_dblwr_writes                     8000000         100            
+Innodb_redo_log_uuid                1500000000000    15000000            
+Innodb_redo_log_checkpoint_lsn      20000000000000   225000000    17500000
+Innodb_redo_log_current_lsn         20000000000000   225000000         300
+Innodb_redo_log_flushed_to_disk_lsn 20000000000000   225000000         300
+Innodb_redo_log_logical_size        150000000000     1750000   -17727255
+Innodb_redo_log_physical_size       1500000000000    17500000            
 Innodb_redo_log_capacity_resized    3500000000000    40000000            
 Innodb_log_write_requests           150000000000     1750000           3
-Innodb_log_writes                   12500000000      150000            
-Innodb_os_log_fsyncs                 1250000000       15000            
-Innodb_os_log_written               22500000000000   250000000         350
+Innodb_log_writes                   12500000000      125000            
+Innodb_os_log_fsyncs                 1250000000       15000           1
+Innodb_os_log_written               22500000000000   250000000         450
 Innodb_pages_created                 1250000000       12500            
-Innodb_pages_read                     600000000        7000           7
-Innodb_pages_written                 1250000000       12500         500
+Innodb_pages_read                     600000000        8000           7
+Innodb_pages_written                 1250000000       12500          20
 Innodb_rows_inserted                80000000000      900000           8
 Innodb_system_rows_deleted               250000           2            
 Innodb_system_rows_inserted              600000           6            
@@ -164,7 +164,7 @@ Specify --databases or --all-databases to dump and summarize schemas
 # InnoDB #####################################################
                   Version | 8.4.8
          Buffer Pool Size | 12.0G
-         Buffer Pool Fill | 100%
+         Buffer Pool Fill | 90%
         Buffer Pool Dirty | 0%
            File Per Table | ON
                 Page Size | 16k
@@ -183,10 +183,10 @@ Specify --databases or --all-databases to dump and summarize schemas
       Txn Isolation Level | REPEATABLE-READ
         Adaptive Flushing | ON
       Adaptive Checkpoint | 
-           Checkpoint Age | 103M
+           Checkpoint Age | 186M
              InnoDB Queue | 0 queries inside InnoDB, 0 queries in queue
        Oldest Transaction | 0 Seconds
-         History List Len | 41
+         History List Len | 0
                Read Views | 0
          Undo Log Entries | 0 transactions, 0 total undo, 0 max undo
         Pending I/O Reads | 0 buf pool reads, 0 normal AIO, 0 ibuf AIO, 0 preads

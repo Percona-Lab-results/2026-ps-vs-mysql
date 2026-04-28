@@ -33,10 +33,10 @@ for VERSION in "${VERSIONS[@]}"; do
   ./run_metrics.sh "mysql" "$VERSION" "$IS_READ_ONLY"
 done
 
-VERSIONS=("8.4.8")
-for VERSION in "${VERSIONS[@]}"; do
-  ./run_metrics.sh "percona-server" "$VERSION" "$IS_READ_ONLY"
-done
+./run_metrics.sh "percona-server" "8.4.8" "0" "0"
+
+# Run with legacy LSN age factor for Percona Server 8.4.8
+./run_metrics.sh "percona-server" "8.4.8" "0" "1"
 
 echo ""
 echo "=========================================================================="
