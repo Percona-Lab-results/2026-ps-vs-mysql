@@ -188,7 +188,7 @@
             <tr><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Primary subject</td><td style="border: 1px solid #ccc; padding: 8px 12px;">Investigating the performance difference between Percona Server 8.4.8-8 and MySQL 8.4.8 on OLTP Read-Write workloads across varying thread counts and memory configurations</td></tr>
             <tr style="background:#fafafa;"><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Reference servers</td><td style="border: 1px solid #ccc; padding: 8px 12px;">MySQL 8.4.8, MySQL 9.7.0-er2, Percona Server 8.4.8 — included for cross-product context, not the focus of this benchmark</td></tr>
             <tr><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Memory tiers (innodb_buffer_pool_size)</td><td style="border: 1px solid #ccc; padding: 8px 12px;">12 GB — moderate buffer pool configuration</td></tr>
-            <tr style="background:#fafafa;"><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Client threads</td><td style="border: 1px solid #ccc; padding: 8px 12px;">16, 32, 64 — testing low, medium, and high concurrency scenarios</td></tr>
+            <tr style="background:#fafafa;"><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Client threads</td><td style="border: 1px solid #ccc; padding: 8px 12px;">32 and 64 threads</td></tr>
           </tbody>
         </table>
       </div>
@@ -324,7 +324,7 @@ function layoutForMode() {
 
 const BASE_URL = "{{BASE_URL}}";
 const CUSTOM_BASE = "https://percona-lab-results.github.io/2026-interactive-metrics-970/";
-const LOG_EXTS = ["sysbench.txt", "iostat.txt", "mpstat.txt", "vmstat.txt", "dstat.txt", "innodb.txt"];
+const LOG_EXTS = ["sysbench.txt", "iostat.txt", "mpstat.txt", "vmstat.txt", "dstat.txt", "innodb.txt", "pt-pmp.txt"];
 
 function serverToPath(server) {
   // Handle formats: "mysql 8.4.8", "run2-mysql-8.4.8", "mysql-8.4.8"

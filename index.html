@@ -88,6 +88,12 @@
             color: #999;
             word-break: break-all;
         }
+        .report-card .description {
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
         .empty-state {
             text-align: center;
             color: #999;
@@ -142,7 +148,7 @@
             </div>
 
             <div class="meta">
-                Generated: 2026-05-01 03:44:38
+                Generated: 2026-05-01 04:23:23
             </div>
         </header>
 
@@ -153,21 +159,25 @@
 
                 <a href="disabled_binlog_sysbench_average.html" class="report-card">
                     <h3>Sysbench Results - Averaged Across Runs</h3>
+                    <div class="description">Binary logging disabled</div>
                     <div class="filename">disabled_binlog_sysbench_average.html</div>
                 </a>
 
                 <a href="enabled_binlog_sysbench_average.html" class="report-card">
                     <h3>Sysbench Results - Averaged Across Runs</h3>
+                    <div class="description">Binary logging enabled</div>
                     <div class="filename">enabled_binlog_sysbench_average.html</div>
                 </a>
 
                 <a href="enabled_binlog_sysbench_individual.html" class="report-card">
                     <h3>Sysbench Results - Individual Runs</h3>
+                    <div class="description">Binary logging enabled</div>
                     <div class="filename">enabled_binlog_sysbench_individual.html</div>
                 </a>
 
                 <a href="disabled_binlog_sysbench_individual.html" class="report-card">
                     <h3>Sysbench Results - Individual Runs</h3>
+                    <div class="description">Binary logging disabled</div>
                     <div class="filename">disabled_binlog_sysbench_individual.html</div>
                 </a>
 
@@ -179,14 +189,16 @@
             <p>Deep-dive into 319 InnoDB internal metrics sampled every second during benchmark runs. Interactive charts show time-series data with per-second measurements and per-minute averages.</p>
             <div class="report-grid">
 
-                <a href="enabled_binlog_innodb_metrics_report.html" class="report-card">
-                    <h3>InnoDB Metrics Analyzer (Binlog Enabled)</h3>
-                    <div class="filename">enabled_binlog_innodb_metrics_report.html</div>
+                <a href="disabled_binlog_innodb_metrics_report.html" class="report-card">
+                    <h3>InnoDB Metrics Analyzer (Binlog Disabled)</h3>
+                    <div class="description">319 InnoDB metrics with binary logging disabled</div>
+                    <div class="filename">disabled_binlog_innodb_metrics_report.html</div>
                 </a>
 
-                <a href="disabled_binlog_innodb_metrics_report.html" class="report-card">
+                <a href="enabled_binlog_innodb_metrics_report.html" class="report-card">
                     <h3>InnoDB Metrics Analyzer (Binlog Enabled)</h3>
-                    <div class="filename">disabled_binlog_innodb_metrics_report.html</div>
+                    <div class="description">319 InnoDB metrics with binary logging enabled</div>
+                    <div class="filename">enabled_binlog_innodb_metrics_report.html</div>
                 </a>
 
             </div>
@@ -197,24 +209,28 @@
             <p>Side-by-side comparison of system variables and status variables between MySQL and Percona Server. Highlights differences in configuration and runtime state.</p>
             <div class="report-grid">
 
-                <a href="enabled_binlog_status_variables.html" class="report-card">
-                    <h3>Status Variables Comparison</h3>
-                    <div class="filename">enabled_binlog_status_variables.html</div>
-                </a>
-
                 <a href="disabled_binlog_status_variables.html" class="report-card">
-                    <h3>Status Variables Comparison</h3>
+                    <h3>Binlog Disabled - Status Variables Comparison</h3>
+                    <div class="description">Configuration with binary logging disabled</div>
                     <div class="filename">disabled_binlog_status_variables.html</div>
                 </a>
 
-                <a href="enabled_binlog_system_variables.html" class="report-card">
-                    <h3>System Variables Comparison</h3>
-                    <div class="filename">enabled_binlog_system_variables.html</div>
+                <a href="disabled_binlog_system_variables.html" class="report-card">
+                    <h3>Binlog Disabled - System Variables Comparison</h3>
+                    <div class="description">Configuration with binary logging disabled</div>
+                    <div class="filename">disabled_binlog_system_variables.html</div>
                 </a>
 
-                <a href="disabled_binlog_system_variables.html" class="report-card">
-                    <h3>System Variables Comparison</h3>
-                    <div class="filename">disabled_binlog_system_variables.html</div>
+                <a href="enabled_binlog_status_variables.html" class="report-card">
+                    <h3>Binlog Enabled - Status Variables Comparison</h3>
+                    <div class="description">Configuration with binary logging enabled</div>
+                    <div class="filename">enabled_binlog_status_variables.html</div>
+                </a>
+
+                <a href="enabled_binlog_system_variables.html" class="report-card">
+                    <h3>Binlog Enabled - System Variables Comparison</h3>
+                    <div class="description">Configuration with binary logging enabled</div>
+                    <div class="filename">enabled_binlog_system_variables.html</div>
                 </a>
 
             </div>

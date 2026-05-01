@@ -10,10 +10,10 @@ from typing import Dict, List, Tuple
 from datetime import datetime
 
 
-def find_html_reports(base_dir: Path) -> Dict[str, List[Tuple[str, Path]]]:
+def find_html_reports(base_dir: Path) -> Dict[str, List[Tuple[str, Path, str]]]:
     """
     Find all HTML reports in the directory and categorize them
-    Returns dict of {category: [(title, filepath)]}
+    Returns dict of {category: [(title, filepath, description)]}
     """
     reports = {
         'performance': [],
@@ -30,29 +30,56 @@ def find_html_reports(base_dir: Path) -> Dict[str, List[Tuple[str, Path]]]:
 
         # Categorize by filename patterns
         if 'sysbench' in filename.lower():
+            # Detect binlog status from filename
+            if 'enabled_binlog' in filename.lower() or 'enabled-binlog' in filename.lower():
+                binlog_desc = 'Binary logging enabled'
+            elif 'disabled_binlog' in filename.lower() or 'disabled-binlog' in filename.lower():
+                binlog_desc = 'Binary logging disabled'
+            elif 'binlog' in filename.lower():
+                binlog_desc = 'Binary logging enabled'
+            else:
+                binlog_desc = 'Binary logging disabled'
+
             if 'average' in filename.lower():
                 title = 'Sysbench Results - Averaged Across Runs'
-                reports['performance'].append((title, html_file))
+                reports['performance'].append((title, html_file, binlog_desc))
             elif 'individual' in filename.lower():
                 title = 'Sysbench Results - Individual Runs'
-                reports['performance'].append((title, html_file))
+                reports['performance'].append((title, html_file, binlog_desc))
             else:
                 title = filename.replace('.html', '').replace('_', ' ').title()
-                reports['performance'].append((title, html_file))
+                reports['performance'].append((title, html_file, binlog_desc))
 
         elif 'innodb_metrics' in filename.lower():
-            if 'binlog' in filename.lower():
+            # Detect binlog status from filename
+            if 'enabled_binlog' in filename.lower() or 'enabled-binlog' in filename.lower():
                 title = 'InnoDB Metrics Analyzer (Binlog Enabled)'
+                desc = '319 InnoDB metrics with binary logging enabled'
+            elif 'disabled_binlog' in filename.lower() or 'disabled-binlog' in filename.lower():
+                title = 'InnoDB Metrics Analyzer (Binlog Disabled)'
+                desc = '319 InnoDB metrics with binary logging disabled'
+            elif 'binlog' in filename.lower():
+                title = 'InnoDB Metrics Analyzer (Binlog Enabled)'
+                desc = '319 InnoDB metrics with binary logging enabled'
             else:
                 title = 'InnoDB Metrics Analyzer (Binlog Disabled)'
-            reports['innodb'].append((title, html_file))
+                desc = '319 InnoDB metrics with binary logging disabled'
+            reports['innodb'].append((title, html_file, desc))
 
         elif 'variable' in filename.lower() or 'status' in filename.lower():
-            # Parse variable comparison files
-            if 'binlog enabled' in filename.lower():
+            # Parse variable comparison files - check for specific patterns
+            if 'enabled_binlog' in filename.lower() or 'enabled-binlog' in filename.lower():
                 prefix = 'Binlog Enabled - '
+                binlog_desc = 'Configuration with binary logging enabled'
+            elif 'disabled_binlog' in filename.lower() or 'disabled-binlog' in filename.lower():
+                prefix = 'Binlog Disabled - '
+                binlog_desc = 'Configuration with binary logging disabled'
+            elif 'binlog enabled' in filename.lower():
+                prefix = 'Binlog Enabled - '
+                binlog_desc = 'Configuration with binary logging enabled'
             else:
                 prefix = ''
+                binlog_desc = 'Configuration with binary logging disabled'
 
             if 'system_variable' in filename.lower():
                 title = f'{prefix}System Variables Comparison'
@@ -61,12 +88,12 @@ def find_html_reports(base_dir: Path) -> Dict[str, List[Tuple[str, Path]]]:
             else:
                 title = filename.replace('.html', '').replace('_', ' ').title()
 
-            reports['variables'].append((title, html_file))
+            reports['variables'].append((title, html_file, binlog_desc))
 
         else:
             # Unknown report type, add to variables as fallback
             title = filename.replace('.html', '').replace('_', ' ').title()
-            reports['variables'].append((title, html_file))
+            reports['variables'].append((title, html_file, ''))
 
     # Sort each category
     for category in reports:
@@ -75,7 +102,7 @@ def find_html_reports(base_dir: Path) -> Dict[str, List[Tuple[str, Path]]]:
     return reports
 
 
-def generate_index_html(reports: Dict[str, List[Tuple[str, Path]]], output_file: Path):
+def generate_index_html(reports: Dict[str, List[Tuple[str, Path, str]]], output_file: Path):
     """Generate index.html with organized links to all reports"""
 
     total_reports = sum(len(r) for r in reports.values())
@@ -171,6 +198,12 @@ def generate_index_html(reports: Dict[str, List[Tuple[str, Path]]], output_file:
             color: #999;
             word-break: break-all;
         }}
+        .report-card .description {{
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.4;
+        }}
         .empty-state {{
             text-align: center;
             color: #999;
@@ -238,10 +271,11 @@ def generate_index_html(reports: Dict[str, List[Tuple[str, Path]]], output_file:
             <p>Sysbench OLTP Read-Write workload results comparing transaction throughput (TPS), queries per second (QPS), and latency metrics across different thread counts.</p>
             <div class="report-grid">
 '''
-        for title, filepath in reports['performance']:
+        for title, filepath, description in reports['performance']:
             html += f'''
                 <a href="{filepath.name}" class="report-card">
                     <h3>{title}</h3>
+                    <div class="description">{description}</div>
                     <div class="filename">{filepath.name}</div>
                 </a>
 '''
@@ -258,10 +292,11 @@ def generate_index_html(reports: Dict[str, List[Tuple[str, Path]]], output_file:
             <p>Deep-dive into 319 InnoDB internal metrics sampled every second during benchmark runs. Interactive charts show time-series data with per-second measurements and per-minute averages.</p>
             <div class="report-grid">
 '''
-        for title, filepath in reports['innodb']:
+        for title, filepath, description in reports['innodb']:
             html += f'''
                 <a href="{filepath.name}" class="report-card">
                     <h3>{title}</h3>
+                    <div class="description">{description}</div>
                     <div class="filename">{filepath.name}</div>
                 </a>
 '''
@@ -278,10 +313,11 @@ def generate_index_html(reports: Dict[str, List[Tuple[str, Path]]], output_file:
             <p>Side-by-side comparison of system variables and status variables between MySQL and Percona Server. Highlights differences in configuration and runtime state.</p>
             <div class="report-grid">
 '''
-        for title, filepath in reports['variables']:
+        for title, filepath, description in reports['variables']:
             html += f'''
                 <a href="{filepath.name}" class="report-card">
                     <h3>{title}</h3>
+                    <div class="description">{description}</div>
                     <div class="filename">{filepath.name}</div>
                 </a>
 '''
