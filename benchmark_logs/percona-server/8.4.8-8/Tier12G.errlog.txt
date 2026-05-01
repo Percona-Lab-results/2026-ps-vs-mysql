@@ -1,1140 +1,165 @@
-2026-04-27T13:38:27.110339Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
-2026-04-27T13:38:27.111755Z 0 [Warning] [MY-011070] [Server] 'binlog_format' is deprecated and will be removed in a future release.
-2026-04-27T13:38:27.111817Z 0 [Note] [MY-010096] [Server] Ignoring --secure-file-priv value as server is running with --initialize(-insecure).
-2026-04-27T13:38:27.111819Z 0 [Note] [MY-010096] [Server] Ignoring --secure-log-path value as server is running with --initialize(-insecure).
-2026-04-27T13:38:27.111841Z 0 [Note] [MY-013932] [Server] BuildID[sha1]=3ef88fdd13810c5b5871d3f65679f2b5fd230279
-2026-04-27T13:38:27.111843Z 0 [Note] [MY-010949] [Server] Basedir set to /usr/.
-2026-04-27T13:38:27.111854Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.8-8) initializing of server in progress as process 14
-2026-04-27T13:38:27.113342Z 0 [Note] [MY-010458] [Server] --initialize specified on an existing data directory.
-2026-04-27T13:38:27.120553Z 0 [Note] [MY-010938] [Server] Generating a new UUID: 5eceaec7-423e-11f1-bfe9-ac1f6bc846a9.
-2026-04-27T13:38:27.121525Z 0 [Note] [MY-012366] [InnoDB] Using Linux native AIO
-2026-04-27T13:38:27.121610Z 0 [Note] [MY-010747] [Server] Plugin 'FEDERATED' is disabled.
-2026-04-27T13:38:27.121662Z 0 [Note] [MY-010747] [Server] Plugin 'ndbcluster' is disabled.
-2026-04-27T13:38:27.121674Z 0 [Note] [MY-010747] [Server] Plugin 'ndbinfo' is disabled.
-2026-04-27T13:38:27.121679Z 0 [Note] [MY-010747] [Server] Plugin 'ndb_transid_mysql_connection_map' is disabled.
-2026-04-27T13:38:27.121728Z 0 [Note] [MY-010747] [Server] Plugin 'mysql_native_password' is disabled.
-2026-04-27T13:38:27.122747Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-04-27T13:38:27.122806Z 1 [Note] [MY-013546] [InnoDB] Atomic write enabled
-2026-04-27T13:38:27.122825Z 1 [Note] [MY-012274] [InnoDB] The first innodb_system data file 'ibdata1' did not exist. A new tablespace will be created!
-2026-04-27T13:38:27.122835Z 1 [Note] [MY-012932] [InnoDB] PUNCH HOLE support available
-2026-04-27T13:38:27.122846Z 1 [Note] [MY-012944] [InnoDB] Uses event mutexes
-2026-04-27T13:38:27.122850Z 1 [Note] [MY-012945] [InnoDB] GCC builtin __atomic_thread_fence() is used for memory barrier
-2026-04-27T13:38:27.122855Z 1 [Note] [MY-012948] [InnoDB] Compressed tables use zlib 1.3.1
-2026-04-27T13:38:27.126308Z 1 [Note] [MY-012951] [InnoDB] Using hardware accelerated crc32 and polynomial multiplication.
-2026-04-27T13:38:27.126795Z 1 [Note] [MY-012203] [InnoDB] Directories to scan './'
-2026-04-27T13:38:27.126834Z 1 [Note] [MY-012204] [InnoDB] Scanning './'
-2026-04-27T13:38:27.126872Z 1 [Note] [MY-012208] [InnoDB] Completed space ID check of 0 files.
-2026-04-27T13:38:27.129140Z 1 [Note] [MY-012955] [InnoDB] Initializing buffer pool, total size = 12.000000G, instances = 2, chunk size =128.000000M 
-2026-04-27T13:38:27.129160Z 1 [Note] [MY-011872] [InnoDB] Setting NUMA memory policy to MPOL_INTERLEAVE
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.129178Z 1 [Warning] [MY-011873] [InnoDB] Failed to set NUMA memory policy to MPOL_INTERLEAVE: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.173993Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5dd7d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.216704Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5dcfa3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.265457Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5dc775d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.307883Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5dbf47c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.355927Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5db719b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.399333Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5daeeba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.447773Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5da6bd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.490014Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d9e8f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.538357Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d96617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.581549Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d8e336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.629038Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d86055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.671277Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d7dd74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.719548Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d75a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.762824Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d6d7b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.810758Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d654d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.853219Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d5d1f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.900108Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d54f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.942559Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d4cc2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:27.989930Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d4494d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.033605Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d3c66c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.080732Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d3438b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.123700Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d2c0aa000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.171412Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d23dc9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.215663Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d1bae8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.306759Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d0b526000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:28.306758Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d13807000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.354672Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5d03245000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.397332Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cfaf64000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.488904Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cea9a2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:28.488899Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cf2c83000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.537013Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5ce26c1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.580128Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cda3e0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.628252Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cd20ff000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.671796Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cc9e1e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.718933Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cc1b3d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.761789Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cb985c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.808956Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5cb157b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.851824Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5ca929a000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.944106Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c93a3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:28.944108Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c9bd1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:28.992074Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c8b75d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.034513Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c8347c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.082500Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c7b19b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.125710Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c72eba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.173607Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c6abd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.215768Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c628f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.263713Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c5a617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.306105Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c52336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.353860Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c4a055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.397005Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c41d74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.444891Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c39a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.488147Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c317b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.536059Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c294d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.579176Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c211f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.626610Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c18f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.669297Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c10c2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.716520Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c0894d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.758912Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5c0066c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.806615Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bf838b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.849431Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bf00aa000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.897003Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5be7dc9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.939782Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bdfae8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:29.987387Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bd7807000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.030119Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bcf526000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.077111Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bc7245000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.119151Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bbef64000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.166747Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bb6c83000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.209370Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5bae9a2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.257883Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5ba66c1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.300783Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b9e3e0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.348160Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b960ff000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.390872Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b8de1e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.438109Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b85b3d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.481085Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b7d85c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.529287Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b7557b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.571954Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b6d29a000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.619614Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b57d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.662910Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b4fa3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.710597Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b4775d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.753869Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b3f47c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.803894Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b2eeba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:30.803921Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b3719b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.851883Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b26bd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.894792Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b1e8f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.943519Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b16617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:30.985515Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b0e336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.032593Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5b06055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.074354Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5afdd74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.121332Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5af5a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.163884Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5aed7b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.211539Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5ae54d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.255217Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5add1f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.303210Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5ad4f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.345385Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5accc2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.392836Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5ac494d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:31.435065Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7e5abc66c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:31.553639Z 1 [Note] [MY-011874] [InnoDB] Setting NUMA memory policy to MPOL_DEFAULT
-2026-04-27T13:38:31.553695Z 1 [Warning] [MY-011875] [InnoDB] Failed to set NUMA memory policy to MPOL_DEFAULT: Operation not permitted
-2026-04-27T13:38:31.553701Z 1 [Note] [MY-012957] [InnoDB] Completed initialization of buffer pool
-2026-04-27T13:38:31.610890Z 0 [Note] [MY-011952] [InnoDB] If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
-2026-04-27T13:38:31.610999Z 1 [Note] [MY-012265] [InnoDB] Setting file './ibdata1' size to 12 MB. Physically writing the file full; Please wait ...
-2026-04-27T13:38:31.615718Z 1 [Note] [MY-012266] [InnoDB] File './ibdata1' size is now 12 MB.
-2026-04-27T13:38:31.615773Z 1 [Note] [MY-013566] [InnoDB] Double write buffer files: 2, --innodb-doublewrite-files=2, segments_per_file=2
-2026-04-27T13:38:31.615790Z 1 [Note] [MY-013565] [InnoDB] Double write buffer pages per instance: 128
-2026-04-27T13:38:31.615886Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
-2026-04-27T13:38:31.618069Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
-2026-04-27T13:38:31.770287Z 1 [Note] [MY-012893] [InnoDB] New redo log files created, LSN=8204
-2026-04-27T13:38:31.770374Z 1 [Note] [MY-013083] [InnoDB] Log background threads are being started...
-2026-04-27T13:38:31.771201Z 1 [Note] [MY-012896] [InnoDB] Creating UNDO Tablespace ./undo_001
-2026-04-27T13:38:31.771221Z 1 [Note] [MY-012897] [InnoDB] Setting file ./undo_001 size to 16 MB
-2026-04-27T13:38:31.771227Z 1 [Note] [MY-012898] [InnoDB] Physically writing the file full
-2026-04-27T13:38:31.778245Z 1 [Note] [MY-012896] [InnoDB] Creating UNDO Tablespace ./undo_002
-2026-04-27T13:38:31.778258Z 1 [Note] [MY-012897] [InnoDB] Setting file ./undo_002 size to 16 MB
-2026-04-27T13:38:31.778263Z 1 [Note] [MY-012898] [InnoDB] Physically writing the file full
-2026-04-27T13:38:31.785556Z 1 [Note] [MY-012915] [InnoDB] Created 2 undo tablespaces.
-2026-04-27T13:38:31.786020Z 1 [Note] [MY-011980] [InnoDB] GTID recovery trx_no: 0
-2026-04-27T13:38:31.786463Z 1 [Note] [MY-013776] [InnoDB] Parallel initialization of rseg complete
-2026-04-27T13:38:31.786477Z 1 [Note] [MY-013777] [InnoDB] Time taken to initialize rseg using 4 thread: 0 ms.
-2026-04-27T13:38:31.814248Z 1 [Note] [MY-011920] [InnoDB] Legacy doublewrite buffer not found: creating new
-2026-04-27T13:38:31.815541Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=79] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815586Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=78] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815604Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=77] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815618Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=76] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815631Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=75] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815645Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=74] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815661Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=73] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815674Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=72] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815687Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=71] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815713Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=70] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815733Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=69] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815755Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=68] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815769Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=67] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815800Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=66] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815816Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=65] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815828Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=64] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815843Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=95] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815856Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=94] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815868Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=93] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815881Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=92] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815894Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=91] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815907Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=90] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815919Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=89] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815932Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=88] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815946Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=87] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815959Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=86] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815972Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=85] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815986Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=84] type 20 to 13 when flushing.
-2026-04-27T13:38:31.815999Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=83] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816012Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=82] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816025Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=81] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816046Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=80] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816059Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=111] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816072Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=110] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816087Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=109] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816101Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=108] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816113Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=107] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816129Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=106] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816143Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=105] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816156Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=104] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816169Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=103] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816193Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=102] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816207Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=101] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816220Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=100] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816233Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=99] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816246Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=98] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816267Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=97] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816280Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=96] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816292Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=127] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816306Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=126] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816319Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=125] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816332Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=124] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816345Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=123] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816358Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=122] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816371Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=121] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816383Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=120] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816396Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=119] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816409Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=118] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816422Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=117] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816434Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=116] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816447Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=115] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816461Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=114] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816473Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=113] type 20 to 13 when flushing.
-2026-04-27T13:38:31.816488Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=112] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817473Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=24] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817498Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=23] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817512Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=22] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817525Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=21] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817538Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=20] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817550Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=19] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817565Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=18] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817578Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=17] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817590Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=16] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817605Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=15] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817618Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=14] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817631Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=13] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817644Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=12] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817657Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=11] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817671Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=10] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817684Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=9] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817697Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=40] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817711Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=39] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817723Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=38] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817736Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=37] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817749Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=36] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817762Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=35] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817775Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=34] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817794Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=33] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817810Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=32] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817823Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=31] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817861Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=30] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817875Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=29] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817889Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=28] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817902Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=27] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817918Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=26] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817932Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=25] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817945Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=143] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817957Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=142] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817970Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=141] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817984Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=140] type 20 to 13 when flushing.
-2026-04-27T13:38:31.817997Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=139] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818010Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=138] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818023Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=137] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818036Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=136] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818048Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=135] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818061Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=134] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818073Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=133] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818086Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=132] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818099Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=131] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818111Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=130] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818125Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=129] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818138Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=128] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818150Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=159] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818163Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=158] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818176Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=157] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818189Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=156] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818201Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=155] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818213Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=154] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818227Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=153] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818241Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=152] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818253Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=151] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818267Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=150] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818282Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=149] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818295Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=148] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818307Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=147] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818321Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=146] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818333Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=145] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818346Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=144] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818359Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=175] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818372Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=174] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818385Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=173] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818397Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=172] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818410Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=171] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818423Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=170] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818435Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=169] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818448Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=168] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818461Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=167] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818474Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=166] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818486Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=165] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818499Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=164] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818513Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=163] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818526Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=162] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818538Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=161] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818551Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=160] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818565Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=191] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818578Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=190] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818590Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=189] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818603Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=188] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818617Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=187] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818629Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=186] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818644Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=185] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818658Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=184] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818671Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=183] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818683Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=182] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818697Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=181] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818709Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=180] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818721Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=179] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818734Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=178] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818747Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=177] type 20 to 13 when flushing.
-2026-04-27T13:38:31.818759Z 0 [Note] [MY-011950] [InnoDB] Resetting invalid page [page id: space=0, page number=176] type 20 to 13 when flushing.
-2026-04-27T13:38:31.821332Z 1 [Note] [MY-011924] [InnoDB] Legacy atomic write buffer created
-2026-04-27T13:38:31.821355Z 1 [Note] [MY-012923] [InnoDB] Creating shared tablespace for temporary tables
-2026-04-27T13:38:31.821596Z 1 [Note] [MY-012265] [InnoDB] Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
-2026-04-27T13:38:31.826451Z 1 [Note] [MY-012266] [InnoDB] File './ibtmp1' size is now 12 MB.
-2026-04-27T13:38:31.829862Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in the temporary tablespace. 128 are now active.
-2026-04-27T13:38:31.834126Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in undo tablespace number 1. 128 are now active.
-2026-04-27T13:38:31.838619Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in undo tablespace number 2. 128 are now active.
-2026-04-27T13:38:31.846293Z 1 [Note] [MY-012976] [InnoDB] Percona XtraDB (http://www.percona.com) 8.4.8-8 started; log sequence number 2399391
-2026-04-27T13:38:31.846843Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-04-27T13:38:31.848106Z 1 [Note] [MY-011088] [Server] Data dictionary initializing version '80300'.
-2026-04-27T13:38:31.944170Z 1 [Note] [MY-010007] [Server] Installed data dictionary with version 80300
-2026-04-27T13:38:31.983501Z 2 [Note] [MY-011019] [Server] Created system views with I_S version 80300.
-2026-04-27T13:38:32.141104Z 0 [Note] [MY-013911] [Server] Crash recovery finished in binlog engine. No attempts to commit, rollback or prepare any transactions.
-2026-04-27T13:38:32.141135Z 0 [Note] [MY-013911] [Server] Crash recovery finished in InnoDB engine. No attempts to commit, rollback or prepare any transactions.
-2026-04-27T13:38:32.147241Z 0 [Note] [MY-012487] [InnoDB] DDL log recovery : begin
-2026-04-27T13:38:32.147264Z 0 [Note] [MY-012488] [InnoDB] DDL log recovery : end
-2026-04-27T13:38:32.148925Z 0 [Note] [MY-012922] [InnoDB] Waiting for purge to start
-2026-04-27T13:38:32.429719Z 0 [Note] [MY-010305] [Server] Auto generated SSL certificates are placed in data directory.
-2026-04-27T13:38:32.458277Z 0 [Note] [MY-010309] [Server] Auto generated RSA key files through --sha256_password_auto_generate_rsa_keys are placed in data directory.
-2026-04-27T13:38:32.458587Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --caching_sha2_password_auto_generate_rsa_keys as key files are present in data directory.
-2026-04-27T13:38:32.459811Z 6 [Note] [MY-011061] [Server] Creating the system database.
-2026-04-27T13:38:32.459842Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
-2026-04-27T13:38:32.459895Z 6 [Note] [MY-011061] [Server] Creating the system tables.
-2026-04-27T13:38:32.535130Z 6 [Note] [MY-011061] [Server] Filling in the system tables, part 1.
-2026-04-27T13:38:32.541708Z 6 [Note] [MY-011061] [Server] Filling in the system tables, part 2.
-2026-04-27T13:38:32.766197Z 6 [Note] [MY-011061] [Server] Filling in the mysql.help table.
-2026-04-27T13:38:32.849490Z 6 [Note] [MY-011061] [Server] Creating the system users for internal usage.
-2026-04-27T13:38:32.853262Z 6 [Note] [MY-011061] [Server] Creating the sys schema.
-2026-04-27T13:38:33.000590Z 6 [Note] [MY-010456] [Server] Bootstrapping complete
-2026-04-27T13:38:33.011089Z 0 [Note] [MY-010067] [Server] Giving 0 client threads a chance to die gracefully
-2026-04-27T13:38:33.012373Z 0 [Note] [MY-012330] [InnoDB] FTS optimize thread exiting.
-2026-04-27T13:38:33.921493Z 0 [Note] [MY-013072] [InnoDB] Starting shutdown...
-2026-04-27T13:38:33.942624Z 0 [Note] [MY-013084] [InnoDB] Log background threads are being closed...
-2026-04-27T13:38:35.387056Z 0 [Note] [MY-013854] [InnoDB] Bytes written to disk by DBLWR (ON): 33783808
-2026-04-27T13:38:35.387678Z 0 [Note] [MY-012980] [InnoDB] Shutdown completed; log sequence number 18979116
-2026-04-27T13:38:35.387962Z 0 [Note] [MY-012255] [InnoDB] Removed temporary tablespace data file: "ibtmp1"
-2026-04-27T13:38:35.390250Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
-2026-04-27T13:38:35.486180Z 0 [System] [MY-015015] [Server] MySQL Server - start.
-2026-04-27T13:38:35.604532Z 0 [Warning] [MY-011070] [Server] 'binlog_format' is deprecated and will be removed in a future release.
-2026-04-27T13:38:35.604672Z 0 [Warning] [MY-010097] [Server] Insecure configuration for --secure-log-path: Current value does not restrict location of generated files. Consider setting it to a valid, non-empty path.
-2026-04-27T13:38:35.604694Z 0 [Note] [MY-013932] [Server] BuildID[sha1]=3ef88fdd13810c5b5871d3f65679f2b5fd230279
-2026-04-27T13:38:35.604696Z 0 [Note] [MY-010949] [Server] Basedir set to /usr/.
-2026-04-27T13:38:35.604701Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.8-8) starting as process 98
-2026-04-27T13:38:35.612990Z 0 [Note] [MY-012366] [InnoDB] Using Linux native AIO
-2026-04-27T13:38:35.613089Z 0 [Note] [MY-010747] [Server] Plugin 'FEDERATED' is disabled.
-2026-04-27T13:38:35.613131Z 0 [Note] [MY-010747] [Server] Plugin 'ndbcluster' is disabled.
-2026-04-27T13:38:35.613142Z 0 [Note] [MY-010747] [Server] Plugin 'ndbinfo' is disabled.
-2026-04-27T13:38:35.613146Z 0 [Note] [MY-010747] [Server] Plugin 'ndb_transid_mysql_connection_map' is disabled.
-2026-04-27T13:38:35.613201Z 0 [Note] [MY-010747] [Server] Plugin 'mysql_native_password' is disabled.
-2026-04-27T13:38:35.614238Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-04-27T13:38:35.614301Z 1 [Note] [MY-013546] [InnoDB] Atomic write enabled
-2026-04-27T13:38:35.614324Z 1 [Note] [MY-012932] [InnoDB] PUNCH HOLE support available
-2026-04-27T13:38:35.614335Z 1 [Note] [MY-012944] [InnoDB] Uses event mutexes
-2026-04-27T13:38:35.614339Z 1 [Note] [MY-012945] [InnoDB] GCC builtin __atomic_thread_fence() is used for memory barrier
-2026-04-27T13:38:35.614344Z 1 [Note] [MY-012948] [InnoDB] Compressed tables use zlib 1.3.1
-2026-04-27T13:38:35.617814Z 1 [Note] [MY-012951] [InnoDB] Using hardware accelerated crc32 and polynomial multiplication.
-2026-04-27T13:38:35.618205Z 1 [Note] [MY-012203] [InnoDB] Directories to scan './'
-2026-04-27T13:38:35.618237Z 1 [Note] [MY-012204] [InnoDB] Scanning './'
-2026-04-27T13:38:35.619875Z 1 [Note] [MY-012208] [InnoDB] Completed space ID check of 4 files.
-2026-04-27T13:38:35.621864Z 1 [Note] [MY-012955] [InnoDB] Initializing buffer pool, total size = 12.000000G, instances = 2, chunk size =128.000000M 
-2026-04-27T13:38:35.621885Z 1 [Note] [MY-011872] [InnoDB] Setting NUMA memory policy to MPOL_INTERLEAVE
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.621905Z 1 [Warning] [MY-011873] [InnoDB] Failed to set NUMA memory policy to MPOL_INTERLEAVE: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.668214Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a9fd1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.711089Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a97a3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.802957Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a8747c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:35.802958Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a8f75d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.850862Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a7f19b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.892903Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a76eba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:35.982666Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a668f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:35.982663Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a6ebd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.029917Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a5e617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.072469Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a56336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.120071Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a4e055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.162428Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a45d74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.212291Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a3da93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.259555Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a357b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.309422Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a2d4d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.352040Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a251f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.399433Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a1cf0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.442721Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a14c2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.490596Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a0c94d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.533249Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745a0466c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.580656Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459fc38b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.623233Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459f40aa000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.670686Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459ebdc9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.713490Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459e3ae8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.760722Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459db807000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.803295Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459d3526000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.850579Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459cb245000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.892712Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459c2f64000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.940378Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459bac83000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:36.982915Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459b29a2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.031476Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459aa6c1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.074139Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7459a23e0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.121610Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74599a0ff000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.164036Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745991e1e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.211009Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745989b3d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.254246Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74598185c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.301451Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74597957b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.344010Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74597129a000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.392094Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745963d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.435066Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745953d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.481694Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74594ba3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.524990Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74594375d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.571286Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74593b47c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.614444Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74593319b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.661642Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74592aeba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.705515Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745922bd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.752083Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74591a8f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.795576Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745912617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.842202Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74590a336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.885833Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745902055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.932469Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458f9d74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:37.975849Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458f1a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.022654Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458e97b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.065832Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458e14d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.112491Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458d91f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.155644Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458d0f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.202585Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458c8c2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.245994Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458c094d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.296079Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458b866c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.343335Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458b038b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.392603Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458a80aa000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.435643Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74589fdc9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.482776Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745897ae8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.525994Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74588f807000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.572931Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745887526000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.616086Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74587f245000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.662821Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745876f64000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.705941Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74586ec83000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.752276Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458669a2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.795918Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74585e6c1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.842016Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7458563e0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.885599Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74584e0ff000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.931617Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745845e1e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:38.975254Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74583db3d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.021580Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74583585c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.066656Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74582d57b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.112916Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74581fd1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.156376Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74580fd1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.201843Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745807a3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.245878Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457ff75d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.291330Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457f747c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.335228Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457ef19b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.380758Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457e6eba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.424537Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457debd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.469769Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457d68f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.513605Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457ce617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.559026Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457c6336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.602676Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457be055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.648173Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457b5d74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.691904Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457ada93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.737738Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457a57b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.781763Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74579d4d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.827805Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7457951f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.872323Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74578cf0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.918059Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x745784c2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:39.961824Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x74577c94d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:40.077458Z 1 [Note] [MY-011874] [InnoDB] Setting NUMA memory policy to MPOL_DEFAULT
-2026-04-27T13:38:40.077514Z 1 [Warning] [MY-011875] [InnoDB] Failed to set NUMA memory policy to MPOL_DEFAULT: Operation not permitted
-2026-04-27T13:38:40.077520Z 1 [Note] [MY-012957] [InnoDB] Completed initialization of buffer pool
-2026-04-27T13:38:40.134381Z 0 [Note] [MY-011952] [InnoDB] If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
-2026-04-27T13:38:40.134843Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
-2026-04-27T13:38:40.141829Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
-2026-04-27T13:38:40.159297Z 1 [Note] [MY-013566] [InnoDB] Double write buffer files: 2, --innodb-doublewrite-files=2, segments_per_file=2
-2026-04-27T13:38:40.159321Z 1 [Note] [MY-013565] [InnoDB] Double write buffer pages per instance: 128
-2026-04-27T13:38:40.159338Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
-2026-04-27T13:38:40.159350Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
-2026-04-27T13:38:40.307829Z 1 [Note] [MY-013883] [InnoDB] The latest found checkpoint is at lsn = 18979116 in redo log file ./#innodb_redo/#ib_redo0.
-2026-04-27T13:38:40.307943Z 1 [Note] [MY-013086] [InnoDB] Starting to parse redo log at lsn = 18978837, whereas checkpoint_lsn = 18979116 and start_lsn = 18978816
-2026-04-27T13:38:40.335127Z 1 [Note] [MY-013083] [InnoDB] Log background threads are being started...
-2026-04-27T13:38:40.335499Z 1 [Note] [MY-012532] [InnoDB] Applying a batch of 0 redo log records ...
-2026-04-27T13:38:40.335513Z 1 [Note] [MY-012535] [InnoDB] Apply batch completed!
-2026-04-27T13:38:40.335895Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_001'.
-2026-04-27T13:38:40.336286Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_002'.
-2026-04-27T13:38:40.336975Z 1 [Note] [MY-012910] [InnoDB] Opened 2 existing undo tablespaces.
-2026-04-27T13:38:40.337028Z 1 [Note] [MY-011980] [InnoDB] GTID recovery trx_no: 1026
-2026-04-27T13:38:40.362573Z 1 [Note] [MY-013776] [InnoDB] Parallel initialization of rseg complete
-2026-04-27T13:38:40.362605Z 1 [Note] [MY-013777] [InnoDB] Time taken to initialize rseg using 4 thread: 25 ms.
-2026-04-27T13:38:40.362661Z 1 [Note] [MY-012923] [InnoDB] Creating shared tablespace for temporary tables
-2026-04-27T13:38:40.362860Z 1 [Note] [MY-012265] [InnoDB] Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
-2026-04-27T13:38:40.367677Z 1 [Note] [MY-012266] [InnoDB] File './ibtmp1' size is now 12 MB.
-2026-04-27T13:38:40.367749Z 1 [Note] [MY-013627] [InnoDB] Scanning temp tablespace dir:'./#innodb_temp/'
-2026-04-27T13:38:40.371316Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in the temporary tablespace. 128 are now active.
-2026-04-27T13:38:40.371643Z 1 [Note] [MY-012976] [InnoDB] Percona XtraDB (http://www.percona.com) 8.4.8-8 started; log sequence number 18979126
-2026-04-27T13:38:40.372277Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-04-27T13:38:40.377591Z 1 [Note] [MY-011089] [Server] Data dictionary restarting version '80300'.
-2026-04-27T13:38:40.449181Z 1 [Note] [MY-012357] [InnoDB] Reading DD tablespace files
-2026-04-27T13:38:40.449598Z 1 [Note] [MY-012356] [InnoDB] Scanned 6 tablespaces. Validated 6.
-2026-04-27T13:38:40.460903Z 1 [Note] [MY-010006] [Server] Using data dictionary with version '80300'.
-2026-04-27T13:38:40.465411Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. socket: '/var/lib/mysql/mysqlx.sock''
-2026-04-27T13:38:40.517202Z 0 [Note] [MY-010902] [Server] Thread priority attribute setting in Resource Group SQL shall be ignored due to unsupported platform or insufficient privilege.
-2026-04-27T13:38:40.518096Z 0 [Note] [MY-010856] [Server] Failed to open the crashed binlog file when source server is recovering it.
-2026-04-27T13:38:40.527843Z 0 [Note] [MY-013911] [Server] Crash recovery finished in binlog engine. No attempts to commit, rollback or prepare any transactions.
-2026-04-27T13:38:40.527861Z 0 [Note] [MY-013911] [Server] Crash recovery finished in InnoDB engine. No attempts to commit, rollback or prepare any transactions.
-2026-04-27T13:38:40.529855Z 0 [Note] [MY-012487] [InnoDB] DDL log recovery : begin
-2026-04-27T13:38:40.529966Z 0 [Note] [MY-012488] [InnoDB] DDL log recovery : end
-2026-04-27T13:38:40.533660Z 0 [Note] [MY-012922] [InnoDB] Waiting for purge to start
-2026-04-27T13:38:40.586312Z 0 [Note] [MY-010182] [Server] Found ca.pem, server-cert.pem and server-key.pem in data directory. Trying to enable SSL support using them.
-2026-04-27T13:38:40.587842Z 0 [Note] [MY-010304] [Server] Skipping generation of SSL certificates as certificate files are present in data directory.
-2026-04-27T13:38:40.589461Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
-2026-04-27T13:38:40.589483Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-2026-04-27T13:38:40.589811Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --sha256_password_auto_generate_rsa_keys as key files are present in data directory.
-2026-04-27T13:38:40.590074Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --caching_sha2_password_auto_generate_rsa_keys as key files are present in data directory.
-2026-04-27T13:38:40.592594Z 0 [Note] [MY-011071] [Server] Component percona_telemetry reported: 'Applying Telemetry grace interval 86400 seconds'
-2026-04-27T13:38:40.604928Z 0 [Note] [MY-011025] [Repl] Failed to start replica threads for channel ''.
-2026-04-27T13:38:40.606787Z 6 [Note] [MY-010051] [Server] Event Scheduler: scheduler thread started with id 6
-2026-04-27T13:38:40.606939Z 0 [Note] [MY-011240] [Server] Plugin mysqlx reported: 'Using SSL configuration from MySQL Server'
-2026-04-27T13:38:40.607769Z 0 [Note] [MY-011243] [Server] Plugin mysqlx reported: 'Using OpenSSL for TLS connections'
-2026-04-27T13:38:40.607942Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/lib/mysql/mysqlx.sock
-2026-04-27T13:38:40.607971Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.8-8'  socket: '/var/lib/mysql/mysql.sock'  port: 0  Percona Server (GPL), Release 8, Revision 1c288264.
-2026-04-27T13:38:42.385313Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.8-8).
-2026-04-27T13:38:42.385878Z 0 [Note] [MY-015023] [Server] MySQL Server: Closing Connections - start.
-2026-04-27T13:38:42.385958Z 0 [Note] [MY-010067] [Server] Giving 1 client threads a chance to die gracefully
-2026-04-27T13:38:42.385968Z 0 [Note] [MY-010117] [Server] Shutting down replica threads
-2026-04-27T13:38:42.385974Z 0 [Note] [MY-010054] [Server] Event Scheduler: Killing the scheduler thread, thread id 6
-2026-04-27T13:38:42.385982Z 0 [Note] [MY-010050] [Server] Event Scheduler: Waiting for the scheduler thread to reply
-2026-04-27T13:38:42.386042Z 0 [Note] [MY-010048] [Server] Event Scheduler: Stopped
-2026-04-27T13:38:42.386046Z 0 [Note] [MY-010118] [Server] Forcefully disconnecting 0 remaining clients
-2026-04-27T13:38:42.386051Z 0 [Note] [MY-010043] [Server] Event Scheduler: Purging the queue. 0 events
-2026-04-27T13:38:42.386080Z 0 [Note] [MY-015024] [Server] MySQL Server: Closing Connections - end.
-2026-04-27T13:38:42.387281Z 0 [Note] [MY-012330] [InnoDB] FTS optimize thread exiting.
-2026-04-27T13:38:42.455346Z 0 [Note] [MY-010120] [Server] Binlog end
-2026-04-27T13:38:42.456404Z 0 [Note] [MY-015019] [Server] MySQL Server: Plugins Shutdown - start.
-2026-04-27T13:38:42.456428Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'mysqlx'
-2026-04-27T13:38:42.456883Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'mysqlx_cache_cleaner'
-2026-04-27T13:38:42.456895Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'ngram'
-2026-04-27T13:38:42.456900Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'BLACKHOLE'
-2026-04-27T13:38:42.456906Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'ARCHIVE'
-2026-04-27T13:38:42.456910Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'TempTable'
-2026-04-27T13:38:42.456914Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'MRG_MYISAM'
-2026-04-27T13:38:42.456926Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'MyISAM'
-2026-04-27T13:38:42.456937Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_SESSION_TEMP_TABLESPACES'
-2026-04-27T13:38:42.456942Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CACHED_INDEXES'
-2026-04-27T13:38:42.456946Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_VIRTUAL'
-2026-04-27T13:38:42.456950Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_COLUMNS'
-2026-04-27T13:38:42.456954Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_TABLESPACES'
-2026-04-27T13:38:42.456958Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_INDEXES'
-2026-04-27T13:38:42.456962Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_TABLESTATS'
-2026-04-27T13:38:42.456966Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_TABLES'
-2026-04-27T13:38:42.456970Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_FT_INDEX_TABLE'
-2026-04-27T13:38:42.456973Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_FT_INDEX_CACHE'
-2026-04-27T13:38:42.456977Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_FT_CONFIG'
-2026-04-27T13:38:42.456981Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_FT_BEING_DELETED'
-2026-04-27T13:38:42.456985Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_FT_DELETED'
-2026-04-27T13:38:42.456994Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_FT_DEFAULT_STOPWORD'
-2026-04-27T13:38:42.456998Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_METRICS'
-2026-04-27T13:38:42.457002Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_TEMP_TABLE_INFO'
-2026-04-27T13:38:42.457005Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_BUFFER_POOL_STATS'
-2026-04-27T13:38:42.457009Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_BUFFER_PAGE_LRU'
-2026-04-27T13:38:42.457013Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_BUFFER_PAGE'
-2026-04-27T13:38:42.457017Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CMP_PER_INDEX_RESET'
-2026-04-27T13:38:42.457020Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CMP_PER_INDEX'
-2026-04-27T13:38:42.457024Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CMPMEM_RESET'
-2026-04-27T13:38:42.457033Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CMPMEM'
-2026-04-27T13:38:42.457037Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CMP_RESET'
-2026-04-27T13:38:42.457041Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_CMP'
-2026-04-27T13:38:42.457045Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'INNODB_TRX'
-2026-04-27T13:38:42.457048Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'InnoDB'
-2026-04-27T13:38:42.457067Z 0 [Note] [MY-013072] [InnoDB] Starting shutdown...
-2026-04-27T13:38:42.468322Z 0 [Note] [MY-013084] [InnoDB] Log background threads are being closed...
-2026-04-27T13:38:43.921316Z 0 [Note] [MY-013854] [InnoDB] Bytes written to disk by DBLWR (ON): 11075584
-2026-04-27T13:38:43.922053Z 0 [Note] [MY-012980] [InnoDB] Shutdown completed; log sequence number 29632099
-2026-04-27T13:38:43.922350Z 0 [Note] [MY-012255] [InnoDB] Removed temporary tablespace data file: "ibtmp1"
-2026-04-27T13:38:43.922395Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'MEMORY'
-2026-04-27T13:38:43.922406Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'CSV'
-2026-04-27T13:38:43.922410Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'PERFORMANCE_SCHEMA'
-2026-04-27T13:38:43.922444Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'daemon_keyring_proxy_plugin'
-2026-04-27T13:38:43.922470Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'sha2_cache_cleaner'
-2026-04-27T13:38:43.922478Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'caching_sha2_password'
-2026-04-27T13:38:43.922501Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'sha256_password'
-2026-04-27T13:38:43.922707Z 0 [Note] [MY-010733] [Server] Shutting down plugin 'binlog'
-2026-04-27T13:38:43.922717Z 0 [Note] [MY-015020] [Server] MySQL Server: Plugins Shutdown - end.
-2026-04-27T13:38:43.924885Z 0 [Note] [MY-015021] [Server] MySQL Server: Components Shutdown - start.
-2026-04-27T13:38:43.925382Z 0 [Note] [MY-015022] [Server] MySQL Server: Components Shutdown - end (with return value = 0).
-2026-04-27T13:38:43.925598Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.8-8)  Percona Server (GPL), Release 8, Revision 1c288264.
-2026-04-27T13:38:43.925604Z 0 [System] [MY-015016] [Server] MySQL Server - end.
-2026-04-27T13:38:43.992406Z 0 [System] [MY-015015] [Server] MySQL Server - start.
-2026-04-27T13:38:44.114485Z 0 [Warning] [MY-011070] [Server] 'binlog_format' is deprecated and will be removed in a future release.
-2026-04-27T13:38:44.114609Z 0 [Warning] [MY-010097] [Server] Insecure configuration for --secure-log-path: Current value does not restrict location of generated files. Consider setting it to a valid, non-empty path.
-2026-04-27T13:38:44.114631Z 0 [Note] [MY-013932] [Server] BuildID[sha1]=3ef88fdd13810c5b5871d3f65679f2b5fd230279
-2026-04-27T13:38:44.114634Z 0 [Note] [MY-010949] [Server] Basedir set to /usr/.
-2026-04-27T13:38:44.114638Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.8-8) starting as process 1
-2026-04-27T13:38:44.122935Z 0 [Note] [MY-012366] [InnoDB] Using Linux native AIO
-2026-04-27T13:38:44.123035Z 0 [Note] [MY-010747] [Server] Plugin 'FEDERATED' is disabled.
-2026-04-27T13:38:44.123077Z 0 [Note] [MY-010747] [Server] Plugin 'ndbcluster' is disabled.
-2026-04-27T13:38:44.123090Z 0 [Note] [MY-010747] [Server] Plugin 'ndbinfo' is disabled.
-2026-04-27T13:38:44.123094Z 0 [Note] [MY-010747] [Server] Plugin 'ndb_transid_mysql_connection_map' is disabled.
-2026-04-27T13:38:44.123146Z 0 [Note] [MY-010747] [Server] Plugin 'mysql_native_password' is disabled.
-2026-04-27T13:38:44.124164Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-04-27T13:38:44.124199Z 1 [Note] [MY-013546] [InnoDB] Atomic write enabled
-2026-04-27T13:38:44.124222Z 1 [Note] [MY-012932] [InnoDB] PUNCH HOLE support available
-2026-04-27T13:38:44.124233Z 1 [Note] [MY-012944] [InnoDB] Uses event mutexes
-2026-04-27T13:38:44.124237Z 1 [Note] [MY-012945] [InnoDB] GCC builtin __atomic_thread_fence() is used for memory barrier
-2026-04-27T13:38:44.124247Z 1 [Note] [MY-012948] [InnoDB] Compressed tables use zlib 1.3.1
-2026-04-27T13:38:44.127570Z 1 [Note] [MY-012951] [InnoDB] Using hardware accelerated crc32 and polynomial multiplication.
-2026-04-27T13:38:44.127945Z 1 [Note] [MY-012203] [InnoDB] Directories to scan './'
-2026-04-27T13:38:44.127979Z 1 [Note] [MY-012204] [InnoDB] Scanning './'
-2026-04-27T13:38:44.129583Z 1 [Note] [MY-012208] [InnoDB] Completed space ID check of 4 files.
-2026-04-27T13:38:44.131744Z 1 [Note] [MY-012955] [InnoDB] Initializing buffer pool, total size = 12.000000G, instances = 2, chunk size =128.000000M 
-2026-04-27T13:38:44.131766Z 1 [Note] [MY-011872] [InnoDB] Setting NUMA memory policy to MPOL_INTERLEAVE
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.131786Z 1 [Warning] [MY-011873] [InnoDB] Failed to set NUMA memory policy to MPOL_INTERLEAVE: Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.178052Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc117d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.221441Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc10fa3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.270620Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc10775d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.313608Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0ff47c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.361110Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0f719b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.403255Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0eeeba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.450317Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0e6bd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.495972Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0de8f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.547026Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0d6617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.589317Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0ce336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.636584Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0c6055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.678984Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0bdd74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.726342Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0b5a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.769114Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0ad7b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.816864Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0a54d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.859354Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc09d1f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.906728Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc094f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.951073Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc08cc2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:44.998671Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc08494d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.041771Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc07c66c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.088978Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc07438b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.131238Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc06c0aa000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.178252Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc063dc9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.220727Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc05bae8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.268628Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc053807000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.311186Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc04b526000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.357836Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc043245000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.400339Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc03af64000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.446877Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc032c83000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.489701Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc02a9a2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.536828Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0226c1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.580008Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc01a3e0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.626040Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc0120ff000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.669121Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc009e1e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.715291Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bc001b3d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.758311Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbff985c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.804547Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbff157b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.848016Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfe929a000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.894309Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfdbd1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.937830Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfcbd1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:45.983850Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfc3a3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.027581Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfbb75d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.073395Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfb347c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.116651Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfab19b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.162577Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbfa2eba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.205835Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf9abd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.253334Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf928f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.296539Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf8a617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.342700Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf82336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.385941Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf7a055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.432282Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf71d74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.475657Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf69a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.522391Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf617b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.569287Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf594d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.620913Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf511f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.664263Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf48f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.711216Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf40c2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.754183Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf3894d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.801164Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf3066c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.844086Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf2838b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.891398Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf200aa000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.934238Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf17dc9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:46.981426Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf0fae8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.024413Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbf07807000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.071187Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbeff526000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.114042Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbef7245000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.160509Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbeeef64000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.203576Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbee6c83000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.250894Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbede9a2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.294353Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbed66c1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.340412Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbece3e0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.383810Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbec60ff000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.429583Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbebde1e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.473184Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbeb5b3d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.519276Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbead85c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.563342Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbea557b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.608672Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe97d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.651896Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe87d1f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.697164Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe7fa3e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.740465Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe7775d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.785928Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe6f47c000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.829308Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe6719b000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.874897Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe5eeba000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.918586Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe56bd9000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:47.967488Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe4e8f8000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.010847Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe46617000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.056908Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe3e336000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.100055Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe36055000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.145503Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe2dd74000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.189013Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe25a93000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.235084Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe1d7b2000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.279041Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe154d1000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.324999Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe0d1f0000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.368131Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbe04f0f000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.414241Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbdfcc2e000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-get_mempolicy: Operation not permitted
-2026-04-27T13:38:48.457269Z 0 [Warning] [MY-011879] [InnoDB] Failed to set NUMA memory policy of buffer pool page frames with mbind(0x7bbdf494d000,137236480,MPOL_INTERLEAVE,...,...,MPOL_MF_MOVE) failed with Operation not permitted
-2026-04-27T13:38:48.573565Z 1 [Note] [MY-011874] [InnoDB] Setting NUMA memory policy to MPOL_DEFAULT
-2026-04-27T13:38:48.573622Z 1 [Warning] [MY-011875] [InnoDB] Failed to set NUMA memory policy to MPOL_DEFAULT: Operation not permitted
-2026-04-27T13:38:48.573628Z 1 [Note] [MY-012957] [InnoDB] Completed initialization of buffer pool
-2026-04-27T13:38:48.631034Z 0 [Note] [MY-011952] [InnoDB] If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
-2026-04-27T13:38:48.631574Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
-2026-04-27T13:38:48.638653Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
-2026-04-27T13:38:48.656740Z 1 [Note] [MY-013566] [InnoDB] Double write buffer files: 2, --innodb-doublewrite-files=2, segments_per_file=2
-2026-04-27T13:38:48.656766Z 1 [Note] [MY-013565] [InnoDB] Double write buffer pages per instance: 128
-2026-04-27T13:38:48.656794Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
-2026-04-27T13:38:48.656809Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
-2026-04-27T13:38:48.804329Z 1 [Note] [MY-013883] [InnoDB] The latest found checkpoint is at lsn = 29632099 in redo log file ./#innodb_redo/#ib_redo0.
-2026-04-27T13:38:48.804445Z 1 [Note] [MY-013086] [InnoDB] Starting to parse redo log at lsn = 29632035, whereas checkpoint_lsn = 29632099 and start_lsn = 29632000
-2026-04-27T13:38:48.831742Z 1 [Note] [MY-013083] [InnoDB] Log background threads are being started...
-2026-04-27T13:38:48.832245Z 1 [Note] [MY-012532] [InnoDB] Applying a batch of 0 redo log records ...
-2026-04-27T13:38:48.832263Z 1 [Note] [MY-012535] [InnoDB] Apply batch completed!
-2026-04-27T13:38:48.832970Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_001'.
-2026-04-27T13:38:48.833367Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_002'.
-2026-04-27T13:38:48.833883Z 1 [Note] [MY-012910] [InnoDB] Opened 2 existing undo tablespaces.
-2026-04-27T13:38:48.833926Z 1 [Note] [MY-011980] [InnoDB] GTID recovery trx_no: 1601
-2026-04-27T13:38:48.860444Z 1 [Note] [MY-013776] [InnoDB] Parallel initialization of rseg complete
-2026-04-27T13:38:48.860471Z 1 [Note] [MY-013777] [InnoDB] Time taken to initialize rseg using 4 thread: 26 ms.
-2026-04-27T13:38:48.860526Z 1 [Note] [MY-012923] [InnoDB] Creating shared tablespace for temporary tables
-2026-04-27T13:38:48.860695Z 1 [Note] [MY-012265] [InnoDB] Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
-2026-04-27T13:38:48.865386Z 1 [Note] [MY-012266] [InnoDB] File './ibtmp1' size is now 12 MB.
-2026-04-27T13:38:48.865464Z 1 [Note] [MY-013627] [InnoDB] Scanning temp tablespace dir:'./#innodb_temp/'
-2026-04-27T13:38:48.868886Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in the temporary tablespace. 128 are now active.
-2026-04-27T13:38:48.869297Z 1 [Note] [MY-012976] [InnoDB] Percona XtraDB (http://www.percona.com) 8.4.8-8 started; log sequence number 29632109
-2026-04-27T13:38:48.869790Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-04-27T13:38:48.875110Z 1 [Note] [MY-011089] [Server] Data dictionary restarting version '80300'.
-2026-04-27T13:38:48.947013Z 1 [Note] [MY-012357] [InnoDB] Reading DD tablespace files
-2026-04-27T13:38:48.947431Z 1 [Note] [MY-012356] [InnoDB] Scanned 6 tablespaces. Validated 6.
-2026-04-27T13:38:48.957679Z 1 [Note] [MY-010006] [Server] Using data dictionary with version '80300'.
-2026-04-27T13:38:48.962815Z 0 [Note] [MY-011332] [Server] Plugin mysqlx reported: 'IPv6 is available'
-2026-04-27T13:38:48.963204Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. bind-address: '::' port: 33060'
-2026-04-27T13:38:48.963217Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. socket: '/var/lib/mysql/mysqlx.sock''
-2026-04-27T13:38:48.981273Z 0 [Note] [MY-010902] [Server] Thread priority attribute setting in Resource Group SQL shall be ignored due to unsupported platform or insufficient privilege.
-2026-04-27T13:38:48.982444Z 0 [Note] [MY-010856] [Server] Failed to open the crashed binlog file when source server is recovering it.
-2026-04-27T13:38:48.992018Z 0 [Note] [MY-013911] [Server] Crash recovery finished in binlog engine. No attempts to commit, rollback or prepare any transactions.
-2026-04-27T13:38:48.992034Z 0 [Note] [MY-013911] [Server] Crash recovery finished in InnoDB engine. No attempts to commit, rollback or prepare any transactions.
-2026-04-27T13:38:48.993604Z 0 [Note] [MY-012487] [InnoDB] DDL log recovery : begin
-2026-04-27T13:38:48.993713Z 0 [Note] [MY-012488] [InnoDB] DDL log recovery : end
-2026-04-27T13:38:48.997207Z 0 [Note] [MY-012922] [InnoDB] Waiting for purge to start
-2026-04-27T13:38:49.051946Z 0 [Note] [MY-010182] [Server] Found ca.pem, server-cert.pem and server-key.pem in data directory. Trying to enable SSL support using them.
-2026-04-27T13:38:49.053504Z 0 [Note] [MY-010304] [Server] Skipping generation of SSL certificates as certificate files are present in data directory.
-2026-04-27T13:38:49.055164Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
-2026-04-27T13:38:49.055186Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-2026-04-27T13:38:49.055498Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --sha256_password_auto_generate_rsa_keys as key files are present in data directory.
-2026-04-27T13:38:49.055766Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --caching_sha2_password_auto_generate_rsa_keys as key files are present in data directory.
-2026-04-27T13:38:49.056151Z 0 [Note] [MY-010252] [Server] Server hostname (bind-address): '0.0.0.0'; port: 3306
-2026-04-27T13:38:49.056173Z 0 [Note] [MY-010264] [Server]   - '0.0.0.0' resolves to '0.0.0.0';
-2026-04-27T13:38:49.056188Z 0 [Note] [MY-010251] [Server] Server socket created on IP: '0.0.0.0'.
-2026-04-27T13:38:49.057974Z 0 [Note] [MY-011071] [Server] Component percona_telemetry reported: 'Applying Telemetry grace interval 86400 seconds'
-2026-04-27T13:38:49.075380Z 0 [Note] [MY-011025] [Repl] Failed to start replica threads for channel ''.
-2026-04-27T13:38:49.077235Z 6 [Note] [MY-010051] [Server] Event Scheduler: scheduler thread started with id 6
-2026-04-27T13:38:49.077392Z 0 [Note] [MY-011240] [Server] Plugin mysqlx reported: 'Using SSL configuration from MySQL Server'
-2026-04-27T13:38:49.078228Z 0 [Note] [MY-011243] [Server] Plugin mysqlx reported: 'Using OpenSSL for TLS connections'
-2026-04-27T13:38:49.078433Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.8-8'  socket: '/var/lib/mysql/mysql.sock'  port: 3306  Percona Server (GPL), Release 8, Revision 1c288264.
-2026-04-27T13:38:49.078431Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/lib/mysql/mysqlx.sock
-2026-04-27T13:38:50.811578Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_deadlocks' is already enabled.
-2026-04-27T13:38:50.811617Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_deadlock_false_positives' is already enabled.
-2026-04-27T13:38:50.811623Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_deadlock_rounds' is already enabled.
-2026-04-27T13:38:50.811627Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_threads_waiting' is already enabled.
-2026-04-27T13:38:50.811630Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_timeouts' is already enabled.
-2026-04-27T13:38:50.811635Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_rec_release_attempts' is already enabled.
-2026-04-27T13:38:50.811638Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_rec_grant_attempts' is already enabled.
-2026-04-27T13:38:50.811642Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_current_waits' is already enabled.
-2026-04-27T13:38:50.811646Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_time' is already enabled.
-2026-04-27T13:38:50.811649Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_time_max' is already enabled.
-2026-04-27T13:38:50.811652Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_waits' is already enabled.
-2026-04-27T13:38:50.811656Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_time_avg' is already enabled.
-2026-04-27T13:38:50.811659Z 11 [Note] [MY-012870] [InnoDB] Monitor 'lock_schedule_refreshes' is already enabled.
-2026-04-27T13:38:50.811662Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_size' is already enabled.
-2026-04-27T13:38:50.811669Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_reads' is already enabled.
-2026-04-27T13:38:50.811672Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_read_requests' is already enabled.
-2026-04-27T13:38:50.811676Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_write_requests' is already enabled.
-2026-04-27T13:38:50.811679Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_wait_free' is already enabled.
-2026-04-27T13:38:50.811683Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_read_ahead' is already enabled.
-2026-04-27T13:38:50.811686Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_read_ahead_evicted' is already enabled.
-2026-04-27T13:38:50.811689Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_total' is already enabled.
-2026-04-27T13:38:50.811692Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_misc' is already enabled.
-2026-04-27T13:38:50.811696Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_data' is already enabled.
-2026-04-27T13:38:50.811699Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_bytes_data' is already enabled.
-2026-04-27T13:38:50.811702Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_dirty' is already enabled.
-2026-04-27T13:38:50.811706Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_bytes_dirty' is already enabled.
-2026-04-27T13:38:50.811716Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_free' is already enabled.
-2026-04-27T13:38:50.811719Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_flushed' is already enabled.
-2026-04-27T13:38:50.811723Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_lru_flushed' is already enabled.
-2026-04-27T13:38:50.811726Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages_created' is already enabled.
-2026-04-27T13:38:50.811729Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages_written' is already enabled.
-2026-04-27T13:38:50.811733Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages_read' is already enabled.
-2026-04-27T13:38:50.811736Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages0_read' is already enabled.
-2026-04-27T13:38:50.811740Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_data_reads' is already enabled.
-2026-04-27T13:38:50.811743Z 11 [Note] [MY-012870] [InnoDB] Monitor 'buffer_data_written' is already enabled.
-2026-04-27T13:38:50.811755Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_data_reads' is already enabled.
-2026-04-27T13:38:50.811759Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_data_writes' is already enabled.
-2026-04-27T13:38:50.811763Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_data_fsyncs' is already enabled.
-2026-04-27T13:38:50.811766Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_log_bytes_written' is already enabled.
-2026-04-27T13:38:50.811770Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_log_fsyncs' is already enabled.
-2026-04-27T13:38:50.811773Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_log_pending_fsyncs' is already enabled.
-2026-04-27T13:38:50.811776Z 11 [Note] [MY-012870] [InnoDB] Monitor 'os_log_pending_writes' is already enabled.
-2026-04-27T13:38:50.811796Z 11 [Note] [MY-012870] [InnoDB] Monitor 'trx_rseg_history_len' is already enabled.
-2026-04-27T13:38:50.811817Z 11 [Note] [MY-012870] [InnoDB] Monitor 'log_waits' is already enabled.
-2026-04-27T13:38:50.811821Z 11 [Note] [MY-012870] [InnoDB] Monitor 'log_write_requests' is already enabled.
-2026-04-27T13:38:50.811824Z 11 [Note] [MY-012870] [InnoDB] Monitor 'log_writes' is already enabled.
-2026-04-27T13:38:50.811829Z 11 [Note] [MY-012870] [InnoDB] Monitor 'adaptive_hash_searches' is already enabled.
-2026-04-27T13:38:50.811832Z 11 [Note] [MY-012870] [InnoDB] Monitor 'adaptive_hash_searches_btree' is already enabled.
-2026-04-27T13:38:50.811836Z 11 [Note] [MY-012870] [InnoDB] Monitor 'file_num_open_files' is already enabled.
-2026-04-27T13:38:50.811839Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_insert' is already enabled.
-2026-04-27T13:38:50.811843Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_delete_mark' is already enabled.
-2026-04-27T13:38:50.811848Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_delete' is already enabled.
-2026-04-27T13:38:50.811852Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_discard_insert' is already enabled.
-2026-04-27T13:38:50.811855Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_discard_delete_mark' is already enabled.
-2026-04-27T13:38:50.811859Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_discard_delete' is already enabled.
-2026-04-27T13:38:50.811862Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges' is already enabled.
-2026-04-27T13:38:50.811865Z 11 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_size' is already enabled.
-2026-04-27T13:38:50.811869Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_activity_count' is already enabled.
-2026-04-27T13:38:50.811873Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_dblwr_writes' is already enabled.
-2026-04-27T13:38:50.811876Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_dblwr_pages_written' is already enabled.
-2026-04-27T13:38:50.811879Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_page_size' is already enabled.
-2026-04-27T13:38:50.811883Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_s_spin_waits' is already enabled.
-2026-04-27T13:38:50.811886Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_x_spin_waits' is already enabled.
-2026-04-27T13:38:50.811890Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_sx_spin_waits' is already enabled.
-2026-04-27T13:38:50.811896Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_s_spin_rounds' is already enabled.
-2026-04-27T13:38:50.811899Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_x_spin_rounds' is already enabled.
-2026-04-27T13:38:50.811903Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_sx_spin_rounds' is already enabled.
-2026-04-27T13:38:50.811906Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_s_os_waits' is already enabled.
-2026-04-27T13:38:50.811909Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_x_os_waits' is already enabled.
-2026-04-27T13:38:50.811913Z 11 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_sx_os_waits' is already enabled.
-2026-04-27T13:38:50.811921Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_inserts' is already enabled.
-2026-04-27T13:38:50.811925Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_deletes' is already enabled.
-2026-04-27T13:38:50.811928Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_updates' is already enabled.
-2026-04-27T13:38:50.811931Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_reads' is already enabled.
-2026-04-27T13:38:50.811934Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_inserts' is already enabled.
-2026-04-27T13:38:50.811938Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_deletes' is already enabled.
-2026-04-27T13:38:50.811941Z 11 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_updates' is already enabled.
-2026-04-27T13:39:06.494604Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 205691319. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:39:19.508774Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 3854868602. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:39:31.530809Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 7325833569. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:39:42.639276Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 10522041874. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:39:53.139331Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 13507157801. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:40:05.701309Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 17102433832. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:40:18.396697Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 20730047853. Consider increasing innodb_redo_log_capacity.
-2026-04-27T13:44:44.039051Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 26947726569. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:37:15.317063Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-04-30T12:37:15.434210Z 0 [Note] [MY-010098] [Server] --secure-file-priv is set to NULL. Operations related to importing and exporting data are disabled
+2026-04-30T12:37:15.434212Z 0 [Warning] [MY-010097] [Server] Insecure configuration for --secure-log-path: Current value does not restrict location of generated files. Consider setting it to a valid, non-empty path.
+2026-04-30T12:37:15.434228Z 0 [Note] [MY-013932] [Server] BuildID[sha1]=d5b911c769093eb95437bef51659b2454354168c
+2026-04-30T12:37:15.434230Z 0 [Note] [MY-010949] [Server] Basedir set to /home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/.
+2026-04-30T12:37:15.434233Z 0 [System] [MY-010116] [Server] /home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/bin/mysqld (mysqld 8.4.8-8) starting as process 3978332
+2026-04-30T12:37:15.442551Z 0 [Note] [MY-012366] [InnoDB] Using Linux native AIO
+2026-04-30T12:37:15.442624Z 0 [Note] [MY-010747] [Server] Plugin 'FEDERATED' is disabled.
+2026-04-30T12:37:15.442670Z 0 [Note] [MY-010747] [Server] Plugin 'ndbcluster' is disabled.
+2026-04-30T12:37:15.442678Z 0 [Note] [MY-010747] [Server] Plugin 'ndbinfo' is disabled.
+2026-04-30T12:37:15.442682Z 0 [Note] [MY-010747] [Server] Plugin 'ndb_transid_mysql_connection_map' is disabled.
+2026-04-30T12:37:15.442730Z 0 [Note] [MY-010747] [Server] Plugin 'mysql_native_password' is disabled.
+2026-04-30T12:37:15.443625Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-30T12:37:15.443655Z 1 [Note] [MY-013546] [InnoDB] Atomic write enabled
+2026-04-30T12:37:15.443680Z 1 [Note] [MY-012932] [InnoDB] PUNCH HOLE support available
+2026-04-30T12:37:15.443690Z 1 [Note] [MY-012944] [InnoDB] Uses event mutexes
+2026-04-30T12:37:15.443693Z 1 [Note] [MY-012945] [InnoDB] GCC builtin __atomic_thread_fence() is used for memory barrier
+2026-04-30T12:37:15.443697Z 1 [Note] [MY-012948] [InnoDB] Compressed tables use zlib 1.3.1
+2026-04-30T12:37:15.447114Z 1 [Note] [MY-012951] [InnoDB] Using hardware accelerated crc32 and polynomial multiplication.
+2026-04-30T12:37:15.447469Z 1 [Note] [MY-012203] [InnoDB] Directories to scan './'
+2026-04-30T12:37:15.447489Z 1 [Note] [MY-012204] [InnoDB] Scanning './'
+2026-04-30T12:37:15.448953Z 1 [Note] [MY-012208] [InnoDB] Completed space ID check of 4 files.
+2026-04-30T12:37:15.450920Z 1 [Note] [MY-012955] [InnoDB] Initializing buffer pool, total size = 12.000000G, instances = 2, chunk size =128.000000M 
+2026-04-30T12:37:15.450936Z 1 [Note] [MY-011872] [InnoDB] Setting NUMA memory policy to MPOL_INTERLEAVE
+2026-04-30T12:37:21.372998Z 1 [Note] [MY-011874] [InnoDB] Setting NUMA memory policy to MPOL_DEFAULT
+2026-04-30T12:37:21.373046Z 1 [Note] [MY-012957] [InnoDB] Completed initialization of buffer pool
+2026-04-30T12:37:21.429682Z 0 [Note] [MY-011952] [InnoDB] If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
+2026-04-30T12:37:21.430146Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
+2026-04-30T12:37:21.437633Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
+2026-04-30T12:37:21.457014Z 1 [Note] [MY-013566] [InnoDB] Double write buffer files: 2, --innodb-doublewrite-files=2, segments_per_file=2
+2026-04-30T12:37:21.457034Z 1 [Note] [MY-013565] [InnoDB] Double write buffer pages per instance: 128
+2026-04-30T12:37:21.457047Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
+2026-04-30T12:37:21.457057Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
+2026-04-30T12:37:21.607028Z 1 [Note] [MY-013883] [InnoDB] The latest found checkpoint is at lsn = 18978358 in redo log file ./#innodb_redo/#ib_redo5.
+2026-04-30T12:37:21.607127Z 1 [Note] [MY-013086] [InnoDB] Starting to parse redo log at lsn = 18978358, whereas checkpoint_lsn = 18978358 and start_lsn = 18978304
+2026-04-30T12:37:21.635941Z 1 [Note] [MY-013083] [InnoDB] Log background threads are being started...
+2026-04-30T12:37:21.636355Z 1 [Note] [MY-012532] [InnoDB] Applying a batch of 0 redo log records ...
+2026-04-30T12:37:21.636365Z 1 [Note] [MY-012535] [InnoDB] Apply batch completed!
+2026-04-30T12:37:21.636698Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_001'.
+2026-04-30T12:37:21.637085Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_002'.
+2026-04-30T12:37:21.637764Z 1 [Note] [MY-012910] [InnoDB] Opened 2 existing undo tablespaces.
+2026-04-30T12:37:21.637808Z 1 [Note] [MY-011980] [InnoDB] GTID recovery trx_no: 1026
+2026-04-30T12:37:21.665486Z 1 [Note] [MY-013776] [InnoDB] Parallel initialization of rseg complete
+2026-04-30T12:37:21.665562Z 1 [Note] [MY-013777] [InnoDB] Time taken to initialize rseg using 4 thread: 27 ms.
+2026-04-30T12:37:21.665705Z 1 [Note] [MY-012923] [InnoDB] Creating shared tablespace for temporary tables
+2026-04-30T12:37:21.665996Z 1 [Note] [MY-012265] [InnoDB] Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-04-30T12:37:21.670787Z 1 [Note] [MY-012266] [InnoDB] File './ibtmp1' size is now 12 MB.
+2026-04-30T12:37:21.670840Z 1 [Note] [MY-013627] [InnoDB] Scanning temp tablespace dir:'./#innodb_temp/'
+2026-04-30T12:37:21.673590Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in the temporary tablespace. 128 are now active.
+2026-04-30T12:37:21.674014Z 1 [Note] [MY-012976] [InnoDB] Percona XtraDB (http://www.percona.com) 8.4.8-8 started; log sequence number 18978368
+2026-04-30T12:37:21.674764Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-30T12:37:21.680403Z 1 [Note] [MY-011089] [Server] Data dictionary restarting version '80300'.
+2026-04-30T12:37:21.753104Z 1 [Note] [MY-012357] [InnoDB] Reading DD tablespace files
+2026-04-30T12:37:21.753507Z 1 [Note] [MY-012356] [InnoDB] Scanned 6 tablespaces. Validated 6.
+2026-04-30T12:37:21.764685Z 1 [Note] [MY-010006] [Server] Using data dictionary with version '80300'.
+2026-04-30T12:37:21.769256Z 0 [Note] [MY-011332] [Server] Plugin mysqlx reported: 'IPv6 is available'
+2026-04-30T12:37:21.770080Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. bind-address: '::' port: 33060'
+2026-04-30T12:37:21.770099Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. socket: '/tmp/mysqlx.sock''
+2026-04-30T12:37:21.825138Z 0 [Note] [MY-010902] [Server] Thread priority attribute setting in Resource Group SQL shall be ignored due to unsupported platform or insufficient privilege.
+2026-04-30T12:37:21.836206Z 0 [Note] [MY-013911] [Server] Crash recovery finished in InnoDB engine. No attempts to commit, rollback or prepare any transactions.
+2026-04-30T12:37:21.838164Z 0 [Note] [MY-012487] [InnoDB] DDL log recovery : begin
+2026-04-30T12:37:21.838277Z 0 [Note] [MY-012488] [InnoDB] DDL log recovery : end
+2026-04-30T12:37:21.841785Z 0 [Note] [MY-012922] [InnoDB] Waiting for purge to start
+2026-04-30T12:37:21.895495Z 0 [Note] [MY-010913] [Server] You have not provided a mandatory server-id. Servers in a replication topology must have unique server-ids. Please refer to the proper server start-up parameters documentation.
+2026-04-30T12:37:21.895577Z 0 [Note] [MY-010182] [Server] Found ca.pem, server-cert.pem and server-key.pem in data directory. Trying to enable SSL support using them.
+2026-04-30T12:37:21.897122Z 0 [Note] [MY-010304] [Server] Skipping generation of SSL certificates as certificate files are present in data directory.
+2026-04-30T12:37:21.899553Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-04-30T12:37:21.899572Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-04-30T12:37:21.899771Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --sha256_password_auto_generate_rsa_keys as key files are present in data directory.
+2026-04-30T12:37:21.899949Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --caching_sha2_password_auto_generate_rsa_keys as key files are present in data directory.
+2026-04-30T12:37:21.902000Z 0 [Note] [MY-010252] [Server] Server hostname (bind-address): '0.0.0.0'; port: 3306
+2026-04-30T12:37:21.902013Z 0 [Note] [MY-010264] [Server]   - '0.0.0.0' resolves to '0.0.0.0';
+2026-04-30T12:37:21.902029Z 0 [Note] [MY-010251] [Server] Server socket created on IP: '0.0.0.0'.
+2026-04-30T12:37:21.902768Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-04-30T12:37:21.904272Z 0 [Note] [MY-011071] [Server] Component percona_telemetry reported: 'Applying Telemetry grace interval 86400 seconds'
+2026-04-30T12:37:21.916607Z 0 [Note] [MY-011025] [Repl] Failed to start replica threads for channel ''.
+2026-04-30T12:37:21.918177Z 6 [Note] [MY-010051] [Server] Event Scheduler: scheduler thread started with id 6
+2026-04-30T12:37:21.918318Z 0 [Note] [MY-011240] [Server] Plugin mysqlx reported: 'Using SSL configuration from MySQL Server'
+2026-04-30T12:37:21.919921Z 0 [Note] [MY-011243] [Server] Plugin mysqlx reported: 'Using OpenSSL for TLS connections'
+2026-04-30T12:37:21.920127Z 0 [System] [MY-010931] [Server] /home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/bin/mysqld: ready for connections. Version: '8.4.8-8'  socket: '/tmp/mysql_benchmark.sock'  port: 3306  Percona Server (GPL), Release 8, Revision 1c288264.
+2026-04-30T12:37:21.920116Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /tmp/mysqlx.sock
+2026-04-30T12:37:35.454611Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_deadlocks' is already enabled.
+2026-04-30T12:37:35.454634Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_deadlock_false_positives' is already enabled.
+2026-04-30T12:37:35.454639Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_deadlock_rounds' is already enabled.
+2026-04-30T12:37:35.454642Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_threads_waiting' is already enabled.
+2026-04-30T12:37:35.454646Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_timeouts' is already enabled.
+2026-04-30T12:37:35.454650Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_rec_release_attempts' is already enabled.
+2026-04-30T12:37:35.454653Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_rec_grant_attempts' is already enabled.
+2026-04-30T12:37:35.454657Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_current_waits' is already enabled.
+2026-04-30T12:37:35.454660Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_time' is already enabled.
+2026-04-30T12:37:35.454663Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_time_max' is already enabled.
+2026-04-30T12:37:35.454667Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_waits' is already enabled.
+2026-04-30T12:37:35.454670Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_row_lock_time_avg' is already enabled.
+2026-04-30T12:37:35.454673Z 14 [Note] [MY-012870] [InnoDB] Monitor 'lock_schedule_refreshes' is already enabled.
+2026-04-30T12:37:35.454676Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_size' is already enabled.
+2026-04-30T12:37:35.454680Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_reads' is already enabled.
+2026-04-30T12:37:35.454683Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_read_requests' is already enabled.
+2026-04-30T12:37:35.454686Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_write_requests' is already enabled.
+2026-04-30T12:37:35.454690Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_wait_free' is already enabled.
+2026-04-30T12:37:35.454693Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_read_ahead' is already enabled.
+2026-04-30T12:37:35.454696Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_read_ahead_evicted' is already enabled.
+2026-04-30T12:37:35.454700Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_total' is already enabled.
+2026-04-30T12:37:35.454707Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_misc' is already enabled.
+2026-04-30T12:37:35.454719Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_data' is already enabled.
+2026-04-30T12:37:35.454722Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_bytes_data' is already enabled.
+2026-04-30T12:37:35.454725Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_dirty' is already enabled.
+2026-04-30T12:37:35.454727Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_bytes_dirty' is already enabled.
+2026-04-30T12:37:35.454730Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_free' is already enabled.
+2026-04-30T12:37:35.454733Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_flushed' is already enabled.
+2026-04-30T12:37:35.454736Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pool_pages_lru_flushed' is already enabled.
+2026-04-30T12:37:35.454738Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages_created' is already enabled.
+2026-04-30T12:37:35.454741Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages_written' is already enabled.
+2026-04-30T12:37:35.454744Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages_read' is already enabled.
+2026-04-30T12:37:35.454747Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_pages0_read' is already enabled.
+2026-04-30T12:37:35.454749Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_data_reads' is already enabled.
+2026-04-30T12:37:35.454752Z 14 [Note] [MY-012870] [InnoDB] Monitor 'buffer_data_written' is already enabled.
+2026-04-30T12:37:35.454758Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_data_reads' is already enabled.
+2026-04-30T12:37:35.454760Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_data_writes' is already enabled.
+2026-04-30T12:37:35.454763Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_data_fsyncs' is already enabled.
+2026-04-30T12:37:35.454766Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_log_bytes_written' is already enabled.
+2026-04-30T12:37:35.454769Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_log_fsyncs' is already enabled.
+2026-04-30T12:37:35.454772Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_log_pending_fsyncs' is already enabled.
+2026-04-30T12:37:35.454774Z 14 [Note] [MY-012870] [InnoDB] Monitor 'os_log_pending_writes' is already enabled.
+2026-04-30T12:37:35.454783Z 14 [Note] [MY-012870] [InnoDB] Monitor 'trx_rseg_history_len' is already enabled.
+2026-04-30T12:37:35.454796Z 14 [Note] [MY-012870] [InnoDB] Monitor 'log_waits' is already enabled.
+2026-04-30T12:37:35.454799Z 14 [Note] [MY-012870] [InnoDB] Monitor 'log_write_requests' is already enabled.
+2026-04-30T12:37:35.454802Z 14 [Note] [MY-012870] [InnoDB] Monitor 'log_writes' is already enabled.
+2026-04-30T12:37:35.454806Z 14 [Note] [MY-012870] [InnoDB] Monitor 'adaptive_hash_searches' is already enabled.
+2026-04-30T12:37:35.454809Z 14 [Note] [MY-012870] [InnoDB] Monitor 'adaptive_hash_searches_btree' is already enabled.
+2026-04-30T12:37:35.454812Z 14 [Note] [MY-012870] [InnoDB] Monitor 'file_num_open_files' is already enabled.
+2026-04-30T12:37:35.454814Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_insert' is already enabled.
+2026-04-30T12:37:35.454817Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_delete_mark' is already enabled.
+2026-04-30T12:37:35.454820Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_delete' is already enabled.
+2026-04-30T12:37:35.454823Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_discard_insert' is already enabled.
+2026-04-30T12:37:35.454825Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_discard_delete_mark' is already enabled.
+2026-04-30T12:37:35.454828Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges_discard_delete' is already enabled.
+2026-04-30T12:37:35.454831Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_merges' is already enabled.
+2026-04-30T12:37:35.454834Z 14 [Note] [MY-012870] [InnoDB] Monitor 'ibuf_size' is already enabled.
+2026-04-30T12:37:35.454837Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_activity_count' is already enabled.
+2026-04-30T12:37:35.454842Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_dblwr_writes' is already enabled.
+2026-04-30T12:37:35.454845Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_dblwr_pages_written' is already enabled.
+2026-04-30T12:37:35.454850Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_page_size' is already enabled.
+2026-04-30T12:37:35.454853Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_s_spin_waits' is already enabled.
+2026-04-30T12:37:35.454856Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_x_spin_waits' is already enabled.
+2026-04-30T12:37:35.454859Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_sx_spin_waits' is already enabled.
+2026-04-30T12:37:35.454862Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_s_spin_rounds' is already enabled.
+2026-04-30T12:37:35.454864Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_x_spin_rounds' is already enabled.
+2026-04-30T12:37:35.454867Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_sx_spin_rounds' is already enabled.
+2026-04-30T12:37:35.454870Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_s_os_waits' is already enabled.
+2026-04-30T12:37:35.454873Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_x_os_waits' is already enabled.
+2026-04-30T12:37:35.454875Z 14 [Note] [MY-012870] [InnoDB] Monitor 'innodb_rwlock_sx_os_waits' is already enabled.
+2026-04-30T12:37:35.454879Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_inserts' is already enabled.
+2026-04-30T12:37:35.454882Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_deletes' is already enabled.
+2026-04-30T12:37:35.454884Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_updates' is already enabled.
+2026-04-30T12:37:35.454887Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_reads' is already enabled.
+2026-04-30T12:37:35.454890Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_inserts' is already enabled.
+2026-04-30T12:37:35.454893Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_deletes' is already enabled.
+2026-04-30T12:37:35.454895Z 14 [Note] [MY-012870] [InnoDB] Monitor 'dml_system_updates' is already enabled.
+2026-04-30T12:37:50.065074Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 214954582. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:38:01.011107Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 3792442409. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:38:12.018642Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 7427351775. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:38:23.051661Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 11057139355. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:38:34.676700Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 14881377739. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:38:45.056541Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 18289577247. Consider increasing innodb_redo_log_capacity.
+2026-04-30T12:38:57.223481Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 22226907596. Consider increasing innodb_redo_log_capacity.

@@ -1,0 +1,3554 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>disabled_binlog - Status Variables Comparison</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #1a73e8;
+            padding-bottom: 10px;
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1a73e8;
+        }
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-box .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .controls label {
+            font-weight: 600;
+            color: #333;
+        }
+        .controls input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 250px;
+        }
+        .controls select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th {
+            background: #1a73e8;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .var-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #1a73e8;
+            white-space: nowrap;
+        }
+        .value-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            word-break: break-word;
+        }
+        .different {
+            background: #fff3e0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .badge-diff {
+            background: #ff9800;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .count-badge {
+            background: #666;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>disabled_binlog: Status Variables Comparison</h1>
+
+    <div class="summary">
+        <h2>Overview</h2>
+        <div class="stats">
+            <div class="stat-box">
+                <div class="label">Total Variables</div>
+                <div class="value">550</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Common to All</div>
+                <div class="value">501</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Different Values</div>
+                <div class="value">47</div>
+            </div>
+        </div>
+        <p><strong>Configuration:</strong> Tier 12G (innodb_buffer_pool_size = 12GB)</p>
+        <p><strong>Servers:</strong></p>
+        <ul>
+            <li><strong>Mysql 8.4.8</strong></li>
+            <li><strong>Percona Server 8.4.8-8</strong></li>
+        </ul>
+    </div>
+
+    <div class="controls">
+        <label for="search">Search variables:</label>
+        <input type="text" id="search" placeholder="Type to filter variables (e.g., innodb, buffer, thread)">
+
+        <label for="filter">Filter:</label>
+        <select id="filter">
+            <option value="all">All Variables</option>
+            <option value="different">Variables with Different Values</option>
+            <option value="same">Variables with Same Values</option>
+        </select>
+    </div>
+
+    <div class="section">
+        <h2>All Status Variables <span class="count-badge" id="visibleCount">550 variables</span></h2>
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th style="width: 33%">Variable Name</th>
+                    <th style="width: 33%">Mysql 8.4.8</th>
+                    <th style="width: 33%">Percona Server 8.4.8-8</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr class="var-row " data-var="aborted_clients" data-category="same">
+                    <td class="var-name">Aborted_clients</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="aborted_connects" data-category="same">
+                    <td class="var-name">Aborted_connects</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="acl_cache_items_count" data-category="same">
+                    <td class="var-name">Acl_cache_items_count</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="binlog_cache_disk_use" data-category="same">
+                    <td class="var-name">Binlog_cache_disk_use</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="binlog_cache_use" data-category="same">
+                    <td class="var-name">Binlog_cache_use</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="binlog_snapshot_file" data-category="same">
+                    <td class="var-name">Binlog_snapshot_file</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="binlog_snapshot_gtid_executed" data-category="same">
+                    <td class="var-name">Binlog_snapshot_gtid_executed</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row different" data-var="binlog_snapshot_position" data-category="different">
+                    <td class="var-name">Binlog_snapshot_position<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="binlog_stmt_cache_disk_use" data-category="same">
+                    <td class="var-name">Binlog_stmt_cache_disk_use</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="binlog_stmt_cache_use" data-category="same">
+                    <td class="var-name">Binlog_stmt_cache_use</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="bytes_received" data-category="different">
+                    <td class="var-name">Bytes_received<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">335</td>
+                    <td class="value-cell">337</td>
+                </tr>
+
+                <tr class="var-row different" data-var="bytes_sent" data-category="different">
+                    <td class="var-name">Bytes_sent<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">347</td>
+                    <td class="value-cell">371</td>
+                </tr>
+
+                <tr class="var-row different" data-var="caching_sha2_password_rsa_public_key" data-category="different">
+                    <td class="var-name">Caching_sha2_password_rsa_public_key<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmuulgzP0CaUhzgSTp4VV\nW3BxhcEe3jRsz9OBN5m8cJfX2I8ZdjqceQrfyLiQd3Bles5wFcJWAGxaYwDUghaM\nA3PC4ZpPIZmT3h2avQxRWSBU9dMhROdHZZJol7TK...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo2pGUMrMXZZk3fTrB2kA\nkVKJub08VFzY9rlwXt4zwfImy62uYz10DqyUkmcnrzSi9c1RMgNRg6ixk9ZxvtDk\nnuS2j6P1uzcri192bIlQt09TPD2TkC81r8DMUnxs...</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_admin_commands" data-category="same">
+                    <td class="var-name">Com_admin_commands</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_db" data-category="same">
+                    <td class="var-name">Com_alter_db</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_event" data-category="same">
+                    <td class="var-name">Com_alter_event</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_function" data-category="same">
+                    <td class="var-name">Com_alter_function</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_instance" data-category="same">
+                    <td class="var-name">Com_alter_instance</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_procedure" data-category="same">
+                    <td class="var-name">Com_alter_procedure</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_resource_group" data-category="same">
+                    <td class="var-name">Com_alter_resource_group</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_server" data-category="same">
+                    <td class="var-name">Com_alter_server</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_table" data-category="same">
+                    <td class="var-name">Com_alter_table</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_tablespace" data-category="same">
+                    <td class="var-name">Com_alter_tablespace</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_user" data-category="same">
+                    <td class="var-name">Com_alter_user</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_alter_user_default_role" data-category="same">
+                    <td class="var-name">Com_alter_user_default_role</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_analyze" data-category="same">
+                    <td class="var-name">Com_analyze</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_assign_to_keycache" data-category="same">
+                    <td class="var-name">Com_assign_to_keycache</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_begin" data-category="same">
+                    <td class="var-name">Com_begin</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_binlog" data-category="same">
+                    <td class="var-name">Com_binlog</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_call_procedure" data-category="same">
+                    <td class="var-name">Com_call_procedure</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_change_db" data-category="same">
+                    <td class="var-name">Com_change_db</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_change_repl_filter" data-category="same">
+                    <td class="var-name">Com_change_repl_filter</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_change_replication_source" data-category="same">
+                    <td class="var-name">Com_change_replication_source</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_check" data-category="same">
+                    <td class="var-name">Com_check</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_checksum" data-category="same">
+                    <td class="var-name">Com_checksum</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_clone" data-category="same">
+                    <td class="var-name">Com_clone</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_commit" data-category="same">
+                    <td class="var-name">Com_commit</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_create_compression_dictionary" data-category="different">
+                    <td class="var-name">Com_create_compression_dictionary<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_db" data-category="same">
+                    <td class="var-name">Com_create_db</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_event" data-category="same">
+                    <td class="var-name">Com_create_event</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_function" data-category="same">
+                    <td class="var-name">Com_create_function</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_index" data-category="same">
+                    <td class="var-name">Com_create_index</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_procedure" data-category="same">
+                    <td class="var-name">Com_create_procedure</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_resource_group" data-category="same">
+                    <td class="var-name">Com_create_resource_group</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_role" data-category="same">
+                    <td class="var-name">Com_create_role</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_server" data-category="same">
+                    <td class="var-name">Com_create_server</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_spatial_reference_system" data-category="same">
+                    <td class="var-name">Com_create_spatial_reference_system</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_table" data-category="same">
+                    <td class="var-name">Com_create_table</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_trigger" data-category="same">
+                    <td class="var-name">Com_create_trigger</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_udf" data-category="same">
+                    <td class="var-name">Com_create_udf</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_user" data-category="same">
+                    <td class="var-name">Com_create_user</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_create_view" data-category="same">
+                    <td class="var-name">Com_create_view</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_dealloc_sql" data-category="same">
+                    <td class="var-name">Com_dealloc_sql</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_delete" data-category="same">
+                    <td class="var-name">Com_delete</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_delete_multi" data-category="same">
+                    <td class="var-name">Com_delete_multi</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_do" data-category="same">
+                    <td class="var-name">Com_do</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_drop_compression_dictionary" data-category="different">
+                    <td class="var-name">Com_drop_compression_dictionary<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_db" data-category="same">
+                    <td class="var-name">Com_drop_db</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_event" data-category="same">
+                    <td class="var-name">Com_drop_event</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_function" data-category="same">
+                    <td class="var-name">Com_drop_function</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_index" data-category="same">
+                    <td class="var-name">Com_drop_index</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_procedure" data-category="same">
+                    <td class="var-name">Com_drop_procedure</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_resource_group" data-category="same">
+                    <td class="var-name">Com_drop_resource_group</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_role" data-category="same">
+                    <td class="var-name">Com_drop_role</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_server" data-category="same">
+                    <td class="var-name">Com_drop_server</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_spatial_reference_system" data-category="same">
+                    <td class="var-name">Com_drop_spatial_reference_system</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_table" data-category="same">
+                    <td class="var-name">Com_drop_table</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_trigger" data-category="same">
+                    <td class="var-name">Com_drop_trigger</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_user" data-category="same">
+                    <td class="var-name">Com_drop_user</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_drop_view" data-category="same">
+                    <td class="var-name">Com_drop_view</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_empty_query" data-category="same">
+                    <td class="var-name">Com_empty_query</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_execute_sql" data-category="same">
+                    <td class="var-name">Com_execute_sql</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_explain_other" data-category="same">
+                    <td class="var-name">Com_explain_other</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_flush" data-category="same">
+                    <td class="var-name">Com_flush</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_get_diagnostics" data-category="same">
+                    <td class="var-name">Com_get_diagnostics</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_grant" data-category="same">
+                    <td class="var-name">Com_grant</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_grant_roles" data-category="same">
+                    <td class="var-name">Com_grant_roles</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_group_replication_start" data-category="same">
+                    <td class="var-name">Com_group_replication_start</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_group_replication_stop" data-category="same">
+                    <td class="var-name">Com_group_replication_stop</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_ha_close" data-category="same">
+                    <td class="var-name">Com_ha_close</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_ha_open" data-category="same">
+                    <td class="var-name">Com_ha_open</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_ha_read" data-category="same">
+                    <td class="var-name">Com_ha_read</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_help" data-category="same">
+                    <td class="var-name">Com_help</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_import" data-category="same">
+                    <td class="var-name">Com_import</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_insert" data-category="same">
+                    <td class="var-name">Com_insert</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_insert_select" data-category="same">
+                    <td class="var-name">Com_insert_select</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_install_component" data-category="same">
+                    <td class="var-name">Com_install_component</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_install_plugin" data-category="same">
+                    <td class="var-name">Com_install_plugin</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_kill" data-category="same">
+                    <td class="var-name">Com_kill</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_load" data-category="same">
+                    <td class="var-name">Com_load</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_lock_instance" data-category="same">
+                    <td class="var-name">Com_lock_instance</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_lock_tables" data-category="same">
+                    <td class="var-name">Com_lock_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_lock_tables_for_backup" data-category="different">
+                    <td class="var-name">Com_lock_tables_for_backup<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_optimize" data-category="same">
+                    <td class="var-name">Com_optimize</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_preload_keys" data-category="same">
+                    <td class="var-name">Com_preload_keys</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_prepare_sql" data-category="same">
+                    <td class="var-name">Com_prepare_sql</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_purge" data-category="same">
+                    <td class="var-name">Com_purge</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_purge_before_date" data-category="same">
+                    <td class="var-name">Com_purge_before_date</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_release_savepoint" data-category="same">
+                    <td class="var-name">Com_release_savepoint</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_rename_table" data-category="same">
+                    <td class="var-name">Com_rename_table</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_rename_user" data-category="same">
+                    <td class="var-name">Com_rename_user</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_repair" data-category="same">
+                    <td class="var-name">Com_repair</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_replace" data-category="same">
+                    <td class="var-name">Com_replace</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_replace_select" data-category="same">
+                    <td class="var-name">Com_replace_select</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_replica_start" data-category="same">
+                    <td class="var-name">Com_replica_start</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_replica_stop" data-category="same">
+                    <td class="var-name">Com_replica_stop</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_reset" data-category="same">
+                    <td class="var-name">Com_reset</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_resignal" data-category="same">
+                    <td class="var-name">Com_resignal</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_restart" data-category="same">
+                    <td class="var-name">Com_restart</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_revoke" data-category="same">
+                    <td class="var-name">Com_revoke</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_revoke_all" data-category="same">
+                    <td class="var-name">Com_revoke_all</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_revoke_roles" data-category="same">
+                    <td class="var-name">Com_revoke_roles</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_rollback" data-category="same">
+                    <td class="var-name">Com_rollback</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_rollback_to_savepoint" data-category="same">
+                    <td class="var-name">Com_rollback_to_savepoint</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_savepoint" data-category="same">
+                    <td class="var-name">Com_savepoint</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_select" data-category="same">
+                    <td class="var-name">Com_select</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_set_option" data-category="same">
+                    <td class="var-name">Com_set_option</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_set_password" data-category="same">
+                    <td class="var-name">Com_set_password</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_set_resource_group" data-category="same">
+                    <td class="var-name">Com_set_resource_group</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_set_role" data-category="same">
+                    <td class="var-name">Com_set_role</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_binary_log_status" data-category="same">
+                    <td class="var-name">Com_show_binary_log_status</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_binlog_events" data-category="same">
+                    <td class="var-name">Com_show_binlog_events</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_binlogs" data-category="same">
+                    <td class="var-name">Com_show_binlogs</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_charsets" data-category="same">
+                    <td class="var-name">Com_show_charsets</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_show_client_statistics" data-category="different">
+                    <td class="var-name">Com_show_client_statistics<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_collations" data-category="same">
+                    <td class="var-name">Com_show_collations</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_db" data-category="same">
+                    <td class="var-name">Com_show_create_db</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_event" data-category="same">
+                    <td class="var-name">Com_show_create_event</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_func" data-category="same">
+                    <td class="var-name">Com_show_create_func</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_proc" data-category="same">
+                    <td class="var-name">Com_show_create_proc</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_table" data-category="same">
+                    <td class="var-name">Com_show_create_table</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_trigger" data-category="same">
+                    <td class="var-name">Com_show_create_trigger</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_create_user" data-category="same">
+                    <td class="var-name">Com_show_create_user</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_databases" data-category="same">
+                    <td class="var-name">Com_show_databases</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_engine_logs" data-category="same">
+                    <td class="var-name">Com_show_engine_logs</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_engine_mutex" data-category="same">
+                    <td class="var-name">Com_show_engine_mutex</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_engine_status" data-category="same">
+                    <td class="var-name">Com_show_engine_status</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_errors" data-category="same">
+                    <td class="var-name">Com_show_errors</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_events" data-category="same">
+                    <td class="var-name">Com_show_events</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_fields" data-category="same">
+                    <td class="var-name">Com_show_fields</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_function_code" data-category="same">
+                    <td class="var-name">Com_show_function_code</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_function_status" data-category="same">
+                    <td class="var-name">Com_show_function_status</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_grants" data-category="same">
+                    <td class="var-name">Com_show_grants</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_show_index_statistics" data-category="different">
+                    <td class="var-name">Com_show_index_statistics<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_keys" data-category="same">
+                    <td class="var-name">Com_show_keys</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_open_tables" data-category="same">
+                    <td class="var-name">Com_show_open_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_parse_tree" data-category="same">
+                    <td class="var-name">Com_show_parse_tree</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_plugins" data-category="same">
+                    <td class="var-name">Com_show_plugins</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_privileges" data-category="same">
+                    <td class="var-name">Com_show_privileges</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_procedure_code" data-category="same">
+                    <td class="var-name">Com_show_procedure_code</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_procedure_status" data-category="same">
+                    <td class="var-name">Com_show_procedure_status</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_processlist" data-category="same">
+                    <td class="var-name">Com_show_processlist</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_profile" data-category="same">
+                    <td class="var-name">Com_show_profile</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_profiles" data-category="same">
+                    <td class="var-name">Com_show_profiles</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_relaylog_events" data-category="same">
+                    <td class="var-name">Com_show_relaylog_events</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_replica_status" data-category="same">
+                    <td class="var-name">Com_show_replica_status</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_replicas" data-category="same">
+                    <td class="var-name">Com_show_replicas</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_status" data-category="same">
+                    <td class="var-name">Com_show_status</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_storage_engines" data-category="same">
+                    <td class="var-name">Com_show_storage_engines</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_show_table_statistics" data-category="different">
+                    <td class="var-name">Com_show_table_statistics<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_table_status" data-category="same">
+                    <td class="var-name">Com_show_table_status</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_tables" data-category="same">
+                    <td class="var-name">Com_show_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_show_thread_statistics" data-category="different">
+                    <td class="var-name">Com_show_thread_statistics<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_triggers" data-category="same">
+                    <td class="var-name">Com_show_triggers</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="com_show_user_statistics" data-category="different">
+                    <td class="var-name">Com_show_user_statistics<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_variables" data-category="same">
+                    <td class="var-name">Com_show_variables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_show_warnings" data-category="same">
+                    <td class="var-name">Com_show_warnings</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_shutdown" data-category="same">
+                    <td class="var-name">Com_shutdown</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_signal" data-category="same">
+                    <td class="var-name">Com_signal</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_close" data-category="same">
+                    <td class="var-name">Com_stmt_close</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_execute" data-category="same">
+                    <td class="var-name">Com_stmt_execute</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_fetch" data-category="same">
+                    <td class="var-name">Com_stmt_fetch</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_prepare" data-category="same">
+                    <td class="var-name">Com_stmt_prepare</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_reprepare" data-category="same">
+                    <td class="var-name">Com_stmt_reprepare</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_reset" data-category="same">
+                    <td class="var-name">Com_stmt_reset</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_stmt_send_long_data" data-category="same">
+                    <td class="var-name">Com_stmt_send_long_data</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_truncate" data-category="same">
+                    <td class="var-name">Com_truncate</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_uninstall_component" data-category="same">
+                    <td class="var-name">Com_uninstall_component</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_uninstall_plugin" data-category="same">
+                    <td class="var-name">Com_uninstall_plugin</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_unlock_instance" data-category="same">
+                    <td class="var-name">Com_unlock_instance</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_unlock_tables" data-category="same">
+                    <td class="var-name">Com_unlock_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_update" data-category="same">
+                    <td class="var-name">Com_update</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_update_multi" data-category="same">
+                    <td class="var-name">Com_update_multi</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_xa_commit" data-category="same">
+                    <td class="var-name">Com_xa_commit</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_xa_end" data-category="same">
+                    <td class="var-name">Com_xa_end</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_xa_prepare" data-category="same">
+                    <td class="var-name">Com_xa_prepare</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_xa_recover" data-category="same">
+                    <td class="var-name">Com_xa_recover</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_xa_rollback" data-category="same">
+                    <td class="var-name">Com_xa_rollback</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="com_xa_start" data-category="same">
+                    <td class="var-name">Com_xa_start</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="compression" data-category="same">
+                    <td class="var-name">Compression</td>
+                    <td class="value-cell">OFF</td>
+                    <td class="value-cell">OFF</td>
+                </tr>
+
+                <tr class="var-row " data-var="compression_algorithm" data-category="same">
+                    <td class="var-name">Compression_algorithm</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="compression_level" data-category="same">
+                    <td class="var-name">Compression_level</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="connection_errors_accept" data-category="same">
+                    <td class="var-name">Connection_errors_accept</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="connection_errors_internal" data-category="same">
+                    <td class="var-name">Connection_errors_internal</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="connection_errors_max_connections" data-category="same">
+                    <td class="var-name">Connection_errors_max_connections</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="connection_errors_peer_address" data-category="same">
+                    <td class="var-name">Connection_errors_peer_address</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="connection_errors_select" data-category="same">
+                    <td class="var-name">Connection_errors_select</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="connection_errors_tcpwrap" data-category="same">
+                    <td class="var-name">Connection_errors_tcpwrap</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="connections" data-category="different">
+                    <td class="var-name">Connections<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">15</td>
+                    <td class="value-cell">16</td>
+                </tr>
+
+                <tr class="var-row " data-var="created_tmp_disk_tables" data-category="same">
+                    <td class="var-name">Created_tmp_disk_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="created_tmp_files" data-category="same">
+                    <td class="var-name">Created_tmp_files</td>
+                    <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row " data-var="created_tmp_tables" data-category="same">
+                    <td class="var-name">Created_tmp_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_ca" data-category="same">
+                    <td class="var-name">Current_tls_ca</td>
+                    <td class="value-cell">ca.pem</td>
+                    <td class="value-cell">ca.pem</td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_capath" data-category="same">
+                    <td class="var-name">Current_tls_capath</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_cert" data-category="same">
+                    <td class="var-name">Current_tls_cert</td>
+                    <td class="value-cell">server-cert.pem</td>
+                    <td class="value-cell">server-cert.pem</td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_cipher" data-category="same">
+                    <td class="var-name">Current_tls_cipher</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_ciphersuites" data-category="same">
+                    <td class="var-name">Current_tls_ciphersuites</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_crl" data-category="same">
+                    <td class="var-name">Current_tls_crl</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_crlpath" data-category="same">
+                    <td class="var-name">Current_tls_crlpath</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_key" data-category="same">
+                    <td class="var-name">Current_tls_key</td>
+                    <td class="value-cell">server-key.pem</td>
+                    <td class="value-cell">server-key.pem</td>
+                </tr>
+
+                <tr class="var-row " data-var="current_tls_version" data-category="same">
+                    <td class="var-name">Current_tls_version</td>
+                    <td class="value-cell">TLSv1.2,TLSv1.3</td>
+                    <td class="value-cell">TLSv1.2,TLSv1.3</td>
+                </tr>
+
+                <tr class="var-row " data-var="delayed_errors" data-category="same">
+                    <td class="var-name">Delayed_errors</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="delayed_insert_threads" data-category="same">
+                    <td class="var-name">Delayed_insert_threads</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="delayed_writes" data-category="same">
+                    <td class="var-name">Delayed_writes</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="deprecated_use_fk_on_non_standard_key_count" data-category="same">
+                    <td class="var-name">Deprecated_use_fk_on_non_standard_key_count</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="deprecated_use_fk_on_non_standard_key_last_timestamp" data-category="same">
+                    <td class="var-name">Deprecated_use_fk_on_non_standard_key_last_timestamp</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="deprecated_use_i_s_processlist_count" data-category="same">
+                    <td class="var-name">Deprecated_use_i_s_processlist_count</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="deprecated_use_i_s_processlist_last_timestamp" data-category="same">
+                    <td class="var-name">Deprecated_use_i_s_processlist_last_timestamp</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="error_log_buffered_bytes" data-category="different">
+                    <td class="var-name">Error_log_buffered_bytes<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">17736</td>
+                    <td class="value-cell">18544</td>
+                </tr>
+
+                <tr class="var-row different" data-var="error_log_buffered_events" data-category="different">
+                    <td class="var-name">Error_log_buffered_events<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">153</td>
+                    <td class="value-cell">158</td>
+                </tr>
+
+                <tr class="var-row " data-var="error_log_expired_events" data-category="same">
+                    <td class="var-name">Error_log_expired_events</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="error_log_latest_write" data-category="different">
+                    <td class="var-name">Error_log_latest_write<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">1777546217208924</td>
+                    <td class="value-cell">1777552655454895</td>
+                </tr>
+
+                <tr class="var-row different" data-var="flush_commands" data-category="different">
+                    <td class="var-name">Flush_commands<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">3</td>
+                    <td class="value-cell">4</td>
+                </tr>
+
+                <tr class="var-row " data-var="global_connection_memory" data-category="same">
+                    <td class="var-name">Global_connection_memory</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_commit" data-category="same">
+                    <td class="var-name">Handler_commit</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_delete" data-category="same">
+                    <td class="var-name">Handler_delete</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_discover" data-category="same">
+                    <td class="var-name">Handler_discover</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_external_lock" data-category="same">
+                    <td class="var-name">Handler_external_lock</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_mrr_init" data-category="same">
+                    <td class="var-name">Handler_mrr_init</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_prepare" data-category="same">
+                    <td class="var-name">Handler_prepare</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_first" data-category="same">
+                    <td class="var-name">Handler_read_first</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_key" data-category="same">
+                    <td class="var-name">Handler_read_key</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_last" data-category="same">
+                    <td class="var-name">Handler_read_last</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_next" data-category="same">
+                    <td class="var-name">Handler_read_next</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_prev" data-category="same">
+                    <td class="var-name">Handler_read_prev</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_rnd" data-category="same">
+                    <td class="var-name">Handler_read_rnd</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_read_rnd_next" data-category="same">
+                    <td class="var-name">Handler_read_rnd_next</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_rollback" data-category="same">
+                    <td class="var-name">Handler_rollback</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_savepoint" data-category="same">
+                    <td class="var-name">Handler_savepoint</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_savepoint_rollback" data-category="same">
+                    <td class="var-name">Handler_savepoint_rollback</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_update" data-category="same">
+                    <td class="var-name">Handler_update</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="handler_write" data-category="same">
+                    <td class="var-name">Handler_write</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_background_log_sync" data-category="different">
+                    <td class="var-name">Innodb_background_log_sync<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_bytes_data" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_bytes_data<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">16351232</td>
+                    <td class="value-cell">16384000</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_bytes_dirty" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_bytes_dirty<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">344064</td>
+                    <td class="value-cell">16384</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_dump_status" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_dump_status</td>
+                    <td class="value-cell">Dumping of buffer pool not started</td>
+                    <td class="value-cell">Dumping of buffer pool not started</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_load_status" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_load_status</td>
+                    <td class="value-cell">Loading of buffer pool not started</td>
+                    <td class="value-cell">Loading of buffer pool not started</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_lru_flushed" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_LRU_flushed<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_data" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_data<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">998</td>
+                    <td class="value-cell">1000</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_dirty" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_dirty<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">21</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_flushed" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_flushed<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">230</td>
+                    <td class="value-cell">260</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_free" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_free<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">785363</td>
+                    <td class="value-cell">785336</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_made_not_young" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_made_not_young<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">39</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_made_young" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_made_young<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_misc" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_misc<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">71</td>
+                    <td class="value-cell">96</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_pages_old" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_pages_old<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">206</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_pages_total" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_pages_total</td>
+                    <td class="value-cell">786432</td>
+                    <td class="value-cell">786432</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_read_ahead" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_read_ahead</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_read_ahead_evicted" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_read_ahead_evicted</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_read_ahead_rnd" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_read_ahead_rnd</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_read_requests" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_read_requests<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">29497</td>
+                    <td class="value-cell">30093</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_reads" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_reads<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">838</td>
+                    <td class="value-cell">839</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_resize_status" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_resize_status</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_resize_status_code" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_resize_status_code</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_resize_status_progress" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_resize_status_progress</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_buffer_pool_wait_free" data-category="same">
+                    <td class="var-name">Innodb_buffer_pool_wait_free</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffer_pool_write_requests" data-category="different">
+                    <td class="var-name">Innodb_buffer_pool_write_requests<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">7147</td>
+                    <td class="value-cell">6962</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_buffered_aio_submitted" data-category="different">
+                    <td class="var-name">Innodb_buffered_aio_submitted<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_checkpoint_age" data-category="different">
+                    <td class="var-name">Innodb_checkpoint_age<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">26898</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_checkpoint_max_age" data-category="different">
+                    <td class="var-name">Innodb_checkpoint_max_age<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">3614800384</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_data_fsyncs" data-category="different">
+                    <td class="var-name">Innodb_data_fsyncs<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">128</td>
+                    <td class="value-cell">147</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_data_pending_fsyncs" data-category="same">
+                    <td class="var-name">Innodb_data_pending_fsyncs</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_data_pending_reads" data-category="same">
+                    <td class="var-name">Innodb_data_pending_reads</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_data_pending_writes" data-category="same">
+                    <td class="var-name">Innodb_data_pending_writes</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_data_read" data-category="different">
+                    <td class="var-name">Innodb_data_read<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">13797888</td>
+                    <td class="value-cell">13814272</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_data_reads" data-category="different">
+                    <td class="var-name">Innodb_data_reads<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">862</td>
+                    <td class="value-cell">865</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_data_writes" data-category="different">
+                    <td class="var-name">Innodb_data_writes<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">400</td>
+                    <td class="value-cell">431</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_data_written" data-category="different">
+                    <td class="var-name">Innodb_data_written<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">4360192</td>
+                    <td class="value-cell">4822528</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_dblwr_pages_written" data-category="different">
+                    <td class="var-name">Innodb_dblwr_pages_written<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">89</td>
+                    <td class="value-cell">119</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_dblwr_writes" data-category="different">
+                    <td class="var-name">Innodb_dblwr_writes<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">4</td>
+                    <td class="value-cell">7</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_encryption_n_merge_blocks_decrypted" data-category="different">
+                    <td class="var-name">Innodb_encryption_n_merge_blocks_decrypted<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_encryption_n_merge_blocks_encrypted" data-category="different">
+                    <td class="var-name">Innodb_encryption_n_merge_blocks_encrypted<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_encryption_n_rowlog_blocks_decrypted" data-category="different">
+                    <td class="var-name">Innodb_encryption_n_rowlog_blocks_decrypted<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_encryption_n_rowlog_blocks_encrypted" data-category="different">
+                    <td class="var-name">Innodb_encryption_n_rowlog_blocks_encrypted<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_ibuf_free_list" data-category="different">
+                    <td class="var-name">Innodb_ibuf_free_list<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_ibuf_segment_size" data-category="different">
+                    <td class="var-name">Innodb_ibuf_segment_size<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_log_waits" data-category="same">
+                    <td class="var-name">Innodb_log_waits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_log_write_requests" data-category="different">
+                    <td class="var-name">Innodb_log_write_requests<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">5180</td>
+                    <td class="value-cell">5213</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_log_writes" data-category="different">
+                    <td class="var-name">Innodb_log_writes<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">140</td>
+                    <td class="value-cell">136</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_lsn_current" data-category="different">
+                    <td class="var-name">Innodb_lsn_current<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">19378203</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_lsn_flushed" data-category="different">
+                    <td class="var-name">Innodb_lsn_flushed<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">19378203</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_lsn_last_checkpoint" data-category="different">
+                    <td class="var-name">Innodb_lsn_last_checkpoint<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">19351305</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_master_thread_active_loops" data-category="different">
+                    <td class="var-name">Innodb_master_thread_active_loops<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">3</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_master_thread_idle_loops" data-category="different">
+                    <td class="var-name">Innodb_master_thread_idle_loops<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">10</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_max_trx_id" data-category="different">
+                    <td class="var-name">Innodb_max_trx_id<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">1559</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_num_open_files" data-category="same">
+                    <td class="var-name">Innodb_num_open_files</td>
+                    <td class="value-cell">15</td>
+                    <td class="value-cell">15</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_oldest_view_low_limit_trx_id" data-category="different">
+                    <td class="var-name">Innodb_oldest_view_low_limit_trx_id<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_os_log_fsyncs" data-category="different">
+                    <td class="var-name">Innodb_os_log_fsyncs<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">78</td>
+                    <td class="value-cell">87</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_os_log_pending_fsyncs" data-category="same">
+                    <td class="var-name">Innodb_os_log_pending_fsyncs</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_os_log_pending_writes" data-category="same">
+                    <td class="var-name">Innodb_os_log_pending_writes</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_os_log_written" data-category="different">
+                    <td class="var-name">Innodb_os_log_written<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">478720</td>
+                    <td class="value-cell">436224</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_page_size" data-category="same">
+                    <td class="var-name">Innodb_page_size</td>
+                    <td class="value-cell">16384</td>
+                    <td class="value-cell">16384</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_pages0_read" data-category="different">
+                    <td class="var-name">Innodb_pages0_read<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">7</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_pages_created" data-category="different">
+                    <td class="var-name">Innodb_pages_created<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">165</td>
+                    <td class="value-cell">166</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_pages_read" data-category="different">
+                    <td class="var-name">Innodb_pages_read<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">837</td>
+                    <td class="value-cell">838</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_pages_written" data-category="different">
+                    <td class="var-name">Innodb_pages_written<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">230</td>
+                    <td class="value-cell">260</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_purge_trx_id" data-category="different">
+                    <td class="var-name">Innodb_purge_trx_id<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">1558</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_purge_undo_no" data-category="different">
+                    <td class="var-name">Innodb_purge_undo_no<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_redo_log_capacity_resized" data-category="same">
+                    <td class="var-name">Innodb_redo_log_capacity_resized</td>
+                    <td class="value-cell">4294967296</td>
+                    <td class="value-cell">4294967296</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_redo_log_checkpoint_lsn" data-category="different">
+                    <td class="var-name">Innodb_redo_log_checkpoint_lsn<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">19309762</td>
+                    <td class="value-cell">19351305</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_redo_log_current_lsn" data-category="different">
+                    <td class="var-name">Innodb_redo_log_current_lsn<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">19336514</td>
+                    <td class="value-cell">19378203</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_redo_log_enabled" data-category="same">
+                    <td class="var-name">Innodb_redo_log_enabled</td>
+                    <td class="value-cell">ON</td>
+                    <td class="value-cell">ON</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_redo_log_flushed_to_disk_lsn" data-category="different">
+                    <td class="var-name">Innodb_redo_log_flushed_to_disk_lsn<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">19336514</td>
+                    <td class="value-cell">19378203</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_redo_log_logical_size" data-category="different">
+                    <td class="var-name">Innodb_redo_log_logical_size<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">27136</td>
+                    <td class="value-cell">27648</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_redo_log_physical_size" data-category="same">
+                    <td class="var-name">Innodb_redo_log_physical_size</td>
+                    <td class="value-cell">3276800</td>
+                    <td class="value-cell">3276800</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_redo_log_read_only" data-category="same">
+                    <td class="var-name">Innodb_redo_log_read_only</td>
+                    <td class="value-cell">OFF</td>
+                    <td class="value-cell">OFF</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_redo_log_resize_status" data-category="same">
+                    <td class="var-name">Innodb_redo_log_resize_status</td>
+                    <td class="value-cell">OK</td>
+                    <td class="value-cell">OK</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_redo_log_uuid" data-category="different">
+                    <td class="var-name">Innodb_redo_log_uuid<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">1085282663</td>
+                    <td class="value-cell">1541582715</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_row_lock_current_waits" data-category="same">
+                    <td class="var-name">Innodb_row_lock_current_waits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_row_lock_time" data-category="same">
+                    <td class="var-name">Innodb_row_lock_time</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_row_lock_time_avg" data-category="same">
+                    <td class="var-name">Innodb_row_lock_time_avg</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_row_lock_time_max" data-category="same">
+                    <td class="var-name">Innodb_row_lock_time_max</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_row_lock_waits" data-category="same">
+                    <td class="var-name">Innodb_row_lock_waits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_rows_deleted" data-category="same">
+                    <td class="var-name">Innodb_rows_deleted</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_rows_inserted" data-category="same">
+                    <td class="var-name">Innodb_rows_inserted</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_rows_read" data-category="same">
+                    <td class="var-name">Innodb_rows_read</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_rows_updated" data-category="same">
+                    <td class="var-name">Innodb_rows_updated</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_sampled_pages_read" data-category="same">
+                    <td class="var-name">Innodb_sampled_pages_read</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_sampled_pages_skipped" data-category="same">
+                    <td class="var-name">Innodb_sampled_pages_skipped</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_scan_data_size" data-category="different">
+                    <td class="var-name">Innodb_scan_data_size<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_scan_deleted_recs_size" data-category="different">
+                    <td class="var-name">Innodb_scan_deleted_recs_size<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_scan_pages_contiguous" data-category="different">
+                    <td class="var-name">Innodb_scan_pages_contiguous<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_scan_pages_disjointed" data-category="different">
+                    <td class="var-name">Innodb_scan_pages_disjointed<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_scan_pages_total_seek_distance" data-category="different">
+                    <td class="var-name">Innodb_scan_pages_total_seek_distance<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_secondary_index_triggered_cluster_reads" data-category="different">
+                    <td class="var-name">Innodb_secondary_index_triggered_cluster_reads<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">2477</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_secondary_index_triggered_cluster_reads_avoided" data-category="different">
+                    <td class="var-name">Innodb_secondary_index_triggered_cluster_reads_avoided<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_system_rows_deleted" data-category="same">
+                    <td class="var-name">Innodb_system_rows_deleted</td>
+                    <td class="value-cell">168</td>
+                    <td class="value-cell">168</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_system_rows_inserted" data-category="different">
+                    <td class="var-name">Innodb_system_rows_inserted<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">484</td>
+                    <td class="value-cell">486</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_system_rows_read" data-category="different">
+                    <td class="var-name">Innodb_system_rows_read<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">5848</td>
+                    <td class="value-cell">6206</td>
+                </tr>
+
+                <tr class="var-row different" data-var="innodb_system_rows_updated" data-category="different">
+                    <td class="var-name">Innodb_system_rows_updated<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">340</td>
+                    <td class="value-cell">343</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_truncated_status_writes" data-category="same">
+                    <td class="var-name">Innodb_truncated_status_writes</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_undo_tablespaces_active" data-category="same">
+                    <td class="var-name">Innodb_undo_tablespaces_active</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_undo_tablespaces_explicit" data-category="same">
+                    <td class="var-name">Innodb_undo_tablespaces_explicit</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_undo_tablespaces_implicit" data-category="same">
+                    <td class="var-name">Innodb_undo_tablespaces_implicit</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row " data-var="innodb_undo_tablespaces_total" data-category="same">
+                    <td class="var-name">Innodb_undo_tablespaces_total</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_blocks_not_flushed" data-category="same">
+                    <td class="var-name">Key_blocks_not_flushed</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_blocks_unused" data-category="same">
+                    <td class="var-name">Key_blocks_unused</td>
+                    <td class="value-cell">53585</td>
+                    <td class="value-cell">53585</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_blocks_used" data-category="same">
+                    <td class="var-name">Key_blocks_used</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_read_requests" data-category="same">
+                    <td class="var-name">Key_read_requests</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_reads" data-category="same">
+                    <td class="var-name">Key_reads</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_write_requests" data-category="same">
+                    <td class="var-name">Key_write_requests</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="key_writes" data-category="same">
+                    <td class="var-name">Key_writes</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="last_query_cost" data-category="same">
+                    <td class="var-name">Last_query_cost</td>
+                    <td class="value-cell">0.000000</td>
+                    <td class="value-cell">0.000000</td>
+                </tr>
+
+                <tr class="var-row " data-var="last_query_partial_plans" data-category="same">
+                    <td class="var-name">Last_query_partial_plans</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="locked_connects" data-category="same">
+                    <td class="var-name">Locked_connects</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="max_execution_time_exceeded" data-category="same">
+                    <td class="var-name">Max_execution_time_exceeded</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="max_execution_time_set" data-category="same">
+                    <td class="var-name">Max_execution_time_set</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="max_execution_time_set_failed" data-category="same">
+                    <td class="var-name">Max_execution_time_set_failed</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="max_used_connections" data-category="same">
+                    <td class="var-name">Max_used_connections</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row different" data-var="max_used_connections_time" data-category="different">
+                    <td class="var-name">Max_used_connections_time<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">2026-04-30 10:50:17</td>
+                    <td class="value-cell">2026-04-30 12:37:35</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_aborted_clients" data-category="same">
+                    <td class="var-name">Mysqlx_aborted_clients</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_address" data-category="same">
+                    <td class="var-name">Mysqlx_address</td>
+                    <td class="value-cell">::</td>
+                    <td class="value-cell">::</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_bytes_received" data-category="same">
+                    <td class="var-name">Mysqlx_bytes_received</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_bytes_received_compressed_payload" data-category="same">
+                    <td class="var-name">Mysqlx_bytes_received_compressed_payload</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_bytes_received_uncompressed_frame" data-category="same">
+                    <td class="var-name">Mysqlx_bytes_received_uncompressed_frame</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_bytes_sent" data-category="same">
+                    <td class="var-name">Mysqlx_bytes_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_bytes_sent_compressed_payload" data-category="same">
+                    <td class="var-name">Mysqlx_bytes_sent_compressed_payload</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_bytes_sent_uncompressed_frame" data-category="same">
+                    <td class="var-name">Mysqlx_bytes_sent_uncompressed_frame</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_compression_algorithm" data-category="same">
+                    <td class="var-name">Mysqlx_compression_algorithm</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_compression_level" data-category="same">
+                    <td class="var-name">Mysqlx_compression_level</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_connection_accept_errors" data-category="same">
+                    <td class="var-name">Mysqlx_connection_accept_errors</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_connection_errors" data-category="same">
+                    <td class="var-name">Mysqlx_connection_errors</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_connections_accepted" data-category="same">
+                    <td class="var-name">Mysqlx_connections_accepted</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_connections_closed" data-category="same">
+                    <td class="var-name">Mysqlx_connections_closed</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_connections_rejected" data-category="same">
+                    <td class="var-name">Mysqlx_connections_rejected</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_create_view" data-category="same">
+                    <td class="var-name">Mysqlx_crud_create_view</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_delete" data-category="same">
+                    <td class="var-name">Mysqlx_crud_delete</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_drop_view" data-category="same">
+                    <td class="var-name">Mysqlx_crud_drop_view</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_find" data-category="same">
+                    <td class="var-name">Mysqlx_crud_find</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_insert" data-category="same">
+                    <td class="var-name">Mysqlx_crud_insert</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_modify_view" data-category="same">
+                    <td class="var-name">Mysqlx_crud_modify_view</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_crud_update" data-category="same">
+                    <td class="var-name">Mysqlx_crud_update</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_cursor_close" data-category="same">
+                    <td class="var-name">Mysqlx_cursor_close</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_cursor_fetch" data-category="same">
+                    <td class="var-name">Mysqlx_cursor_fetch</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_cursor_open" data-category="same">
+                    <td class="var-name">Mysqlx_cursor_open</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_errors_sent" data-category="same">
+                    <td class="var-name">Mysqlx_errors_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_errors_unknown_message_type" data-category="same">
+                    <td class="var-name">Mysqlx_errors_unknown_message_type</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_expect_close" data-category="same">
+                    <td class="var-name">Mysqlx_expect_close</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_expect_open" data-category="same">
+                    <td class="var-name">Mysqlx_expect_open</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_init_error" data-category="same">
+                    <td class="var-name">Mysqlx_init_error</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_messages_sent" data-category="same">
+                    <td class="var-name">Mysqlx_messages_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_notice_global_sent" data-category="same">
+                    <td class="var-name">Mysqlx_notice_global_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_notice_other_sent" data-category="same">
+                    <td class="var-name">Mysqlx_notice_other_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_notice_warning_sent" data-category="same">
+                    <td class="var-name">Mysqlx_notice_warning_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_notified_by_group_replication" data-category="same">
+                    <td class="var-name">Mysqlx_notified_by_group_replication</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_port" data-category="same">
+                    <td class="var-name">Mysqlx_port</td>
+                    <td class="value-cell">33060</td>
+                    <td class="value-cell">33060</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_prep_deallocate" data-category="same">
+                    <td class="var-name">Mysqlx_prep_deallocate</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_prep_execute" data-category="same">
+                    <td class="var-name">Mysqlx_prep_execute</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_prep_prepare" data-category="same">
+                    <td class="var-name">Mysqlx_prep_prepare</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_rows_sent" data-category="same">
+                    <td class="var-name">Mysqlx_rows_sent</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_sessions" data-category="same">
+                    <td class="var-name">Mysqlx_sessions</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_sessions_accepted" data-category="same">
+                    <td class="var-name">Mysqlx_sessions_accepted</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_sessions_closed" data-category="same">
+                    <td class="var-name">Mysqlx_sessions_closed</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_sessions_fatal_error" data-category="same">
+                    <td class="var-name">Mysqlx_sessions_fatal_error</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_sessions_killed" data-category="same">
+                    <td class="var-name">Mysqlx_sessions_killed</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_sessions_rejected" data-category="same">
+                    <td class="var-name">Mysqlx_sessions_rejected</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_socket" data-category="same">
+                    <td class="var-name">Mysqlx_socket</td>
+                    <td class="value-cell">/tmp/mysqlx.sock</td>
+                    <td class="value-cell">/tmp/mysqlx.sock</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_accepts" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_accepts</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_active" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_active</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_cipher" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_cipher</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_cipher_list" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_cipher_list</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_ctx_verify_depth" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_ctx_verify_depth</td>
+                    <td class="value-cell">18446744073709551615</td>
+                    <td class="value-cell">18446744073709551615</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_ctx_verify_mode" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_ctx_verify_mode</td>
+                    <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_finished_accepts" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_finished_accepts</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="mysqlx_ssl_server_not_after" data-category="different">
+                    <td class="var-name">Mysqlx_ssl_server_not_after<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">Apr 27 10:49:55 2036 GMT</td>
+                    <td class="value-cell">Apr 27 12:37:13 2036 GMT</td>
+                </tr>
+
+                <tr class="var-row different" data-var="mysqlx_ssl_server_not_before" data-category="different">
+                    <td class="var-name">Mysqlx_ssl_server_not_before<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">Apr 30 10:49:55 2026 GMT</td>
+                    <td class="value-cell">Apr 30 12:37:13 2026 GMT</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_verify_depth" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_verify_depth</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_verify_mode" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_verify_mode</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_ssl_version" data-category="same">
+                    <td class="var-name">Mysqlx_ssl_version</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_create_collection" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_create_collection</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_create_collection_index" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_create_collection_index</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_disable_notices" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_disable_notices</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_drop_collection" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_drop_collection</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_drop_collection_index" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_drop_collection_index</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_enable_notices" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_enable_notices</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_ensure_collection" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_ensure_collection</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_execute_mysqlx" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_execute_mysqlx</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_execute_sql" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_execute_sql</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_execute_xplugin" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_execute_xplugin</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_get_collection_options" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_get_collection_options</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_kill_client" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_kill_client</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_list_clients" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_list_clients</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_list_notices" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_list_notices</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_list_objects" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_list_objects</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_modify_collection_options" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_modify_collection_options</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_stmt_ping" data-category="same">
+                    <td class="var-name">Mysqlx_stmt_ping</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_worker_threads" data-category="same">
+                    <td class="var-name">Mysqlx_worker_threads</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row " data-var="mysqlx_worker_threads_active" data-category="same">
+                    <td class="var-name">Mysqlx_worker_threads_active</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="net_buffer_length" data-category="different">
+                    <td class="var-name">Net_buffer_length<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">16384</td>
+                </tr>
+
+                <tr class="var-row " data-var="not_flushed_delayed_rows" data-category="same">
+                    <td class="var-name">Not_flushed_delayed_rows</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ongoing_anonymous_transaction_count" data-category="same">
+                    <td class="var-name">Ongoing_anonymous_transaction_count</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="open_files" data-category="same">
+                    <td class="var-name">Open_files</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="open_streams" data-category="same">
+                    <td class="var-name">Open_streams</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="open_table_definitions" data-category="same">
+                    <td class="var-name">Open_table_definitions</td>
+                    <td class="value-cell">46</td>
+                    <td class="value-cell">46</td>
+                </tr>
+
+                <tr class="var-row " data-var="open_tables" data-category="same">
+                    <td class="var-name">Open_tables</td>
+                    <td class="value-cell">111</td>
+                    <td class="value-cell">111</td>
+                </tr>
+
+                <tr class="var-row different" data-var="open_tables_with_triggers" data-category="different">
+                    <td class="var-name">Open_tables_with_triggers<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="opened_files" data-category="same">
+                    <td class="var-name">Opened_files</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="opened_table_definitions" data-category="same">
+                    <td class="var-name">Opened_table_definitions</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="opened_tables" data-category="same">
+                    <td class="var-name">Opened_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_accounts_lost" data-category="same">
+                    <td class="var-name">Performance_schema_accounts_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_cond_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_cond_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_cond_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_cond_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_digest_lost" data-category="same">
+                    <td class="var-name">Performance_schema_digest_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_file_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_file_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_file_handles_lost" data-category="same">
+                    <td class="var-name">Performance_schema_file_handles_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_file_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_file_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_hosts_lost" data-category="same">
+                    <td class="var-name">Performance_schema_hosts_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_index_stat_lost" data-category="same">
+                    <td class="var-name">Performance_schema_index_stat_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_locker_lost" data-category="same">
+                    <td class="var-name">Performance_schema_locker_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_memory_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_memory_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_metadata_lock_lost" data-category="same">
+                    <td class="var-name">Performance_schema_metadata_lock_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_meter_lost" data-category="same">
+                    <td class="var-name">Performance_schema_meter_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_metric_lost" data-category="same">
+                    <td class="var-name">Performance_schema_metric_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_mutex_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_mutex_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_mutex_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_mutex_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_nested_statement_lost" data-category="same">
+                    <td class="var-name">Performance_schema_nested_statement_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_prepared_statements_lost" data-category="same">
+                    <td class="var-name">Performance_schema_prepared_statements_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_program_lost" data-category="same">
+                    <td class="var-name">Performance_schema_program_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_rwlock_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_rwlock_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_rwlock_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_rwlock_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_session_connect_attrs_longest_seen" data-category="same">
+                    <td class="var-name">Performance_schema_session_connect_attrs_longest_seen</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_session_connect_attrs_lost" data-category="same">
+                    <td class="var-name">Performance_schema_session_connect_attrs_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_socket_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_socket_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_socket_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_socket_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_stage_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_stage_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_statement_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_statement_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_table_handles_lost" data-category="same">
+                    <td class="var-name">Performance_schema_table_handles_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_table_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_table_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_table_lock_stat_lost" data-category="same">
+                    <td class="var-name">Performance_schema_table_lock_stat_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_thread_classes_lost" data-category="same">
+                    <td class="var-name">Performance_schema_thread_classes_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_thread_instances_lost" data-category="same">
+                    <td class="var-name">Performance_schema_thread_instances_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="performance_schema_users_lost" data-category="same">
+                    <td class="var-name">Performance_schema_users_lost</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="prepared_stmt_count" data-category="same">
+                    <td class="var-name">Prepared_stmt_count</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="queries" data-category="same">
+                    <td class="var-name">Queries</td>
+                    <td class="value-cell">30</td>
+                    <td class="value-cell">30</td>
+                </tr>
+
+                <tr class="var-row " data-var="questions" data-category="same">
+                    <td class="var-name">Questions</td>
+                    <td class="value-cell">3</td>
+                    <td class="value-cell">3</td>
+                </tr>
+
+                <tr class="var-row " data-var="replica_open_temp_tables" data-category="same">
+                    <td class="var-name">Replica_open_temp_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="resource_group_supported" data-category="same">
+                    <td class="var-name">Resource_group_supported</td>
+                    <td class="value-cell">ON</td>
+                    <td class="value-cell">ON</td>
+                </tr>
+
+                <tr class="var-row different" data-var="rsa_public_key" data-category="different">
+                    <td class="var-name">Rsa_public_key<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmuulgzP0CaUhzgSTp4VV\nW3BxhcEe3jRsz9OBN5m8cJfX2I8ZdjqceQrfyLiQd3Bles5wFcJWAGxaYwDUghaM\nA3PC4ZpPIZmT3h2avQxRWSBU9dMhROdHZZJol7TK...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo2pGUMrMXZZk3fTrB2kA\nkVKJub08VFzY9rlwXt4zwfImy62uYz10DqyUkmcnrzSi9c1RMgNRg6ixk9ZxvtDk\nnuS2j6P1uzcri192bIlQt09TPD2TkC81r8DMUnxs...</td>
+                </tr>
+
+                <tr class="var-row " data-var="secondary_engine_execution_count" data-category="same">
+                    <td class="var-name">Secondary_engine_execution_count</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="select_full_join" data-category="same">
+                    <td class="var-name">Select_full_join</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="select_full_range_join" data-category="same">
+                    <td class="var-name">Select_full_range_join</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="select_range" data-category="same">
+                    <td class="var-name">Select_range</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="select_range_check" data-category="same">
+                    <td class="var-name">Select_range_check</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="select_scan" data-category="same">
+                    <td class="var-name">Select_scan</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="slave_open_temp_tables" data-category="same">
+                    <td class="var-name">Slave_open_temp_tables</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="slow_launch_threads" data-category="same">
+                    <td class="var-name">Slow_launch_threads</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="slow_queries" data-category="same">
+                    <td class="var-name">Slow_queries</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="sort_merge_passes" data-category="same">
+                    <td class="var-name">Sort_merge_passes</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="sort_range" data-category="same">
+                    <td class="var-name">Sort_range</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="sort_rows" data-category="same">
+                    <td class="var-name">Sort_rows</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="sort_scan" data-category="same">
+                    <td class="var-name">Sort_scan</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_accept_renegotiates" data-category="same">
+                    <td class="var-name">Ssl_accept_renegotiates</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_accepts" data-category="same">
+                    <td class="var-name">Ssl_accepts</td>
+                    <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_callback_cache_hits" data-category="same">
+                    <td class="var-name">Ssl_callback_cache_hits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_cipher" data-category="same">
+                    <td class="var-name">Ssl_cipher</td>
+                    <td class="value-cell">TLS_AES_128_GCM_SHA256</td>
+                    <td class="value-cell">TLS_AES_128_GCM_SHA256</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_cipher_list" data-category="same">
+                    <td class="var-name">Ssl_cipher_list</td>
+                    <td class="value-cell">TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES2...</td>
+                    <td class="value-cell">TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES2...</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_client_connects" data-category="same">
+                    <td class="var-name">Ssl_client_connects</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_connect_renegotiates" data-category="same">
+                    <td class="var-name">Ssl_connect_renegotiates</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_ctx_verify_depth" data-category="same">
+                    <td class="var-name">Ssl_ctx_verify_depth</td>
+                    <td class="value-cell">18446744073709551615</td>
+                    <td class="value-cell">18446744073709551615</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_ctx_verify_mode" data-category="same">
+                    <td class="var-name">Ssl_ctx_verify_mode</td>
+                    <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_default_timeout" data-category="same">
+                    <td class="var-name">Ssl_default_timeout</td>
+                    <td class="value-cell">7200</td>
+                    <td class="value-cell">7200</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_finished_accepts" data-category="same">
+                    <td class="var-name">Ssl_finished_accepts</td>
+                    <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_finished_connects" data-category="same">
+                    <td class="var-name">Ssl_finished_connects</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="ssl_server_not_after" data-category="different">
+                    <td class="var-name">Ssl_server_not_after<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">Apr 27 10:49:55 2036 GMT</td>
+                    <td class="value-cell">Apr 27 12:37:13 2036 GMT</td>
+                </tr>
+
+                <tr class="var-row different" data-var="ssl_server_not_before" data-category="different">
+                    <td class="var-name">Ssl_server_not_before<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">Apr 30 10:49:55 2026 GMT</td>
+                    <td class="value-cell">Apr 30 12:37:13 2026 GMT</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_hits" data-category="same">
+                    <td class="var-name">Ssl_session_cache_hits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_misses" data-category="same">
+                    <td class="var-name">Ssl_session_cache_misses</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_mode" data-category="same">
+                    <td class="var-name">Ssl_session_cache_mode</td>
+                    <td class="value-cell">SERVER</td>
+                    <td class="value-cell">SERVER</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_overflows" data-category="same">
+                    <td class="var-name">Ssl_session_cache_overflows</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_size" data-category="same">
+                    <td class="var-name">Ssl_session_cache_size</td>
+                    <td class="value-cell">128</td>
+                    <td class="value-cell">128</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_timeout" data-category="same">
+                    <td class="var-name">Ssl_session_cache_timeout</td>
+                    <td class="value-cell">300</td>
+                    <td class="value-cell">300</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_session_cache_timeouts" data-category="same">
+                    <td class="var-name">Ssl_session_cache_timeouts</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_sessions_reused" data-category="same">
+                    <td class="var-name">Ssl_sessions_reused</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_used_session_cache_entries" data-category="same">
+                    <td class="var-name">Ssl_used_session_cache_entries</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_verify_depth" data-category="same">
+                    <td class="var-name">Ssl_verify_depth</td>
+                    <td class="value-cell">18446744073709551615</td>
+                    <td class="value-cell">18446744073709551615</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_verify_mode" data-category="same">
+                    <td class="var-name">Ssl_verify_mode</td>
+                    <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
+                </tr>
+
+                <tr class="var-row " data-var="ssl_version" data-category="same">
+                    <td class="var-name">Ssl_version</td>
+                    <td class="value-cell">TLSv1.3</td>
+                    <td class="value-cell">TLSv1.3</td>
+                </tr>
+
+                <tr class="var-row " data-var="table_locks_immediate" data-category="same">
+                    <td class="var-name">Table_locks_immediate</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row " data-var="table_locks_waited" data-category="same">
+                    <td class="var-name">Table_locks_waited</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="table_open_cache_hits" data-category="same">
+                    <td class="var-name">Table_open_cache_hits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="table_open_cache_misses" data-category="same">
+                    <td class="var-name">Table_open_cache_misses</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="table_open_cache_overflows" data-category="same">
+                    <td class="var-name">Table_open_cache_overflows</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="table_open_cache_triggers_hits" data-category="different">
+                    <td class="var-name">Table_open_cache_triggers_hits<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="table_open_cache_triggers_misses" data-category="different">
+                    <td class="var-name">Table_open_cache_triggers_misses<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="table_open_cache_triggers_overflows" data-category="different">
+                    <td class="var-name">Table_open_cache_triggers_overflows<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="tc_log_max_pages_used" data-category="same">
+                    <td class="var-name">Tc_log_max_pages_used</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="tc_log_page_size" data-category="same">
+                    <td class="var-name">Tc_log_page_size</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="tc_log_page_waits" data-category="same">
+                    <td class="var-name">Tc_log_page_waits</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="telemetry_metrics_supported" data-category="same">
+                    <td class="var-name">Telemetry_metrics_supported</td>
+                    <td class="value-cell">ON</td>
+                    <td class="value-cell">ON</td>
+                </tr>
+
+                <tr class="var-row " data-var="telemetry_traces_supported" data-category="same">
+                    <td class="var-name">Telemetry_traces_supported</td>
+                    <td class="value-cell">ON</td>
+                    <td class="value-cell">ON</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_idle_threads" data-category="different">
+                    <td class="var-name">Threadpool_idle_threads<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_threads" data-category="different">
+                    <td class="var-name">Threadpool_threads<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="threads_cached" data-category="same">
+                    <td class="var-name">Threads_cached</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row " data-var="threads_connected" data-category="same">
+                    <td class="var-name">Threads_connected</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="threads_created" data-category="same">
+                    <td class="var-name">Threads_created</td>
+                    <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
+                </tr>
+
+                <tr class="var-row " data-var="threads_running" data-category="same">
+                    <td class="var-name">Threads_running</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
+                </tr>
+
+                <tr class="var-row different" data-var="tls_library_version" data-category="different">
+                    <td class="var-name">Tls_library_version<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell">OpenSSL 3.0.18 30 Sep 2025</td>
+                    <td class="value-cell">OpenSSL 3.0.13 30 Jan 2024</td>
+                </tr>
+
+                <tr class="var-row " data-var="tls_sni_server_name" data-category="same">
+                    <td class="var-name">Tls_sni_server_name</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                </tr>
+
+                <tr class="var-row " data-var="uptime" data-category="same">
+                    <td class="var-name">Uptime</td>
+                    <td class="value-cell">20</td>
+                    <td class="value-cell">20</td>
+                </tr>
+
+                <tr class="var-row " data-var="uptime_since_flush_status" data-category="same">
+                    <td class="var-name">Uptime_since_flush_status</td>
+                    <td class="value-cell">20</td>
+                    <td class="value-cell">20</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const filterSelect = document.getElementById('filter');
+        const rows = document.querySelectorAll('.var-row');
+        const countBadge = document.getElementById('visibleCount');
+
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filterValue = filterSelect.value;
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const varName = row.dataset.var;
+                const category = row.dataset.category;
+
+                // Check search match
+                const matchesSearch = !searchTerm || varName.includes(searchTerm);
+
+                // Check filter match
+                let matchesFilter = true;
+                if (filterValue === 'same') {
+                    matchesFilter = category === 'same';
+                } else if (filterValue === 'different') {
+                    matchesFilter = category === 'different';
+                }
+
+                // Show/hide row
+                if (matchesSearch && matchesFilter) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            countBadge.textContent = visibleCount + ' variables';
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+        filterSelect.addEventListener('change', applyFilters);
+    </script>
+</body>
+</html>

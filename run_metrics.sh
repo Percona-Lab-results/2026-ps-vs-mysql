@@ -1,10 +1,15 @@
 #!/bin/bash
 
 # --- VARIABLES ---
-DB_HOST="127.0.0.1"   # REPLACE ME
+DB_HOST="127.0.0.1"
 DB_USER="root"
 DB_PASS="password"
 DB_DATABASE="sbtest"
+DB_PORT="3306"
+
+# Server locations
+SERVERS_BASE="/home/bogdan.degtyariov/mysql-nvme/servers"
+DATADIR_BASE="/home/bogdan.degtyariov/mysql-nvme/data"
 
 # POOL_SIZES=(32 12 2)      # The 3 Tiers (GB)
 POOL_SIZES=(12)
@@ -26,132 +31,196 @@ DURATION=900
 DBMS_NAME="$1"
 DBMS_VER="$2"
 IS_READ_ONLY="$3"
-USE_LEGACY_LSN="$4"
+ENABLE_BINLOG="$4"
 
-CONF_D_DIR="/etc/mysql/conf.d"
 sudo cpupower frequency-set -g performance > /dev/null
 
 echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============="
 
+# Determine server directory and binaries
 if [[ "$DBMS_NAME" == "percona-server" ]]; then
-    IMAGE_PREFIX="percona/"
-    CONF_D_DIR="/etc/my.cnf.d"
-fi
-
-if [[ "$DBMS_NAME" == "mysql-server" ]]; then
-    # Assume the image was built using RPM with the default config location
-    CONF_D_DIR="/etc"
-fi
-
-
-if [[ "$DBMS_NAME" == "mariadb" ]]; then
-    ADMIN_TOOL="mariadb-admin"
-else
+    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.35"
     ADMIN_TOOL="mysqladmin"
-fi  
+elif [[ "$DBMS_NAME" == "mysql" ]]; then
+    SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64"
+    ADMIN_TOOL="mysqladmin"
+else
+    echo "Unknown DBMS: ${DBMS_NAME}"
+    exit 1
+fi
 
-IMAGE_NAME="${IMAGE_PREFIX}${DBMS_NAME}:${DBMS_VER}"
+if [ ! -d "$SERVER_DIR" ]; then
+    echo "ERROR: Server directory not found: $SERVER_DIR"
+    exit 1
+fi
 
-CONTAINER_NAME="dbms-benchmark-test"
+MYSQLD="${SERVER_DIR}/bin/mysqld"
+MYSQL_CLIENT="${SERVER_DIR}/bin/mysql"
+MYSQLADMIN="${SERVER_DIR}/bin/${ADMIN_TOOL}"
 
-MYSQL_ROOT_PASSWORD="password"
+if [ ! -x "$MYSQLD" ]; then
+    echo "ERROR: mysqld not found or not executable: $MYSQLD"
+    exit 1
+fi
+
 CONFIG_DIR="$HOME/configs"
 CONFIG_NAME="my.cnf"
 CONFIG_PATH="${CONFIG_DIR}/${CONFIG_NAME}"
 
+# PID file for server management
+PID_FILE="/tmp/mysql_benchmark.pid"
 
 server_wait() {
-  # Wait for MySQL to be ready
   echo "Waiting for DB Server to initialize..."
   sleep 5
 
-  # Check that the container exists and is running
-  if [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME" 2>/dev/null)" != "true" ]; then
-    echo "Fatal error: container '$CONTAINER_NAME' is not running or does not exist. Terminating script."
+  # Check if mysqld process is running
+  if [ -f "$PID_FILE" ]; then
+    local pid=$(cat "$PID_FILE")
+    if ! kill -0 "$pid" 2>/dev/null; then
+      echo "Fatal error: mysqld process is not running (PID: $pid). Terminating script."
+      exit 1
+    fi
+  else
+    echo "Fatal error: PID file not found. Terminating script."
     exit 1
   fi
 
-  until docker exec "$CONTAINER_NAME" "$ADMIN_TOOL" ping --host=127.0.0.1 -u"root" -p"$DB_PASS" 2>/dev/null; do
-    echo "Waiting..."       
+  until "$MYSQLADMIN" ping --host=$DB_HOST --port=$DB_PORT -u"$DB_USER" -p"$DB_PASS" 2>/dev/null; do
+    echo "Waiting for server to respond..."
     sleep 2
   done
+  echo "Server is ready!"
 }
 
-stop_container() {
-  local CONTAINER=$1
-  echo "Stopping container ${CONTAINER}"
-  docker container stop "$CONTAINER" 2>/dev/null
+stop_server() {
+  echo "Stopping MySQL server..."
+  if [ -f "$PID_FILE" ]; then
+    local pid=$(cat "$PID_FILE")
+    if kill -0 "$pid" 2>/dev/null; then
+      "$MYSQLADMIN" --host=$DB_HOST --port=$DB_PORT -u"$DB_USER" -p"$DB_PASS" shutdown 2>/dev/null
+      sleep 3
+      # Force kill if still running
+      if kill -0 "$pid" 2>/dev/null; then
+        echo "Force killing mysqld (PID: $pid)"
+        kill -9 "$pid" 2>/dev/null
+      fi
+    fi
+    rm -f "$PID_FILE"
+  fi
   sleep 2
-  docker container rm "$CONTAINER" 2>/dev/null
 }
 
-run_container() {
-  local MOUNT=$1
+start_server() {
+  local DATADIR=$1
+  local CONFIG=$2
 
-  if [ -n "$MOUNT" ]; then
-    echo "Mounting config from: $CONFIG_PATH"
-    MOUNT_ARG="-v ${CONFIG_PATH}:${CONF_D_DIR}/${CONFIG_NAME}:ro"
-    # MOUNT_ARG="-v /mnt/nvme/data/:/var/log/mysql:rw ${MOUNT_ARG}"
+  echo "Starting MySQL server..."
+  echo "  Server: $MYSQLD"
+  echo "  Datadir: $DATADIR"
+  echo "  Config: $CONFIG"
+  echo "  Command: $MYSQLD --defaults-file=$CONFIG --datadir=$DATADIR --pid-file=$PID_FILE --user=$(whoami)"
+
+  # Start mysqld in background
+  "$MYSQLD" --defaults-file="$CONFIG" --datadir="$DATADIR" --pid-file="$PID_FILE" \
+    --user=$(whoami) &
+
+  # Wait a moment for PID file to be created
+  sleep 15
+
+  cat $PID_FILE
+
+  if [ ! -f "$PID_FILE" ]; then
+    echo "ERROR: Failed to start mysqld (PID file not created)"
+    exit 1
   fi
 
-  # 1. Define the command as an array
-  local cmd=(
-    docker run --user mysql --rm -it --name "$CONTAINER_NAME"
-    --network host
-    $MOUNT_ARG
-    -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD"
-    -e MYSQL_DATABASE="$DB_DATABASE"
-    -e MYSQL_ROOT_HOST='%'
-    -d "${IMAGE_NAME}"
-  )
-
-  # 2. Print the command to the terminal
-  echo "Executing: ${cmd[*]}"
-
-  # 3. Run the command
-  "${cmd[@]}"
+  echo "mysqld started with PID: $(cat $PID_FILE)"
 }
 
-# Make sure no containers are running at this stage.
-stop_container "$CONTAINER_NAME"
+initialize_datadir() {
+  local DATADIR=$1
+
+  echo "Initializing clean data directory: $DATADIR"
+
+  # Remove old datadir if exists
+  if [ -d "$DATADIR" ]; then
+    echo "Removing old datadir..."
+    rm -rf "$DATADIR"
+  fi
+
+  # Create fresh datadir
+  mkdir -p "$DATADIR"
+
+  # Initialize MySQL data directory
+  echo "Running mysqld --initialize-insecure..."
+  "$MYSQLD" --initialize-insecure --datadir="$DATADIR" --user=$(whoami)
+
+  if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to initialize data directory"
+    exit 1
+  fi
+
+  echo "Data directory initialized successfully"
+}
+
+# Make sure no server is running at this stage
+stop_server
 
 # --- DETECT VERSION & VENDOR ---
-echo "Run container to detect the version of the server"
+echo "Starting server to detect version..."
 
 if [[ "$IS_READ_ONLY" == "1" ]]; then
     BENCH_DIR="./benchmark_logs_read_only"
+elif [[ "$ENABLE_BINLOG" == "1" ]]; then
+    BENCH_DIR="./benchmark_logs_binlog"
 else
     BENCH_DIR="./benchmark_logs"
-fi  
+fi
 
 echo "Removing old config if exists: $CONFIG_PATH"
-sudo rm -rf "$CONFIG_PATH"
+rm -rf "$CONFIG_PATH"
 
-# --- THIS NEEDS TO BE DONE IF A VERSION IS "latest" ---
-run_container
-server_wait 
+# Create temporary minimal config for version detection
+TMP_DATADIR="${DATADIR_BASE}/tmp_init"
+initialize_datadir "$TMP_DATADIR"
 
-RAW_VERSION=$(mysql -h $DB_HOST -u $DB_USER -p$DB_PASS -N -e "SELECT VERSION();" 2>/dev/null)
+# Create minimal config
+mkdir -p "$CONFIG_DIR"
+cat > "$CONFIG_PATH" << EOF
+[mysqld]
+port=$DB_PORT
+socket=/tmp/mysql_benchmark.sock
+datadir=$TMP_DATADIR
+EOF
+
+start_server "$TMP_DATADIR" "$CONFIG_PATH"
+server_wait
+
+# Set root password and grant TCP/IP access (use socket for initial connection)
+"$MYSQLADMIN" --socket=/tmp/mysql_benchmark.sock -u"$DB_USER" password "$DB_PASS" 2>/dev/null
+
+# Grant access from 127.0.0.1
+"$MYSQL_CLIENT" --socket=/tmp/mysql_benchmark.sock -u"$DB_USER" -p"$DB_PASS" -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION; FLUSH PRIVILEGES;" 2>/dev/null
+
+RAW_VERSION=$("$MYSQL_CLIENT" -h $DB_HOST --port=$DB_PORT -u $DB_USER -p$DB_PASS -N -e "SELECT VERSION();" 2>/dev/null)
 MAJOR_VER=$(echo $RAW_VERSION | cut -d'.' -f1,2)
-IS_MARIA=$(echo $RAW_VERSION | grep -i "Maria" | wc -l)
 
-if [ "$USE_LEGACY_LSN" == "1" ]; then
-    LOG_DIR="${BENCH_DIR}/${DBMS_NAME}/${RAW_VERSION}-legacy"
-else
-    LOG_DIR="${BENCH_DIR}/${DBMS_NAME}/${RAW_VERSION}"
-fi
-mkdir -p $LOG_DIR
+LOG_DIR="${BENCH_DIR}/${DBMS_NAME}/${RAW_VERSION}"
+mkdir -p "$LOG_DIR"
 
-echo "Detected: $RAW_VERSION (Major: $MAJOR_VER, MariaDB: $IS_MARIA)"
-[ "$USE_LEGACY_LSN" == "1" ] && echo "Legacy LSN mode: ENABLED"
+echo "Detected: $RAW_VERSION (Major: $MAJOR_VER)"
+[ "$ENABLE_BINLOG" == "1" ] && echo "Binary logging: ENABLED"
+[ "$ENABLE_BINLOG" != "1" ] && echo "Binary logging: DISABLED"
+
+stop_server
+rm -rf "$TMP_DATADIR"
 
 check_innodb_buffer() {
     local EXPECTED_GB=$1
     echo ">>> Verifying InnoDB Buffer Pool: ${EXPECTED_GB}GB..."
 
-    # Get the value in bytes and divide by 1024^3 to get GB
-    # Note: MySQL returns an integer; we use shell arithmetic to convert
-    local ACTUAL_BYTES=$(mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -N -s -e "SELECT @@innodb_buffer_pool_size;" 2>/dev/null)
+    local ACTUAL_BYTES=$("$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -s -e "SELECT @@innodb_buffer_pool_size;")
     local ACTUAL_GB=$(( ACTUAL_BYTES / 1024 / 1024 / 1024 ))
 
     if [ "$ACTUAL_GB" -ne "$EXPECTED_GB" ]; then
@@ -159,9 +228,6 @@ check_innodb_buffer() {
         echo "CRITICAL ERROR: Buffer Pool is ${ACTUAL_GB}GB (Expected ${EXPECTED_GB}GB)"
         echo "Aborting entire benchmark script immediately."
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        
-        # docker stop "$CONTAINER_NAME" 2>/dev/null
-        # Immediate termination of the script
         exit 1
     fi
 
@@ -172,16 +238,14 @@ check_vars_status() {
     local FILE_PREFIX=$1
     echo ">>> Capturing server variables and status..."
 
-    # Capture MySQL server variables into file
-    mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -N -e "SHOW VARIABLES;" > "${FILE_PREFIX}.vars.txt" 2>/dev/null
+    "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -e "SHOW VARIABLES;" > "${FILE_PREFIX}.vars.txt" 2>/dev/null
     if [ $? -eq 0 ]; then
         echo "    Variables saved to: ${FILE_PREFIX}.vars.txt"
     else
         echo "    ERROR: Failed to capture variables"
     fi
 
-    # Capture MySQL server status into file
-    mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -N -e "SHOW STATUS;" > "${FILE_PREFIX}.status.txt" 2>/dev/null
+    "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -e "SHOW STATUS;" > "${FILE_PREFIX}.status.txt" 2>/dev/null
     if [ $? -eq 0 ]; then
         echo "    Status saved to: ${FILE_PREFIX}.status.txt"
     else
@@ -191,7 +255,7 @@ check_vars_status() {
 
 run_mysql_summary() {
     local FILE_PREFIX=$1
-    ./pt-mysql-summary --host="$DB_HOST" --user="$DB_USER" --password="$DB_PASS" > "${FILE_PREFIX}-pt-mysql-summary.txt"
+    ./pt-mysql-summary --host="$DB_HOST" --port=$DB_PORT --user="$DB_USER" --password="$DB_PASS" > "${FILE_PREFIX}-pt-mysql-summary.txt"
     if [ $? -eq 0 ]; then
         echo "    Server summary saved to: ${FILE_PREFIX}-pt-mysql-summary.txt"
     else
@@ -199,29 +263,24 @@ run_mysql_summary() {
     fi
 }
 
-
 # --- CONFIGURATION GENERATOR ---
 generate_config() {
     local SIZE=$1
+    local DATADIR=$2
     local CFG="/tmp/$CONFIG_NAME"
-    rm "$CFG"
+    rm -f "$CFG"
 
     # 1. Start Base Config
     echo "[mysqld]" > "$CFG"
-    if [ "$IS_MARIA" -eq 1 ]; then
-        echo "log_warnings = 2" >> "$CFG"
-    else
-        echo "log_error_verbosity = 3" >> "$CFG"
-    fi
-    echo "log_error = /tmp/Tier${SIZE}G.errlog.txt" >> "$CFG"
+    echo "port                            = $DB_PORT" >> "$CFG"
+    echo "socket                          = /tmp/mysql_benchmark.sock" >> "$CFG"
+    echo "datadir                         = $DATADIR" >> "$CFG"
+    echo "log_error_verbosity             = 3" >> "$CFG"
+    echo "log_error                       = ${DATADIR}/mysql-error.log" >> "$CFG"
 
     echo "# --- General -------------------------------------------------------------------" >> "$CFG"
-    echo "user                            = mysql" >> "$CFG"
-    echo "#datadir                         = /var/lib/mysql" >> "$CFG"
-    echo "#socket                          = /var/run/mysqld/mysqld.sock" >> "$CFG"
-    echo "#pid-file                        = /var/run/mysqld/mysqld.pid" >> "$CFG"
+    echo "user                            = $(whoami)" >> "$CFG"
     echo "bind-address                    = 0.0.0.0" >> "$CFG"
-    echo "port                            = 3306" >> "$CFG"
     echo "skip-name-resolve               = ON" >> "$CFG"
     echo "performance_schema              = OFF" >> "$CFG"
     echo "" >> "$CFG"
@@ -230,7 +289,6 @@ generate_config() {
     echo "max_connections                 = 2000" >> "$CFG"
     echo "max_connect_errors              = 1000000" >> "$CFG"
     echo "max_prepared_stmt_count         = 1000000" >> "$CFG"
-
     echo "thread_stack                    = 512K" >> "$CFG"
     echo "thread_cache_size               = 256" >> "$CFG"
     echo "back_log                        = 4096" >> "$CFG"
@@ -252,20 +310,14 @@ generate_config() {
     echo "innodb_write_io_threads         = 16" >> "$CFG"
     echo "innodb_use_native_aio           = ON" >> "$CFG"
     echo "" >> "$CFG"
-    echo "# --- InnoDB instances - one per 5G of memory, but no more than 8 -------------" >> "$CFG"
 
     echo "# --- InnoDB – Log / Durability -------------------------------------------------" >> "$CFG"
-    echo "#innodb_log_file_size is set later with the version specific logic" >> "$CFG"
     echo "innodb_log_buffer_size          = 256M" >> "$CFG"
     echo "innodb_flush_log_at_trx_commit  = 1          # full ACID; use 2 for ~10 % more speed" >> "$CFG"
     echo "innodb_doublewrite              = ON" >> "$CFG"
     echo "" >> "$CFG"
 
     echo "# --- InnoDB – Concurrency & OLTP Tuning ---------------------------------------" >> "$CFG"
-    echo "#innodb_adaptive_hash_index      = ON" >> "$CFG"
-    echo "#innodb_adaptive_flushing        = ON" >> "$CFG"
-    echo "#innodb_adaptive_flushing_lwm    = 10" >> "$CFG"
-    echo "#innodb_lru_scan_depth           = 4096" >> "$CFG"
     echo "innodb_stats_on_metadata        = OFF" >> "$CFG"
     echo "innodb_open_files               = 65536" >> "$CFG"
     echo "innodb_lock_wait_timeout        = 50" >> "$CFG"
@@ -288,21 +340,25 @@ generate_config() {
     echo "table_open_cache_instances      = 64" >> "$CFG"
     echo "" >> "$CFG"
 
-    echo "# --- Binary Log (enable for replication / PITR) --------------------------------" >> "$CFG"
-    # In 5.7, server_id must be specified if binary logging is enabled, otherwise the server is not allowed to start.
-    echo "server_id                       = 1" >> "$CFG"
-    echo "log_bin                         = /var/lib/mysql/mysql-bin" >> "$CFG"
-    echo "binlog_format                   = ROW" >> "$CFG"
-    echo "binlog_row_image                = MINIMAL" >> "$CFG"
-    #echo "expire_logs_days                = 7" >> "$CFG"
-    echo "sync_binlog                     = 1" >> "$CFG"
-    echo "binlog_cache_size               = 4M" >> "$CFG"
-    echo "max_binlog_size                 = 512M" >> "$CFG"
+    echo "# --- Binary Log ----------------------------------------------------------------" >> "$CFG"
+    if [ "$ENABLE_BINLOG" == "1" ]; then
+        echo "# Binary logging ENABLED" >> "$CFG"
+        echo "server_id                       = 1" >> "$CFG"
+        echo "log_bin                         = ${DATADIR}/mysql-bin" >> "$CFG"
+        echo "binlog_format                   = ROW" >> "$CFG"
+        echo "binlog_row_image                = MINIMAL" >> "$CFG"
+        echo "sync_binlog                     = 1" >> "$CFG"
+        echo "binlog_cache_size               = 4M" >> "$CFG"
+        echo "max_binlog_size                 = 512M" >> "$CFG"
+    else
+        echo "# Binary logging DISABLED for benchmarking" >> "$CFG"
+        echo "disable_log_bin                 = ON" >> "$CFG"
+    fi
     echo "" >> "$CFG"
 
     echo "# --- Slow Query Log ------------------------------------------------------------" >> "$CFG"
     echo "slow_query_log                  = ON" >> "$CFG"
-    echo "slow_query_log_file             = /var/lib/mysql/slow.log" >> "$CFG"
+    echo "slow_query_log_file             = ${DATADIR}/slow.log" >> "$CFG"
     echo "long_query_time                 = 1" >> "$CFG"
     echo "log_queries_not_using_indexes   = OFF" >> "$CFG"
     echo "min_examined_row_limit          = 1000" >> "$CFG"
@@ -327,75 +383,31 @@ generate_config() {
     [ "$INSTANCES" -lt 1 ] && INSTANCES=1
     [ "$INSTANCES" -gt 8 ] && INSTANCES=8
 
-    # Add legacy LSN age factor if requested (Percona Server specific)
-    if [ "$USE_LEGACY_LSN" == "1" ]; then
-        echo "innodb_cleaner_lsn_age_factor   = legacy" >> "$CFG"
-        echo "" >> "$CFG"
-    fi
 
-    if [ "$IS_MARIA" -eq 1 ]; then
-        # --- MARIADB ---
-        # Query Cache removed in 12.1+
-        if [ "${MAJOR_VER%%.*}" -lt 11 ]; then
-            echo "query_cache_type = OFF" >> "$CFG"
-            echo "query_cache_size = 0" >> "$CFG"
-            echo "innodb_flush_method = O_DIRECT" >> "$CFG"
-            echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
-            echo "innodb_log_files_in_group = 2" >> "$CFG"
-            echo "innodb_log_file_size = 2G" >> "$CFG"
-        else
-            echo "innodb_log_file_size = 4G" >> "$CFG"
-        fi
-        echo "innodb_data_file_buffering=OFF" >> "$CFG"
-        echo "innodb_data_file_write_through=OFF" >> "$CFG"
-        echo "innodb_log_file_buffering=ON" >> "$CFG"
-        echo "innodb_log_file_write_through=OFF" >> "$CFG"
-        echo "innodb_snapshot_isolation        = OFF" >> "$CFG"
-
-    elif [[ "$MAJOR_VER" == "5.7" ]]; then
-        # --- MYSQL / PERCONA 5.7 ---
-        echo "innodb_log_file_size = 2G" >> "$CFG"
-        echo "innodb_log_files_in_group = 2" >> "$CFG"
-        echo "innodb_flush_method = O_DIRECT" >> "$CFG"
-        echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
-
-    elif [[ "$MAJOR_VER" == "8.0" ]]; then
-        # --- MYSQL / PERCONA 8.0 ---
-        # NOTE: query_cache is REMOVED. Including it here prevents startup.
-        echo "innodb_log_file_size = 2G" >> "$CFG"
-        echo "innodb_log_files_in_group = 2" >> "$CFG"
-        echo "innodb_change_buffering = none" >> "$CFG"
-        echo "innodb_flush_method = O_DIRECT" >> "$CFG"
-        echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
-    else
-        # --- MYSQL 8.4 / 9.x ---
-        # Modern redo log handling
-        echo "innodb_redo_log_capacity = 4G" >> "$CFG"
-        echo "innodb_change_buffering = none" >> "$CFG"
-        echo "innodb_flush_method = O_DIRECT" >> "$CFG"
-        echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
-    fi
+    # MySQL 8.4+ / 9.x
+    echo "innodb_redo_log_capacity = 4G" >> "$CFG"
+    echo "innodb_change_buffering = none" >> "$CFG"
+    echo "innodb_flush_method = O_DIRECT" >> "$CFG"
+    echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
 
     # 4. Deploy Config
-    # Ensure directory exists and copy
-    echo "mkdir -p $CONFIG_DIR"
     mkdir -p "$CONFIG_DIR"
-    echo "sudo cp $CFG $CONFIG_DIR"
-    sudo cp "$CFG" "$CONFIG_PATH"
+    cp "$CFG" "$CONFIG_PATH"
     cp "$CFG" "${LOG_DIR}/Tier${SIZE}G.cnf.txt"
 
-    # Optional: Fix permissions to ensure Docker mysql user can read it
-    sudo chmod 644 "$CONFIG_PATH"
+    chmod 644 "$CONFIG_PATH"
 }
 
 copy_server_logs() {
     local SIZE=$1
+    local DATADIR=$2
     local DEST_DIR="${LOG_DIR}"
 
     echo "Copying server logs to ${DEST_DIR}..."
-    docker cp "${CONTAINER_NAME}:/tmp/Tier${SIZE}G.errlog.txt" "${DEST_DIR}/"
+    if [ -f "${DATADIR}/mysql-error.log" ]; then
+        cp "${DATADIR}/mysql-error.log" "${DEST_DIR}/Tier${SIZE}G.errlog.txt"
+    fi
 }
-
 
 # --- TELEMETRY FUNCTIONS ---
 start_innodb_metrics() {
@@ -405,14 +417,14 @@ start_innodb_metrics() {
 
     (
         # Header: one column per metric NAME, sorted
-        HEADER=$(mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -N -B \
+        HEADER=$("$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -B \
             -e "SELECT NAME FROM information_schema.INNODB_METRICS ORDER BY NAME" 2>/dev/null \
             | paste -sd,)
         echo "timestamp,${HEADER}" > "$OUT"
 
         while :; do
             TS=$(date +%s.%3N)
-            VALS=$(mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -N -B \
+            VALS=$("$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -B \
                 -e "SELECT COUNT FROM information_schema.INNODB_METRICS ORDER BY NAME" 2>/dev/null \
                 | paste -sd,)
             echo "${TS},${VALS}" >> "$OUT"
@@ -424,7 +436,7 @@ start_innodb_metrics() {
 
 enable_innodb_metrics() {
     echo ">>> Enabling all InnoDB metrics counters..."
-    mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -N \
+    "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N \
         -e "SET GLOBAL innodb_monitor_enable = 'all';" 2>/dev/null
     if [ $? -eq 0 ]; then
         echo "    innodb_monitor_enable = 'all'"
@@ -433,38 +445,71 @@ enable_innodb_metrics() {
     fi
 }
 
+start_gdb_snapshots() {
+    local PREFIX=$1
+    local OUT="${PREFIX}.pt-pmp.txt"
+    local DELAY=$((DURATION / 2))
+
+    echo "pt-pmp stack profiling -> ${OUT} (will start after ${DELAY}s)"
+
+    (
+        # Wait for half of benchmark duration before starting profiling
+        echo "Waiting ${DELAY} seconds before starting pt-pmp profiling..." > "$OUT"
+        sleep $DELAY
+
+        echo "" >> "$OUT"
+        echo "Starting stack trace collection at $(date)" >> "$OUT"
+        echo "Collecting stack traces using pt-pmp (auto-detecting mysqld)" >> "$OUT"
+        echo "================================================" >> "$OUT"
+        echo "" >> "$OUT"
+
+        # Get absolute path to current directory for pt-eustack-resolver
+        local SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+        # Run pt-pmp with sudo, providing PATH so it can find pt-eustack-resolver
+        # Collect 30 snapshots with pt-pmp (auto-detects mysqld process)
+        sudo env "PATH=$SCRIPT_DIR:$PATH" "$SCRIPT_DIR/pt-pmp" -i 30 -d pteu >> "$OUT" 2>&1
+
+        echo "" >> "$OUT"
+        echo "Profiling completed at $(date)" >> "$OUT"
+    ) &
+    echo $! > /tmp/gdb.pid
+}
+
 start_metrics() {
     local PREFIX=$1
     echo " --- START METRICS ---"
-    echo "iostat -dxm 1 > ${PREFIX}.iostat.txt & echo \$! > /tmp/iostat.pid"
-    echo "vmstat 1 > ${PREFIX}.vmstat.txt & echo \$! > /tmp/vmstat.pid"
-    echo "mpstat -P ALL 1 > ${PREFIX}.mpstat.txt & echo \$! > /tmp/mpstat.pid"
-    echo "dstat -t 1 > ${PREFIX}.dstat.txt & echo \$! > /tmp/dstat.pid"
 
-    iostat -dxm 1 > ${PREFIX}.iostat.txt & echo $! > /tmp/iostat.pid
-    vmstat 1 > ${PREFIX}.vmstat.txt & echo $! > /tmp/vmstat.pid
-    mpstat -P ALL 1 > ${PREFIX}.mpstat.txt & echo $! > /tmp/mpstat.pid
-    dstat -t 1 > ${PREFIX}.dstat.txt & echo $! > /tmp/dstat.pid
+    iostat -dxm 1 > "${PREFIX}.iostat.txt" & echo $! > /tmp/iostat.pid
+    vmstat 1 > "${PREFIX}.vmstat.txt" & echo $! > /tmp/vmstat.pid
+    mpstat -P ALL 1 > "${PREFIX}.mpstat.txt" & echo $! > /tmp/mpstat.pid
+    dstat -t 1 > "${PREFIX}.dstat.txt" & echo $! > /tmp/dstat.pid
 
     start_innodb_metrics "$PREFIX"
+    start_gdb_snapshots "$PREFIX"
 }
 
 stop_metrics() {
-    kill $(cat /tmp/iostat.pid) $(cat /tmp/vmstat.pid) $(cat /tmp/mpstat.pid) $(cat /tmp/dstat.pid) $(cat /tmp/innodb.pid) 2>/dev/null
+    kill $(cat /tmp/iostat.pid) $(cat /tmp/vmstat.pid) $(cat /tmp/mpstat.pid) $(cat /tmp/dstat.pid) $(cat /tmp/innodb.pid) $(cat /tmp/gdb.pid 2>/dev/null) 2>/dev/null
+
+    # Give GDB snapshot a moment to finish if still running
+    if [ -f /tmp/gdb.pid ]; then
+        local gdb_pid=$(cat /tmp/gdb.pid)
+        if kill -0 "$gdb_pid" 2>/dev/null; then
+            echo "Waiting for GDB snapshots to complete..."
+            sleep 2
+        fi
+    fi
 }
 
-trap 'stop_metrics' EXIT
-trap 'stop_metrics; exit 1' INT TERM
+trap 'stop_metrics; stop_server' EXIT
+trap 'stop_metrics; stop_server; exit 1' INT TERM
 
 init_data() {
-  # echo ">>> Resetting databases..."
-  # docker exec "$CONTAINER_NAME" mysql -h $DB_HOST -u $DB_USER -p$DB_PASS -N -e "DROP DATABASE IF EXISTS ${DB_DATABASE}; CREATE DATABASE ${DB_DATABASE};"
-
   echo ">>> Create tables and insert data..."
-  sysbench oltp_read_only --mysql-host=$DB_HOST --mysql-user=$DB_USER --mysql-password=$DB_PASS \
+  sysbench oltp_read_only --mysql-host=$DB_HOST --mysql-port=$DB_PORT --mysql-user=$DB_USER --mysql-password=$DB_PASS \
     --mysql-db=$DB_DATABASE --tables=20 --table-size=$TABLE_ROWS --threads=64 prepare
 }
-
 
 # --- EXECUTION LOOP ---
 for SIZE in "${POOL_SIZES[@]}"; do
@@ -472,26 +517,40 @@ for SIZE in "${POOL_SIZES[@]}"; do
   echo ">>> TIER: ${SIZE}GB | VER: $RAW_VERSION <<<"
   echo "========================================================="
 
-  # 1. Apply Config & Restart
-  generate_config $SIZE
+  # 1. Create clean datadir for this tier
+  TIER_DATADIR="${DATADIR_BASE}/${DBMS_NAME}_${RAW_VERSION}_tier${SIZE}G"
+  if [ "$ENABLE_BINLOG" == "1" ]; then
+      TIER_DATADIR="${TIER_DATADIR}_binlog"
+  fi
 
-  stop_container $CONTAINER_NAME
+  initialize_datadir "$TIER_DATADIR"
+
+  # 2. Generate config
+  generate_config $SIZE "$TIER_DATADIR"
 
   echo "Starting server with the new config..."
-  run_container 1
-  server_wait "$CONTAINER_NAME"
-  echo "Container restarted with custom config."
+  start_server "$TIER_DATADIR" "$CONFIG_PATH"
+  server_wait
+
+  # Set root password and grant TCP/IP access (use socket for initial connection after fresh init)
+  "$MYSQLADMIN" --socket=/tmp/mysql_benchmark.sock -u"$DB_USER" password "$DB_PASS" 2>/dev/null
+
+  # Grant access from 127.0.0.1
+  "$MYSQL_CLIENT" --socket=/tmp/mysql_benchmark.sock -u"$DB_USER" -p"$DB_PASS" -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION; FLUSH PRIVILEGES;" 2>/dev/null
+
+  # Create database
+  "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE};" 2>/dev/null
+
+  echo "Server started with custom config."
   check_innodb_buffer $SIZE
   enable_innodb_metrics
   check_vars_status "${LOG_DIR}/Tier${SIZE}G"
   init_data
   run_mysql_summary "${LOG_DIR}/Tier${SIZE}G"
 
-  # continue # SKIP BENCHMARKS FOR NOW, REMOVE ME WHEN READY
-  
   # 2. WARMUP (Reads then Writes)
   echo ">>> Warmup A: Read-Only (${WARMUP_RO_TIME}s)..."
-  sysbench oltp_read_only --mysql-host=$DB_HOST --mysql-user=$DB_USER --mysql-password=$DB_PASS \
+  sysbench oltp_read_only --mysql-host=$DB_HOST --mysql-port=$DB_PORT --mysql-user=$DB_USER --mysql-password=$DB_PASS \
     --mysql-db=$DB_DATABASE --tables=20 --table-size=$TABLE_ROWS --threads=16 --time=$WARMUP_RO_TIME run
 
   if [ "$IS_READ_ONLY" == "1" ]; then
@@ -499,7 +558,7 @@ for SIZE in "${POOL_SIZES[@]}"; do
     TEST_TYPE="oltp_read_only"
   else
     echo ">>> Warmup B: Dirty Writes (${WARMUP_RW_TIME}s)..."
-    sysbench oltp_read_write --mysql-host=$DB_HOST --mysql-user=$DB_USER --mysql-password=$DB_PASS \
+    sysbench oltp_read_write --mysql-host=$DB_HOST --mysql-port=$DB_PORT --mysql-user=$DB_USER --mysql-password=$DB_PASS \
         --mysql-db=$DB_DATABASE --tables=20 --table-size=$TABLE_ROWS --threads=64 --time=$WARMUP_RW_TIME run
     TEST_TYPE="oltp_read_write"
   fi
@@ -514,6 +573,7 @@ for SIZE in "${POOL_SIZES[@]}"; do
 
       sysbench $TEST_TYPE \
         --mysql-host=$DB_HOST \
+        --mysql-port=$DB_PORT \
         --mysql-user=$DB_USER \
         --mysql-password=$DB_PASS \
         --mysql-db=$DB_DATABASE \
@@ -530,8 +590,10 @@ for SIZE in "${POOL_SIZES[@]}"; do
       sleep 10
     done
   done
-  copy_server_logs $SIZE
 
-  stop_container "$CONTAINER_NAME"
+  copy_server_logs $SIZE "$TIER_DATADIR"
+
+  stop_server
 done
+
 echo "============= Finished benchmarks for ${DBMS_NAME}:${DBMS_VER} ============="

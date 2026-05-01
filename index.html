@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>MySQL vs Percona Server Benchmark Reports</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        header h1 {
+            font-size: 42px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+            margin: 5px 0;
+        }
+        .meta {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .section h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 24px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .section p {
+            color: #666;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+        }
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .report-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .report-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+        .report-card h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .report-card .filename {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #999;
+            word-break: break-all;
+        }
+        .empty-state {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+        .stats-box {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+        .stats-box .number {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .stats-box .label {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 14px;
+        }
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MySQL vs Percona Server</h1>
+            <p>Performance Benchmark Reports</p>
+            <p style="font-size: 14px; opacity: 0.8;">MySQL 8.4.8 vs Percona Server 8.4.8-8</p>
+
+            <div class="stats-box">
+                <div class="number">10</div>
+                <div class="label">Interactive Reports Available</div>
+            </div>
+
+            <div class="meta">
+                Generated: 2026-05-01 03:44:38
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>📊 Performance Reports</h2>
+            <p>Sysbench OLTP Read-Write workload results comparing transaction throughput (TPS), queries per second (QPS), and latency metrics across different thread counts.</p>
+            <div class="report-grid">
+
+                <a href="disabled_binlog_sysbench_average.html" class="report-card">
+                    <h3>Sysbench Results - Averaged Across Runs</h3>
+                    <div class="filename">disabled_binlog_sysbench_average.html</div>
+                </a>
+
+                <a href="enabled_binlog_sysbench_average.html" class="report-card">
+                    <h3>Sysbench Results - Averaged Across Runs</h3>
+                    <div class="filename">enabled_binlog_sysbench_average.html</div>
+                </a>
+
+                <a href="enabled_binlog_sysbench_individual.html" class="report-card">
+                    <h3>Sysbench Results - Individual Runs</h3>
+                    <div class="filename">enabled_binlog_sysbench_individual.html</div>
+                </a>
+
+                <a href="disabled_binlog_sysbench_individual.html" class="report-card">
+                    <h3>Sysbench Results - Individual Runs</h3>
+                    <div class="filename">disabled_binlog_sysbench_individual.html</div>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 InnoDB Metrics Analysis</h2>
+            <p>Deep-dive into 319 InnoDB internal metrics sampled every second during benchmark runs. Interactive charts show time-series data with per-second measurements and per-minute averages.</p>
+            <div class="report-grid">
+
+                <a href="enabled_binlog_innodb_metrics_report.html" class="report-card">
+                    <h3>InnoDB Metrics Analyzer (Binlog Enabled)</h3>
+                    <div class="filename">enabled_binlog_innodb_metrics_report.html</div>
+                </a>
+
+                <a href="disabled_binlog_innodb_metrics_report.html" class="report-card">
+                    <h3>InnoDB Metrics Analyzer (Binlog Enabled)</h3>
+                    <div class="filename">disabled_binlog_innodb_metrics_report.html</div>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Configuration Comparisons</h2>
+            <p>Side-by-side comparison of system variables and status variables between MySQL and Percona Server. Highlights differences in configuration and runtime state.</p>
+            <div class="report-grid">
+
+                <a href="enabled_binlog_status_variables.html" class="report-card">
+                    <h3>Status Variables Comparison</h3>
+                    <div class="filename">enabled_binlog_status_variables.html</div>
+                </a>
+
+                <a href="disabled_binlog_status_variables.html" class="report-card">
+                    <h3>Status Variables Comparison</h3>
+                    <div class="filename">disabled_binlog_status_variables.html</div>
+                </a>
+
+                <a href="enabled_binlog_system_variables.html" class="report-card">
+                    <h3>System Variables Comparison</h3>
+                    <div class="filename">enabled_binlog_system_variables.html</div>
+                </a>
+
+                <a href="disabled_binlog_system_variables.html" class="report-card">
+                    <h3>System Variables Comparison</h3>
+                    <div class="filename">disabled_binlog_system_variables.html</div>
+                </a>
+
+            </div>
+        </div>
+
+        <footer>
+            <p>Generated by generate_index.py</p>
+            <p>Benchmark Suite: 2026-ps-vs-mysql</p>
+        </footer>
+    </div>
+</body>
+</html>

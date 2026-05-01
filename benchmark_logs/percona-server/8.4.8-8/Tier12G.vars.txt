@@ -17,10 +17,10 @@ auto_increment_offset	1
 autocommit	ON
 automatic_sp_privileges	ON
 back_log	4096
-basedir	/usr/
+basedir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/
 big_tables	OFF
 bind_address	0.0.0.0
-binlog_cache_size	4194304
+binlog_cache_size	32768
 binlog_checksum	CRC32
 binlog_ddl_skip_rewrite	OFF
 binlog_direct_non_transactional_updates	OFF
@@ -36,7 +36,7 @@ binlog_max_flush_queue_time	0
 binlog_order_commits	ON
 binlog_rotate_encryption_master_key_at_startup	OFF
 binlog_row_event_max_size	8192
-binlog_row_image	MINIMAL
+binlog_row_image	FULL
 binlog_row_metadata	MINIMAL
 binlog_row_value_options	
 binlog_rows_query_log_events	OFF
@@ -49,7 +49,7 @@ binlog_transaction_dependency_history_size	25000
 block_encryption_mode	aes-128-ecb
 buffered_error_log_filename	
 buffered_error_log_size	0
-build_id	3ef88fdd13810c5b5871d3f65679f2b5fd230279
+build_id	d5b911c769093eb95437bef51659b2454354168c
 bulk_insert_buffer_size	268435456
 caching_sha2_password_auto_generate_rsa_keys	ON
 caching_sha2_password_digest_rounds	5000
@@ -62,7 +62,7 @@ character_set_filesystem	binary
 character_set_results	utf8mb4
 character_set_server	utf8mb4
 character_set_system	utf8mb3
-character_sets_dir	/usr/share/percona-server/charsets/
+character_sets_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/share/charsets/
 check_proxy_users	OFF
 collation_connection	utf8mb4_0900_ai_ci
 collation_database	utf8mb4_unicode_ci
@@ -75,7 +75,7 @@ connection_memory_limit	18446744073709551615
 core_file	OFF
 create_admin_listener_thread	OFF
 cte_max_recursion_depth	1000
-datadir	/var/lib/mysql/
+datadir	/home/bogdan.degtyariov/mysql-nvme/data/percona-server_8.4.8-8_tier12G/
 default_collation_for_utf8mb4	utf8mb4_0900_ai_ci
 default_password_lifetime	0
 default_storage_engine	InnoDB
@@ -111,7 +111,7 @@ ft_query_expansion_limit	20
 ft_query_extra_word_chars	OFF
 ft_stopword_file	(built-in)
 general_log	OFF
-general_log_file	/var/lib/mysql/beast-node8.log
+general_log_file	/home/bogdan.degtyariov/mysql-nvme/data/percona-server_8.4.8-8_tier12G/beast-node8.log
 generated_random_password_length	20
 global_connection_memory_limit	18446744073709551615
 global_connection_memory_tracking	OFF
@@ -135,7 +135,7 @@ have_snapshot_cloning	YES
 have_statement_timeout	YES
 have_symlink	DISABLED
 histogram_generation_max_mem_size	20000000
-host_cache_size	0
+host_cache_size	703
 hostname	beast-node8.tp.int.percona.com
 identity	0
 immediate_server_version	999999
@@ -326,17 +326,17 @@ large_page_size	0
 large_pages	OFF
 last_insert_id	0
 lc_messages	en_US
-lc_messages_dir	/usr/share/percona-server/
+lc_messages_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/share/
 lc_time_names	en_US
 license	GPL
 local_infile	OFF
 lock_wait_timeout	31536000
 locked_in_memory	OFF
-log_bin	ON
-log_bin_basename	/var/lib/mysql/mysql-bin
-log_bin_index	/var/lib/mysql/mysql-bin.index
+log_bin	OFF
+log_bin_basename	
+log_bin_index	
 log_bin_trust_function_creators	OFF
-log_error	/tmp/Tier12G.errlog.txt
+log_error	/home/bogdan.degtyariov/mysql-nvme/data/percona-server_8.4.8-8_tier12G/mysql-error.log
 log_error_services	log_filter_internal; log_sink_internal
 log_error_suppression_list	
 log_error_verbosity	3
@@ -344,8 +344,8 @@ log_output	FILE
 log_queries_not_using_indexes	OFF
 log_query_errors	
 log_raw	OFF
-log_replica_updates	ON
-log_slave_updates	ON
+log_replica_updates	OFF
+log_slave_updates	OFF
 log_slow_admin_statements	OFF
 log_slow_extra	OFF
 log_slow_filter	
@@ -366,7 +366,7 @@ mandatory_roles
 master_verify_checksum	OFF
 max_allowed_packet	67108864
 max_binlog_cache_size	18446744073709547520
-max_binlog_size	536870912
+max_binlog_size	1073741824
 max_binlog_stmt_cache_size	18446744073709547520
 max_connect_errors	1000000
 max_connections	2000
@@ -414,7 +414,7 @@ mysqlx_min_worker_threads	2
 mysqlx_port	33060
 mysqlx_port_open_timeout	0
 mysqlx_read_timeout	30
-mysqlx_socket	/var/lib/mysql/mysqlx.sock
+mysqlx_socket	/tmp/mysqlx.sock
 mysqlx_ssl_ca	
 mysqlx_ssl_capath	
 mysqlx_ssl_cert	
@@ -434,7 +434,7 @@ net_write_timeout	60
 ngram_token_size	2
 offline_mode	OFF
 old_alter_table	OFF
-open_files_limit	1048576
+open_files_limit	1000000
 optimizer_max_subgraph_pairs	100000
 optimizer_prune_level	1
 optimizer_search_depth	62
@@ -506,8 +506,8 @@ performance_schema_users_size	0
 persist_only_admin_x509_subject	
 persist_sensitive_variables_in_plaintext	ON
 persisted_globals_load	ON
-pid_file	/var/run/mysqld/mysqld.pid
-plugin_dir	/usr/lib64/mysql/plugin/
+pid_file	/tmp/mysql_benchmark.pid
+plugin_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/lib/plugin/
 port	3306
 preload_buffer_size	32768
 print_identified_with_as_hex	OFF
@@ -519,7 +519,7 @@ proxy_protocol_networks
 proxy_user	
 pseudo_replica_mode	OFF
 pseudo_slave_mode	OFF
-pseudo_thread_id	12
+pseudo_thread_id	15
 query_alloc_block_size	8192
 query_prealloc_size	8192
 rand_seed1	0
@@ -533,8 +533,8 @@ read_rnd_buffer_size	4194304
 regexp_stack_limit	8000000
 regexp_time_limit	32
 relay_log	beast-node8-relay-bin
-relay_log_basename	/var/lib/mysql/beast-node8-relay-bin
-relay_log_index	/var/lib/mysql/beast-node8-relay-bin.index
+relay_log_basename	/home/bogdan.degtyariov/mysql-nvme/data/percona-server_8.4.8-8_tier12G/beast-node8-relay-bin
+relay_log_index	/home/bogdan.degtyariov/mysql-nvme/data/percona-server_8.4.8-8_tier12G/beast-node8-relay-bin.index
 relay_log_purge	ON
 relay_log_recovery	OFF
 relay_log_space_limit	0
@@ -570,14 +570,14 @@ rpl_stop_replica_timeout	31536000
 rpl_stop_slave_timeout	31536000
 schema_definition_cache	256
 secondary_engine_cost_threshold	100000.000000
-secure_file_priv	/var/lib/mysql-files/
+secure_file_priv	NULL
 secure_log_path	
 select_into_buffer_size	131072
 select_into_disk_sync	OFF
 select_into_disk_sync_delay	0
 server_id	1
 server_id_bits	32
-server_uuid	5eceaec7-423e-11f1-bfe9-ac1f6bc846a9
+server_uuid	4fc45544-4491-11f1-8fc9-ac1f6bc846a9
 session_track_gtids	OFF
 session_track_schema	ON
 session_track_state_change	OFF
@@ -616,9 +616,9 @@ slave_type_conversions
 slow_launch_time	2
 slow_query_log	ON
 slow_query_log_always_write_time	10.000000
-slow_query_log_file	/var/lib/mysql/slow.log
+slow_query_log_file	/home/bogdan.degtyariov/mysql-nvme/data/percona-server_8.4.8-8_tier12G/slow.log
 slow_query_log_use_global_control	
-socket	/var/lib/mysql/mysql.sock
+socket	/tmp/mysql_benchmark.sock
 sort_buffer_size	4194304
 source_verify_checksum	OFF
 sql_auto_is_null	OFF
@@ -646,7 +646,7 @@ ssl_fips_mode	OFF
 ssl_key	server-key.pem
 ssl_session_cache_mode	ON
 ssl_session_cache_timeout	300
-statement_id	11
+statement_id	26
 stored_program_cache	256
 stored_program_definition_cache	256
 super_read_only	OFF
@@ -679,7 +679,7 @@ thread_pool_stall_limit	500
 thread_stack	524288
 thread_statistics	OFF
 time_zone	SYSTEM
-timestamp	1777297130.846630
+timestamp	1777552655.490942
 tls_certificates_enforced_validation	OFF
 tls_ciphersuites	
 tls_version	TLSv1.2,TLSv1.3

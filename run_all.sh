@@ -1,44 +1,76 @@
 #!/bin/bash
 
-# Check if Docker is installed
-if ! command -v docker >/dev/null 2>&1; then
-    echo "Error: Docker is not installed." >&2
+# Check if required tools are installed
+if ! command -v sysbench >/dev/null 2>&1; then
+    echo "Error: sysbench is not installed." >&2
     exit 1
 fi
 
-# Check if MySQL client is installed
-if ! command -v mysql >/dev/null 2>&1; then
-    echo "Error: MySQL client is not installed." >&2
+if ! command -v iostat >/dev/null 2>&1; then
+    echo "Error: sysstat (iostat) is not installed." >&2
     exit 1
 fi
 
-# Check if current user is in the docker group
-if ! groups "$USER" | grep -q "\bdocker\b"; then
-    echo "Error: User '$USER' is not in the docker group." >&2
+if ! command -v dstat >/dev/null 2>&1; then
+    echo "Error: dstat is not installed." >&2
     exit 1
 fi
 
+# Check if server directories exist
+SERVERS_BASE="/home/bogdan.degtyariov/mysql-nvme/servers"
+if [ ! -d "$SERVERS_BASE" ]; then
+    echo "Error: Server base directory not found: $SERVERS_BASE" >&2
+    exit 1
+fi
 
-sudo apt update
-sudo apt install sysstat sysbench dstat -y
+# Optional: Install prerequisites if not present
+# sudo apt update
+# sudo apt install linux-tools-generic sysstat sysbench dstat -y
 
-
-./run_pt_summary.sh
-./run_pt_mysql_summary.sh
+./run_pt.sh
 
 IS_READ_ONLY="0"
-VERSIONS=("8.4.8")
 
-for VERSION in "${VERSIONS[@]}"; do
-  ./run_metrics.sh "mysql" "$VERSION" "$IS_READ_ONLY"
+# Loop through both binlog configurations
+for ENABLE_BINLOG in 0 1; do
+  if [ "$ENABLE_BINLOG" == "1" ]; then
+    BINLOG_MODE="with binlog"
+  else
+    BINLOG_MODE="without binlog"
+  fi
+
+  # Run MySQL 8.4.8 benchmarks
+  echo ""
+  echo "=========================================================================="
+  echo "Starting MySQL 8.4.8 benchmarks ($BINLOG_MODE)"
+  echo "=========================================================================="
+  ./run_metrics.sh "mysql" "8.4.8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
+
+  # Run Percona Server 8.4.8-8 benchmarks
+  echo ""
+  echo "=========================================================================="
+  echo "Starting Percona Server 8.4.8-8 benchmarks ($BINLOG_MODE)"
+  echo "=========================================================================="
+  ./run_metrics.sh "percona-server" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
 done
 
-./run_metrics.sh "percona-server" "8.4.8" "0" "0"
-
-# Run with legacy LSN age factor for Percona Server 8.4.8
-./run_metrics.sh "percona-server" "8.4.8" "0" "1"
 
 echo ""
 echo "=========================================================================="
 echo "All benchmarks completed!"
+echo "=========================================================================="
+echo ""
+echo "Results saved to:"
+echo "  - benchmark_logs/ (binlog disabled)"
+echo "  - benchmark_logs_binlog/ (binlog enabled)"
+echo ""
+echo "Next steps:"
+echo "  1. Generate reports:"
+echo "     bash visuals/generate_both_reports.sh"
+echo "  2. Generate InnoDB metrics reports:"
+echo "     python3 visuals/innodb_metrics_report.py benchmark_logs innodb_metrics_report.html"
+echo "     python3 visuals/innodb_metrics_report.py benchmark_logs_binlog innodb_metrics_report_binlog.html _binlog"
+echo "  3. Generate variable comparisons:"
+echo "     python3 visuals/generate_variable_comparisons.py benchmark_logs"
+echo "     python3 visuals/generate_variable_comparisons.py benchmark_logs_binlog \"Binlog Enabled\""
 echo "=========================================================================="

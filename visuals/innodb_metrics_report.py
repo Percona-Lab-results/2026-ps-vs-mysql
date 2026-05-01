@@ -7,11 +7,17 @@ generates an interactive HTML with multi-select controls for servers and runs.
 Data is split into separate JSON files for dynamic loading.
 
 Usage:
-  python3 innodb_metrics_report.py [base_dir] [output_file]
+  python3 innodb_metrics_report.py [base_dir] [output_file] [data_dir_suffix]
 
 Defaults:
-  base_dir    = "benchmark_logs"
-  output_file = "innodb_metrics_report.html"
+  base_dir         = "benchmark_logs"
+  output_file      = "innodb_metrics_report.html"
+  data_dir_suffix  = "" (creates "innodb_data" directory)
+
+Examples:
+  python3 innodb_metrics_report.py benchmark_logs report.html
+  python3 innodb_metrics_report.py benchmark_logs report.html "_disabled_binlog"
+    -> Creates innodb_data_disabled_binlog/ directory
 """
 
 import sys
@@ -103,8 +109,11 @@ def main():
     base_dir = args[0] if len(args) >= 1 else "benchmark_logs"
     default_output = "innodb_metrics_report.html"
     output_file = args[1] if len(args) >= 2 else default_output
+    data_dir_suffix = args[2] if len(args) >= 3 else ""
 
     print(f"Scanning: {base_dir}")
+    if data_dir_suffix:
+        print(f"Data directory suffix: {data_dir_suffix}")
 
     # Find all InnoDB files
     base_path = Path(base_dir)
@@ -154,7 +163,8 @@ def main():
 
     # Create data directory for JSON files
     output_dir = Path(output_file).parent
-    data_dir = output_dir / "innodb_data"
+    data_dir_name = f"innodb_data{data_dir_suffix}"
+    data_dir = output_dir / data_dir_name
     data_dir.mkdir(exist_ok=True)
 
     # Write separate JSON files for each server+run+threads
@@ -180,7 +190,7 @@ def main():
                 'data': pf['data']
             }, f, separators=(',', ':'))
 
-        data_manifest[key] = f"innodb_data/{safe_name}"
+        data_manifest[key] = f"{data_dir_name}/{safe_name}"
         print(f"  Written: {json_path} ({os.path.getsize(json_path) / 1024:.1f} KB)")
 
     # Generate HTML
