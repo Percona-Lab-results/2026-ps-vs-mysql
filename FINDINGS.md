@@ -232,9 +232,7 @@ At **64 threads**, the data suggests Percona Server's buffer pool management may
 ### For Investigation:
 
 1. **Review PS changelog** for buffer pool page cleaner changes between MySQL 8.4.8 and PS 8.4.8-8
-2. **Test with increased flushing capacity**:
-   - `innodb_io_capacity=2000` (default is often too low)
-   - `innodb_io_capacity_max=4000`
+2. **Test with increased number of page cleaners**:
    - `innodb_page_cleaners=8` (increase parallelism)
 3. **Profile page cleaner thread** activity using performance_schema
 4. **Check if PS has additional flushing logic** that serializes differently than MySQL
