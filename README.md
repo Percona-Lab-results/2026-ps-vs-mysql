@@ -26,12 +26,14 @@ See **[FINDINGS.md](FINDINGS.md)** for detailed performance analysis, including:
 
 ## Reproducibility
 
+**Supported OS**: Ubuntu 24.04 LTS only. The test scripts are currently tailored for Ubuntu 24.04 and require specific library compatibility patches.
+
 ### Prerequisites
 
 Install required packages:
 
 ```bash
-sudo apt install linux-tools-generic sysstat sysbench mysql-client dstat gdb -y
+sudo apt install linux-tools-generic sysstat sysbench mysql-client dstat -y
 
 # Ubuntu 24.04: Install libaio compatibility libraries
 sudo apt install libaio1t64 libaio-dev
@@ -44,6 +46,35 @@ rm libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
 ```
 
 **Note:** The user requires root access (`sudo`) as the scripts internally execute sudo commands for CPU governor, pt-pmp profiling, and telemetry collection.
+
+### Server Binaries Setup
+
+1. **Download server binary tarballs**:
+   - MySQL 8.4.8: `mysql-8.4.8-linux-glibc2.28-x86_64.tar.xz`
+   - Percona Server 8.4.8-8: `Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35.tar.gz`
+
+2. **Configure server base directory**:
+   
+   Edit the `SERVERS_BASE` variable in both `run_all.sh` and `run_metrics.sh`:
+   ```bash
+   SERVERS_BASE="/path/to/your/servers"
+   ```
+
+3. **Unpack servers** into the configured directory:
+   ```bash
+   cd $SERVERS_BASE
+   tar xf mysql-8.4.8-linux-glibc2.28-x86_64.tar.xz
+   tar xf Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35.tar.gz
+   ```
+
+   The resulting directory structure should be:
+   ```
+   $SERVERS_BASE/
+   ├── mysql-8.4.8-linux-glibc2.28-x86_64/
+   │   └── bin/mysqld
+   └── Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/
+       └── bin/mysqld
+   ```
 
 ### Running Benchmarks
 
