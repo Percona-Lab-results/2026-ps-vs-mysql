@@ -12,11 +12,17 @@ See **[FINDINGS.md](FINDINGS.md)** for detailed performance analysis, including:
 
 ## Interactive Reports
 
-- **[Sysbench Results - Average](https://percona-lab-results.github.io/2026-ps-vs-mysql/sysbench_ps_mysql_average.html)** - Performance comparison averaged across runs
-- **[Sysbench Results - Individual Runs](https://percona-lab-results.github.io/2026-ps-vs-mysql/sysbench_ps_mysql_individual.html)** - Detailed per-run results
-- **[InnoDB Metrics Analyzer](https://percona-lab-results.github.io/2026-ps-vs-mysql/innodb_metrics_report.html)** - Interactive deep-dive into 319 InnoDB metrics
-- **[System Variables Comparison](https://percona-lab-results.github.io/2026-ps-vs-mysql/system_variables_comparison.html)** - Side-by-side comparison of 706 system variables
-- **[Status Variables Comparison](https://percona-lab-results.github.io/2026-ps-vs-mysql/status_variables_comparison.html)** - Side-by-side comparison of 550 status variables
+- **[Index Page](https://percona-lab-results.github.io/2026-ps-vs-mysql/index.html)** - Navigation page for all reports
+- **[Sysbench Results - Average (Binlog Disabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/disabled_binlog_sysbench_average.html)** - Performance comparison averaged across runs
+- **[Sysbench Results - Individual Runs (Binlog Disabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/disabled_binlog_sysbench_individual.html)** - Detailed per-run results
+- **[Sysbench Results - Average (Binlog Enabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/enabled_binlog_sysbench_average.html)** - Performance comparison averaged across runs
+- **[Sysbench Results - Individual Runs (Binlog Enabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/enabled_binlog_sysbench_individual.html)** - Detailed per-run results
+- **[InnoDB Metrics Analyzer (Binlog Disabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/disabled_binlog_innodb_metrics_report.html)** - Interactive deep-dive into 319 InnoDB metrics
+- **[InnoDB Metrics Analyzer (Binlog Enabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/enabled_binlog_innodb_metrics_report.html)** - Interactive deep-dive into 319 InnoDB metrics
+- **[System Variables Comparison (Binlog Disabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/disabled_binlog_system_variables.html)** - Side-by-side comparison of system variables
+- **[Status Variables Comparison (Binlog Disabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/disabled_binlog_status_variables.html)** - Side-by-side comparison of status variables
+- **[System Variables Comparison (Binlog Enabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/enabled_binlog_system_variables.html)** - Side-by-side comparison of system variables
+- **[Status Variables Comparison (Binlog Enabled)](https://percona-lab-results.github.io/2026-ps-vs-mysql/enabled_binlog_status_variables.html)** - Side-by-side comparison of status variables
 
 ## Reproducibility
 
@@ -149,14 +155,16 @@ python3 visuals/generate_index.py
 
 **Generated files**:
 - `index.html` - Navigation page with links to all reports
-- `sysbench_ps_mysql_average.html` - Performance averages across runs
-- `sysbench_ps_mysql_individual.html` - Individual run results
-- `innodb_metrics_report.html` - Interactive InnoDB metrics (no binlog)
-- `innodb_metrics_report_binlog.html` - Interactive InnoDB metrics (with binlog)
-- `system_variables_comparison.html` - System variables comparison (no binlog)
-- `status_variables_comparison.html` - Status variables comparison (no binlog)
-- `Binlog Enabled_system_variables.html` - System variables (with binlog)
-- `Binlog Enabled_status_variables.html` - Status variables (with binlog)
+- `disabled_binlog_sysbench_average.html` - Performance averages (binlog disabled)
+- `disabled_binlog_sysbench_individual.html` - Individual run results (binlog disabled)
+- `enabled_binlog_sysbench_average.html` - Performance averages (binlog enabled)
+- `enabled_binlog_sysbench_individual.html` - Individual run results (binlog enabled)
+- `disabled_binlog_innodb_metrics_report.html` - Interactive InnoDB metrics (binlog disabled)
+- `enabled_binlog_innodb_metrics_report.html` - Interactive InnoDB metrics (binlog enabled)
+- `disabled_binlog_system_variables.html` - System variables comparison (binlog disabled)
+- `disabled_binlog_status_variables.html` - Status variables comparison (binlog disabled)
+- `enabled_binlog_system_variables.html` - System variables comparison (binlog enabled)
+- `enabled_binlog_status_variables.html` - Status variables comparison (binlog enabled)
 
 ## Benchmark Configuration
 
@@ -192,7 +200,3 @@ python3 visuals/generate_index.py
 ## Documentation
 
 - **[FINDINGS.md](FINDINGS.md)** - Performance analysis and root cause investigation
-
-## License
-
-This benchmark suite and analysis is provided as-is for reproducibility and transparency.

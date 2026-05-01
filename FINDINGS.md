@@ -2,33 +2,85 @@
 
 ## Interactive Tools
 
-- **[Sysbench Results - Average View](https://percona-lab-results.github.io/2026-ps-vs-mysql/sysbench_ps_mysql_average.html)** - Compare average performance across runs
-- **[Sysbench Results - Individual Runs](https://percona-lab-results.github.io/2026-ps-vs-mysql/sysbench_ps_mysql_individual.html)** - View detailed per-run results
-- **[InnoDB Metrics Analyzer](https://percona-lab-results.github.io/2026-ps-vs-mysql/innodb_metrics_report.html)** - Interactive tool for deep-dive metric analysis
+- **[📊 Interactive Reports Index](https://percona-lab-results.github.io/2026-ps-vs-mysql/index.html)** - Navigate all performance reports, InnoDB metrics, and configuration comparisons
 
 ---
 
 ## Executive Summary
 
-Percona Server 8.4.8-8 is **14% slower** than MySQL 8.4.8 at 64 threads (5,865 TPS vs 6,847 TPS).
+Percona Server 8.4.8-8 is **12-13% slower** than MySQL 8.4.8 at 64 threads across both binlog configurations.
 
-**Root Cause**: Transaction log subsystem serialization causing cascading lock contention.
+**Primary Hypothesis**: Buffer pool flushing contention is the likely bottleneck, based on:
+1. **pt-pmp stack traces** show 361 samples of Percona Server threads blocked in `buf_flush_await_no_flushing` vs 0 in MySQL
+2. **Consistency across configurations**: The 12-13% gap persists regardless of binlog state, suggesting a core buffer pool management difference
+3. **Cascade pattern**: The buffer pool waits correlate with elevated transaction log waits (+111%) and lock contention (+12-17%)
+4. **Thread blocking distribution**: The 361 wait samples occur across diverse operations (index searches, row updates, range estimation), indicating a systemic serialization point rather than a specific query pattern
 
 ---
 
 ## Benchmark Results
 
+### Binlog Disabled (benchmark_logs/)
+
 | Metric | MySQL 8.4.8 | Percona Server 8.4.8-8 | Difference |
 |--------|-------------|------------------------|------------|
-| **Throughput (TPS)** | 6,847 | 5,865 | **-14.3%** |
+| **Run 1 TPS** | 7,164 | 6,265 | **-12.5%** |
+| **Run 2 TPS** | 7,080 | 6,218 | **-12.2%** |
+| **Run 3 TPS** | 7,099 | 6,189 | **-12.8%** |
+| **Average TPS** | **7,114** | **6,224** | **-12.5%** |
 | Threads | 64 | 64 | - |
 | Workload | Tier12G RW | Tier12G RW | - |
+
+### Binlog Enabled (benchmark_logs_binlog/)
+
+| Metric | MySQL 8.4.8 | Percona Server 8.4.8-8 | Difference |
+|--------|-------------|------------------------|------------|
+| **Run 1 TPS** | 6,732 | 5,936 | **-11.8%** |
+| **Run 2 TPS** | 6,696 | 5,926 | **-11.5%** |
+| **Run 3 TPS** | 6,684 | 5,845 | **-12.6%** |
+| **Average TPS** | **6,704** | **5,902** | **-12.0%** |
+| Threads | 64 | 64 | - |
+| Workload | Tier12G RW | Tier12G RW | - |
+
+**Key Observation**: Performance gap is consistent (~12-13%) regardless of binlog configuration, indicating the bottleneck is not binlog-related.
 
 ---
 
 ## Key Performance Differences
 
-### 1. Transaction Log Waits (+111%) 🔴 **PRIMARY ISSUE**
+### 1. Buffer Pool Flush Contention (361 vs 0 occurrences) 🔴 **POTENTIAL PRIMARY BOTTLENECK**
+
+**Stack Trace Analysis (pt-pmp)**:
+
+```
+Percona Server: 361 total stack samples waiting in buf_flush_await_no_flushing
+  - 166 occurrences during index searches
+  - 66 occurrences during range estimation
+  - 38 occurrences during index reads
+  - 31 occurrences during UPDATE operations
+  - 23 occurrences during estimates
+  - And more distributed across various operations
+
+MySQL: 0 occurrences (no threads blocked on buffer pool flushing)
+```
+
+**Analysis**: At 64 threads, Percona Server shows significant contention where threads appear to wait for the buffer pool page cleaner to flush pages before they can continue. This suggests a potential serialization point that is not observed in MySQL 8.4.8 stack traces. The `buf_flush_await_no_flushing` function blocks threads when they need free buffer pool pages, possibly indicating the page cleaner has not kept up with flushing dirty pages.
+
+**Potential Impact**: This pattern strongly correlates with the observed 12-13% throughput degradation. When threads are blocked waiting for flushes, they cannot process transactions, which may contribute to:
+- Cascading lock contention (threads potentially hold locks longer while waiting)
+- Transaction log pressure (commits may pile up)
+- Reduced overall throughput
+
+**Hypothesized Mechanism**: 
+1. At high concurrency (64 threads), buffer pool may become saturated with dirty pages
+2. Threads need free pages to read data from disk
+3. Instead of getting pages immediately, threads encounter `buf_flush_await_no_flushing`
+4. Page cleaner in Percona Server may not keep up with flush demand as effectively as MySQL 8.4.8
+5. Threads block, potentially holding locks and affecting other threads' progress
+
+---
+
+### 2. Transaction Log Waits (+111% in previous analysis) 🟠 **SECONDARY ISSUE**
 
 ```
 trx_on_log_waits
@@ -111,45 +163,42 @@ buffer_pool_read_requests
 
 ---
 
-## Root Cause Analysis
+## Performance Analysis Summary
 
 ### Why is Percona Server Slower?
 
-**Hypothesis**: Log subsystem architectural differences between MySQL 8.4.8 and Percona Server 8.4.8-8.
+**Working Hypothesis**: Buffer pool page cleaner architecture may not keep up with flush demand at high concurrency as effectively as MySQL 8.4.8.
 
-### Evidence Chain:
+### Observed Patterns:
 
-1. **Log waits doubled** (+111%)
-   - Transactions blocked on log writes
+1. **Buffer pool flush contention** (361 vs 0 stack samples)
+   - OBSERVATION: Threads blocked waiting for free pages in Percona Server
+   - Page cleaner in Percona Server shows contention at 64 threads
+   - MySQL 8.4.8 shows no such contention (0 samples)
 
-2. **Lock waits increased** (+12-17%)
-   - Cascade effect: blocked transactions hold locks longer
+2. **Log waits increased** (+111% in InnoDB metrics)
+   - CORRELATION: May be a secondary effect of blocked threads
+   - Commits may queue up while waiting for buffer pool pages
 
-3. **CPU usage decreased** (-16-17%)
-   - Threads waiting, not processing
+3. **Lock waits increased** (+12-17%)
+   - CORRELATION: May result from blocked transactions holding locks longer
+   - Other threads may wait for locks held by threads blocked on flushes
 
-4. **Buffer pool improved** (-56% waits)
-   - Rules out memory/caching issues
+4. **CPU usage decreased** (-16-17%)
+   - SYMPTOM: Threads appear to be waiting instead of processing
+   - Suggests I/O/memory contention rather than CPU saturation
 
-### Conclusion:
+### Summary:
 
-At **64 threads**, Percona Server's log subsystem becomes a **serialization point**:
-- High concurrency overwhelms log write capacity
-- Transactions queue for log access
-- Held locks cause contention cascades
-- Overall throughput drops 14%
+At **64 threads**, the data suggests Percona Server's buffer pool management may experience a serialization bottleneck:
+- High concurrency appears to saturate buffer pool with dirty pages
+- Page cleaner may not flush fast enough to provide free pages
+- Threads block in `buf_flush_await_no_flushing` waiting for flushes
+- Blocked threads potentially hold locks, contributing to cascading contention
+- Transaction log pressure may build up as commits pile up
+- Overall throughput is consistently 12-13% lower across all configurations
 
----
-
-## Scaling Behavior
-
-| Thread Count | Expected Behavior |
-|--------------|-------------------|
-| **16 threads** | PS and MySQL likely perform similarly (low contention) |
-| **32 threads** | PS may show slight degradation as log pressure increases |
-| **64 threads** | PS shows 14% degradation due to log serialization |
-
-**Recommendation**: Compare performance at 16 and 32 threads to identify the inflection point where PS performance degrades.
+**Observed Difference**: MySQL 8.4.8's buffer pool page cleaner shows no blocking in pt-pmp traces (0 occurrences), suggesting better scalability at high concurrency.
 
 ---
 
@@ -169,31 +218,16 @@ At **64 threads**, Percona Server's log subsystem becomes a **serialization poin
 
 ## Recommendations
 
-### For Production Workloads:
-
-1. **Use MySQL 8.4.8** for workloads with 64+ concurrent threads
-2. **Profile PS at 16/32 threads** to find safe concurrency limits
-3. **Monitor `trx_on_log_waits`** as a leading indicator of performance issues
-4. **Tune log system** in PS if staying with it:
-   - `innodb_log_write_ahead_size`
-   - `innodb_log_buffer_size`
-   - `innodb_flush_log_at_trx_commit`
-
 ### For Investigation:
 
-1. **Review PS changelog** for log subsystem changes between MySQL and PS forks
-2. **Test with different `innodb_flush_log_at_trx_commit`** settings
-3. **Profile log mutex contention** using performance_schema
-4. **Check if PS has additional logging** (audit, extra diagnostics) enabled
-
----
-
-## Data Sources
-
-- **Benchmark logs**: `benchmark_logs/mysql/8.4.8/run1_Tier12G_RW_64th.innodb.txt`
-- **Analysis script**: `analyze_64th_performance.py`
-- **Visualization**: `innodb_metrics_report.html` (thread selection: 64)
-- **Date**: 2026-04-27
+1. **Review PS changelog** for buffer pool page cleaner changes between MySQL 8.4.8 and PS 8.4.8-8
+2. **Test with increased flushing capacity**:
+   - `innodb_io_capacity=2000` (default is often too low)
+   - `innodb_io_capacity_max=4000`
+   - `innodb_page_cleaners=8` (increase parallelism)
+3. **Profile page cleaner thread** activity using performance_schema
+4. **Check if PS has additional flushing logic** that serializes differently than MySQL
+5. **Compare buffer pool configuration** between MySQL and PS (both should use same settings for fair comparison)
 
 ---
 
@@ -213,6 +247,29 @@ At **64 threads**, Percona Server's log subsystem becomes a **serialization poin
 
 ---
 
+
+## Stack Trace Deep Dive
+
+### Most Common Wait Patterns in Percona Server (pt-pmp analysis)
+
+Top wait locations where Percona Server threads are blocked in `buf_flush_await_no_flushing`:
+
+1. **166 samples**: During `btr_cur_search_to_nth_level` (B-tree cursor search) - threads searching indexes need to read pages but must wait for flushes
+2. **66 samples**: During `records_in_range` estimation - optimizer queries blocked
+3. **38 samples**: During `btr_estimate_n_rows_in_range_low` - statistics gathering blocked
+4. **31 samples**: During UPDATE operations via `handler::read_range_first`
+5. **23 samples**: During row range estimation for query optimization
+
+### MySQL 8.4.8 Equivalent Operations
+
+All these same operations in MySQL 8.4.8 show **0 samples** of `buf_flush_await_no_flushing`, indicating:
+- MySQL's page cleaner keeps up with demand
+- Free pages are always available without blocking
+- No serialization point in buffer pool management
+
+---
+
 **Status**: Analysis Complete ✅  
-**Version**: 1.0  
-**Date**: 2026-04-27
+**Version**: 2.0  
+**Date**: 2026-05-01  
+**Updated**: Added comprehensive 64-thread analysis with pt-pmp stack trace evidence and binlog comparison
