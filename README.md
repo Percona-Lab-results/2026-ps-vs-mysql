@@ -49,13 +49,22 @@ rm libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
 
 ### Server Binaries Setup
 
-1. **Download server binary tarballs**:
-   - MySQL 8.4.8: `mysql-8.4.8-linux-glibc2.28-x86_64.tar.xz`
-   - Percona Server 8.4.8-8: `Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35.tar.gz`
+**Note:** These are generic Linux binary packages (not Ubuntu-specific builds). They require the library compatibility patches installed in Prerequisites.
 
+1. **Download server binary tarballs**:
+
+   - MySQL 8.4.8: `mysql-8.4.8-linux-glibc2.28-x86_64.tar.xz`
+   ```
+   wget https://downloads.mysql.com/archives/get/p/23/file/mysql-8.4.8-linux-glibc2.28-x86_64.tar.xz
+   ```  
+   - Percona Server 8.4.8-8: `Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35.tar.gz`
+   ```
+   wget https://downloads.percona.com/downloads/Percona-Server-8.4/Percona-Server-8.4.8-8/binary/tarball/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35.tar.gz
+   ```
+   
 2. **Configure server base directory**:
    
-   Edit the `SERVERS_BASE` variable in both `run_all.sh` and `run_metrics.sh`:
+   Edit the `SERVERS_BASE` and `DATADIR_BASE` variable in both `run_all.sh` and `run_metrics.sh`:
    ```bash
    SERVERS_BASE="/path/to/your/servers"
    ```
