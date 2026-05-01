@@ -102,7 +102,7 @@ def find_html_reports(base_dir: Path) -> Dict[str, List[Tuple[str, Path, str]]]:
     return reports
 
 
-def generate_index_html(reports: Dict[str, List[Tuple[str, Path, str]]], output_file: Path):
+def generate_index_html(reports: Dict[str, List[Tuple[str, Path, str]]], output_file: Path, base_dir: Path):
     """Generate index.html with organized links to all reports"""
 
     total_reports = sum(len(r) for r in reports.values())
@@ -326,6 +326,23 @@ def generate_index_html(reports: Dict[str, List[Tuple[str, Path, str]]], output_
         </div>
 '''
 
+    # Stack Traces Section
+    pmp_index = base_dir / 'index-pmp.html'
+    if pmp_index.exists():
+        html += '''
+        <div class="section">
+            <h2>🔬 Stack Trace Analysis</h2>
+            <p>Browse pt-pmp stack profiling files collected during benchmark runs. View thread blocking patterns and function call stacks.</p>
+            <div class="report-grid">
+                <a href="index-pmp.html" class="report-card">
+                    <h3>pt-pmp Stack Traces Index</h3>
+                    <div class="description">Tree view of all stack trace files across all runs</div>
+                    <div class="filename">index-pmp.html</div>
+                </a>
+            </div>
+        </div>
+'''
+
     # No reports found
     if total_reports == 0:
         html += '''
@@ -373,7 +390,7 @@ def main():
     print("=" * 60)
 
     reports = find_html_reports(base_dir)
-    generate_index_html(reports, base_dir / 'index.html')
+    generate_index_html(reports, base_dir / 'index.html', base_dir)
 
     print("\n" + "=" * 60)
     print("Done! Open index.html in your browser to view all reports.")

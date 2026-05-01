@@ -151,10 +151,14 @@ python3 visuals/generate_variable_comparisons.py benchmark_logs_binlog "Binlog E
 
 # 4. Generate index.html (navigation page for all reports)
 python3 visuals/generate_index.py
+
+# 5. Generate index-pmp.html (tree view of all pt-pmp stack trace files)
+python3 visuals/generate_pmp_index.py
 ```
 
 **Generated files**:
 - `index.html` - Navigation page with links to all reports
+- `index-pmp.html` - Tree view index of all pt-pmp stack trace files
 - `disabled_binlog_sysbench_average.html` - Performance averages (binlog disabled)
 - `disabled_binlog_sysbench_individual.html` - Individual run results (binlog disabled)
 - `enabled_binlog_sysbench_average.html` - Performance averages (binlog enabled)

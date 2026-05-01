@@ -3,6 +3,17 @@
 ## Interactive Tools
 
 - **[📊 Interactive Reports Index](https://percona-lab-results.github.io/2026-ps-vs-mysql/index.html)** - Navigate all performance reports, InnoDB metrics, and configuration comparisons
+- **[🔬 pt-pmp Stack Traces Index](https://percona-lab-results.github.io/2026-ps-vs-mysql/index-pmp.html)** - Browse all stack profiling files (24 files across all runs)
+
+---
+
+## Stack Trace Analysis
+
+This analysis is based on **pt-pmp** (Poor Man's Profiler) stack traces collected at the midpoint of each 15-minute benchmark run. Stack sampling provides visibility into where threads spend their time and what blocking patterns emerge under load.
+
+**Key Finding**: The pt-pmp traces revealed the critical difference - Percona Server shows **361 stack samples** of threads blocked in `buf_flush_await_no_flushing`, while MySQL 8.4.8 shows **zero**. This blocking occurs across diverse operations (index searches, updates, range estimation), indicating a systemic bottleneck in buffer pool page flushing rather than a specific query pattern.
+
+All stack trace files are available for review at **[index-pmp.html](https://percona-lab-results.github.io/2026-ps-vs-mysql/index-pmp.html)**, organized by benchmark configuration, server, and version.
 
 ---
 
