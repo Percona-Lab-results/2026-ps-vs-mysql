@@ -188,7 +188,8 @@
             <tr><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Primary subject</td><td style="border: 1px solid #ccc; padding: 8px 12px;">Investigating the performance difference between Percona Server 8.4.8-8 and MySQL 8.4.8 on OLTP Read-Write workloads across varying thread counts and memory configurations</td></tr>
             <tr style="background:#fafafa;"><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Reference servers</td><td style="border: 1px solid #ccc; padding: 8px 12px;">MySQL 8.4.8, MySQL 9.7.0-er2, Percona Server 8.4.8 — included for cross-product context, not the focus of this benchmark</td></tr>
             <tr><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Memory tiers (innodb_buffer_pool_size)</td><td style="border: 1px solid #ccc; padding: 8px 12px;">12 GB — moderate buffer pool configuration</td></tr>
-            <tr style="background:#fafafa;"><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Client threads</td><td style="border: 1px solid #ccc; padding: 8px 12px;">32 and 64 threads</td></tr>
+            <tr style="background:#fafafa;"><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Buffer pool instances (BP&lt;N&gt;)</td><td style="border: 1px solid #ccc; padding: 8px 12px;">Default (2 for 12GB), 4, and 8 instances tested for Percona Server</td></tr>
+            <tr><td style="border: 1px solid #ccc; padding: 8px 12px; color: #666; font-weight: 600;">Client threads</td><td style="border: 1px solid #ccc; padding: 8px 12px;">32 and 64 threads</td></tr>
           </tbody>
         </table>
       </div>
@@ -196,8 +197,8 @@
   </div>
 
 <script>
-const DATA = [{"server": "mysql 8.4.8", "mem_gb": 12, "threads": 32, "tps": 4892.89, "qps": 97857.84}, {"server": "mysql 8.4.8", "mem_gb": 12, "threads": 64, "tps": 7114.59, "qps": 142291.85}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 32, "tps": 4401.57, "qps": 88031.49}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 64, "tps": 6223.93, "qps": 124478.52}];
-const SERVERS = ["mysql 8.4.8", "percona-server 8.4.8-8"];
+const DATA = [{"server": "mysql 8.4.8", "mem_gb": 12, "threads": 32, "tps": 4892.89, "qps": 97857.84}, {"server": "mysql 8.4.8", "mem_gb": 12, "threads": 64, "tps": 7114.59, "qps": 142291.85}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 32, "tps": 4401.57, "qps": 88031.49}, {"server": "percona-server 8.4.8-8", "mem_gb": 12, "threads": 64, "tps": 6223.93, "qps": 124478.52}, {"server": "percona-server 8.4.8-8-bp4", "mem_gb": 12, "threads": 32, "tps": 4630.16, "qps": 92603.16}, {"server": "percona-server 8.4.8-8-bp4", "mem_gb": 12, "threads": 64, "tps": 6756.44, "qps": 135128.81}, {"server": "percona-server 8.4.8-8-bp8", "mem_gb": 12, "threads": 32, "tps": 4654.18, "qps": 93083.66}, {"server": "percona-server 8.4.8-8-bp8", "mem_gb": 12, "threads": 64, "tps": 6824.21, "qps": 136484.26}];
+const SERVERS = ["mysql 8.4.8", "percona-server 8.4.8-8", "percona-server 8.4.8-8-bp4", "percona-server 8.4.8-8-bp8"];
 const MEMS = [12];
 const THREADS = [32, 64];
 
