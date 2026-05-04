@@ -1,0 +1,3271 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="2400" height="942" onload="init(evt)" viewBox="0 0 2400 942" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<!-- NOTES:  -->
+<defs>
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#f8f8f8" offset="5%" />
+		<stop stop-color="#e8e8e8" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	text { font-family:Verdana; font-size:12px; fill:rgb(0,0,0); }
+	#search, #ignorecase { opacity:0.1; cursor:pointer; }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show { opacity:1; }
+	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+	#title { text-anchor:middle; font-size:17px}
+	#unzoom { cursor:pointer; }
+	#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+	.hide { display:none; }
+	.parent { opacity:0.5; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+	var details, searchbtn, unzoombtn, matchedtxt, svg, searching, currentSearchTerm, ignorecase, ignorecaseBtn;
+	function init(evt) {
+		details = document.getElementById("details").firstChild;
+		searchbtn = document.getElementById("search");
+		ignorecaseBtn = document.getElementById("ignorecase");
+		unzoombtn = document.getElementById("unzoom");
+		matchedtxt = document.getElementById("matched");
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+		currentSearchTerm = null;
+
+		// use GET parameters to restore a flamegraphs state.
+		var params = get_params();
+		if (params.x && params.y)
+			zoom(find_group(document.querySelector('[x="' + params.x + '"][y="' + params.y + '"]')));
+                if (params.s) search(params.s);
+	}
+
+	// event listeners
+	window.addEventListener("click", function(e) {
+		var target = find_group(e.target);
+		if (target) {
+			if (target.nodeName == "a") {
+				if (e.ctrlKey === false) return;
+				e.preventDefault();
+			}
+			if (target.classList.contains("parent")) unzoom(true);
+			zoom(target);
+			if (!document.querySelector('.parent')) {
+				// we have basically done a clearzoom so clear the url
+				var params = get_params();
+				if (params.x) delete params.x;
+				if (params.y) delete params.y;
+				history.replaceState(null, null, parse_params(params));
+				unzoombtn.classList.add("hide");
+				return;
+			}
+
+			// set parameters for zoom state
+			var el = target.querySelector("rect");
+			if (el && el.attributes && el.attributes.y && el.attributes._orig_x) {
+				var params = get_params()
+				params.x = el.attributes._orig_x.value;
+				params.y = el.attributes.y.value;
+				history.replaceState(null, null, parse_params(params));
+			}
+		}
+		else if (e.target.id == "unzoom") clearzoom();
+		else if (e.target.id == "search") search_prompt();
+		else if (e.target.id == "ignorecase") toggle_ignorecase();
+	}, false)
+
+	// mouse-over for info
+	// show
+	window.addEventListener("mouseover", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = "Function: " + g_to_text(target);
+	}, false)
+
+	// clear
+	window.addEventListener("mouseout", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = ' ';
+	}, false)
+
+	// ctrl-F for search
+	// ctrl-I to toggle case-sensitive search
+	window.addEventListener("keydown",function (e) {
+		if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+			e.preventDefault();
+			search_prompt();
+		}
+		else if (e.ctrlKey && e.keyCode === 73) {
+			e.preventDefault();
+			toggle_ignorecase();
+		}
+	}, false)
+
+	// functions
+	function get_params() {
+		var params = {};
+		var paramsarr = window.location.search.substr(1).split('&');
+		for (var i = 0; i < paramsarr.length; ++i) {
+			var tmp = paramsarr[i].split("=");
+			if (!tmp[0] || !tmp[1]) continue;
+			params[tmp[0]]  = decodeURIComponent(tmp[1]);
+		}
+		return params;
+	}
+	function parse_params(params) {
+		var uri = "?";
+		for (var key in params) {
+			uri += key + '=' + encodeURIComponent(params[key]) + '&';
+		}
+		if (uri.slice(-1) == "&")
+			uri = uri.substring(0, uri.length - 1);
+		if (uri == '?')
+			uri = window.location.href.split('?')[0];
+		return uri;
+	}
+	function find_child(node, selector) {
+		var children = node.querySelectorAll(selector);
+		if (children.length) return children[0];
+	}
+	function find_group(node) {
+		var parent = node.parentElement;
+		if (!parent) return;
+		if (parent.id == "frames") return node;
+		return find_group(parent);
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_" + attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_" + attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_" + attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function g_to_text(e) {
+		var text = find_child(e, "title").firstChild.nodeValue;
+		return (text)
+	}
+	function g_to_func(e) {
+		var func = g_to_text(e);
+		// if there's any manipulation we want to do to the function
+		// name before it's searched, do it here before returning.
+		return (func);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes.width.value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+		t.attributes.x.value = parseFloat(r.attributes.x.value) + 3;
+
+		// Smaller than this size won't fit anything
+		if (w < 2 * 12 * 0.59) {
+			t.textContent = "";
+			return;
+		}
+
+		t.textContent = txt;
+		var sl = t.getSubStringLength(0, txt.length);
+		// check if only whitespace or if we can fit the entire string into width w
+		if (/^ *$/.test(txt) || sl < w)
+			return;
+
+		// this isn't perfect, but gives a good starting point
+		// and avoids calling getSubStringLength too often
+		var start = Math.floor((w/sl) * txt.length);
+		for (var x = start; x > 0; x = x-2) {
+			if (t.getSubStringLength(0, x + 2) <= w) {
+				t.textContent = txt.substring(0, x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = (parseFloat(e.attributes.x.value) - x - 10) * ratio + 10;
+				if (e.tagName == "text")
+					e.attributes.x.value = find_child(e.parentNode, "rect[x]").attributes.x.value + 3;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseFloat(e.attributes.width.value) * ratio;
+			}
+		}
+
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_child(c[i], x - 10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = 10;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseInt(svg.width.baseVal.value) - (10 * 2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) {
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr.width.value);
+		var xmin = parseFloat(attr.x.value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr.y.value);
+		var ratio = (svg.width.baseVal.value - 2 * 10) / width;
+
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+
+		unzoombtn.classList.remove("hide");
+
+		var el = document.getElementById("frames").children;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a.x.value);
+			var ew = parseFloat(a.width.value);
+			var upstack;
+			// Is it an ancestor
+			if (0 == 0) {
+				upstack = parseFloat(a.y.value) > ymin;
+			} else {
+				upstack = parseFloat(a.y.value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.classList.add("parent");
+					zoom_parent(e);
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.classList.add("hide");
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.classList.add("hide");
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					update_text(e);
+				}
+			}
+		}
+		search();
+	}
+	function unzoom(dont_update_text) {
+		unzoombtn.classList.add("hide");
+		var el = document.getElementById("frames").children;
+		for(var i = 0; i < el.length; i++) {
+			el[i].classList.remove("parent");
+			el[i].classList.remove("hide");
+			zoom_reset(el[i]);
+			if(!dont_update_text) update_text(el[i]);
+		}
+		search();
+	}
+	function clearzoom() {
+		unzoom();
+
+		// remove zoom state
+		var params = get_params();
+		if (params.x) delete params.x;
+		if (params.y) delete params.y;
+		history.replaceState(null, null, parse_params(params));
+	}
+
+	// search
+	function toggle_ignorecase() {
+		ignorecase = !ignorecase;
+		if (ignorecase) {
+			ignorecaseBtn.classList.add("show");
+		} else {
+			ignorecaseBtn.classList.remove("show");
+		}
+		reset_search();
+		search();
+	}
+	function reset_search() {
+		var el = document.querySelectorAll("#frames rect");
+		for (var i = 0; i < el.length; i++) {
+			orig_load(el[i], "fill")
+		}
+		var params = get_params();
+		delete params.s;
+		history.replaceState(null, null, parse_params(params));
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)"
+			    + (ignorecase ? ", ignoring case" : "")
+			    + "\nPress Ctrl-i to toggle case sensitivity", "");
+			if (term != null) search(term);
+		} else {
+			reset_search();
+			searching = 0;
+			currentSearchTerm = null;
+			searchbtn.classList.remove("show");
+			searchbtn.firstChild.nodeValue = "Search"
+			matchedtxt.classList.add("hide");
+			matchedtxt.firstChild.nodeValue = ""
+		}
+	}
+	function search(term) {
+		if (term) currentSearchTerm = term;
+		if (currentSearchTerm === null) return;
+
+		var re = new RegExp(currentSearchTerm, ignorecase ? 'i' : '');
+		var el = document.getElementById("frames").children;
+		var matches = new Object();
+		var maxwidth = 0;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var func = g_to_func(e);
+			var rect = find_child(e, "rect");
+			if (func == null || rect == null)
+				continue;
+
+			// Save max width. Only works as we have a root frame
+			var w = parseFloat(rect.attributes.width.value);
+			if (w > maxwidth)
+				maxwidth = w;
+
+			if (func.match(re)) {
+				// highlight
+				var x = parseFloat(rect.attributes.x.value);
+				orig_save(rect, "fill");
+				rect.attributes.fill.value = "rgb(230,0,230)";
+
+				// remember matches
+				if (matches[x] == undefined) {
+					matches[x] = w;
+				} else {
+					if (w > matches[x]) {
+						// overwrite with parent
+						matches[x] = w;
+					}
+				}
+				searching = 1;
+			}
+		}
+		if (!searching)
+			return;
+		var params = get_params();
+		params.s = currentSearchTerm;
+		history.replaceState(null, null, parse_params(params));
+
+		searchbtn.classList.add("show");
+		searchbtn.firstChild.nodeValue = "Reset Search";
+
+		// calculate percent matched, excluding vertical overlap
+		var count = 0;
+		var lastx = -1;
+		var lastw = 0;
+		var keys = Array();
+		for (k in matches) {
+			if (matches.hasOwnProperty(k))
+				keys.push(k);
+		}
+		// sort the matched frames by their x location
+		// ascending, then width descending
+		keys.sort(function(a, b){
+			return a - b;
+		});
+		// Step through frames saving only the biggest bottom-up frames
+		// thanks to the sort order. This relies on the tree property
+		// where children are always smaller than their parents.
+		var fudge = 0.0001;	// JavaScript floating point
+		for (var k in keys) {
+			var x = parseFloat(keys[k]);
+			var w = matches[keys[k]];
+			if (x >= lastx + lastw - fudge) {
+				count += w;
+				lastx = x;
+				lastw = w;
+			}
+		}
+		// display matched percent
+		matchedtxt.classList.remove("hide");
+		var pct = 100 * count / maxwidth;
+		if (pct != 100) pct = pct.toFixed(1)
+		matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="2400.0" height="942.0" fill="url(#background)"  />
+<text id="title" x="1200.00" y="24" >Off-CPU Profile: PERCONA-SERVER 8.4.8-8-bp8 - Run 3, 32 threads (Binlog Disabled)</text>
+<text id="subtitle" x="1200.00" y="48" >PID: 4175118 (mysqld) | 30 seconds | Captured: Fri May  1 02:40:37 PM UTC 2026</text>
+<text id="details" x="10.00" y="925" > </text>
+<text id="unzoom" x="10.00" y="24" class="hide">Reset Zoom</text>
+<text id="search" x="2290.00" y="24" >Search</text>
+<text id="ignorecase" x="2374.00" y="24" >ic</text>
+<text id="matched" x="2290.00" y="925" > </text>
+<g id="frames">
+<g >
+<title>__x64_sys_clock_nanosleep (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="669" width="5.7" height="15.0" fill="rgb(132,132,248)" rx="2" ry="2" />
+<text  x="1297.50" y="679.5" ></text>
+</g>
+<g >
+<title>__x64_sys_futex (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="653" width="52.4" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="865.74" y="663.5" >__x64..</text>
+</g>
+<g >
+<title>os_event::wait_low(long) (146,970,247 microseconds, 12.01%)</title><rect x="916.5" y="781" width="285.9" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="919.53" y="791.5" >os_event::wait_low(long)</text>
+</g>
+<g >
+<title>Double_write::flush_to_disk(buf_flush_t) (8,332,108 microseconds, 0.68%)</title><rect x="1234.5" y="717" width="16.2" height="15.0" fill="rgb(93,93,215)" rx="2" ry="2" />
+<text  x="1237.54" y="727.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="301" width="12.8" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1583.24" y="311.5" ></text>
+</g>
+<g >
+<title>schedule (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="637" width="46.4" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2338.49" y="647.5" >sche..</text>
+</g>
+<g >
+<title>- (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="733" width="155.5" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1304.46" y="743.5" >-</text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (146,970,247 microseconds, 12.01%)</title><rect x="916.5" y="765" width="285.9" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="919.53" y="775.5" >__GI___pthread_cond_wait</text>
+</g>
+<g >
+<title>vio_ssl_read(Vio*, unsigned char*, unsigned long) (61,295,825 microseconds, 5.01%)</title><rect x="1460.3" y="717" width="119.2" height="15.0" fill="rgb(113,113,232)" rx="2" ry="2" />
+<text  x="1463.32" y="727.5" >vio_ssl_read(V..</text>
+</g>
+<g >
+<title>os_file_write_retry(IORequest&amp;, char const*, pfs_os_file_t, void const*, unsigned long, unsigned long) (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="653" width="5.8" height="15.0" fill="rgb(111,111,231)" rx="2" ry="2" />
+<text  x="1237.56" y="663.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="621" width="119.2" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1463.32" y="631.5" >do_syscall_64</text>
+</g>
+<g >
+<title>do_syscall_64 (21,697,127 microseconds, 1.77%)</title><rect x="10.0" y="829" width="42.2" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="13.00" y="839.5" >do_..</text>
+</g>
+<g >
+<title>blk_io_schedule (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="141" width="7.5" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2232.90" y="151.5" ></text>
+</g>
+<g >
+<title>os_file_flush_func(int) (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="749" width="25.0" height="15.0" fill="rgb(100,100,221)" rx="2" ry="2" />
+<text  x="840.69" y="759.5" >o..</text>
+</g>
+<g >
+<title>btr_estimate_n_rows_in_range_low(dict_index_t*, dtuple_t const*, page_cur_mode_t, dtuple_t const*, page_cur_mode_t, unsigned int) (140,263,694 microseconds, 11.46%)</title><rect x="1622.5" y="493" width="272.8" height="15.0" fill="rgb(120,120,239)" rx="2" ry="2" />
+<text  x="1625.48" y="503.5" >btr_estimate_n_rows_in_range_low(dic..</text>
+</g>
+<g >
+<title>io_schedule_timeout (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="141" width="271.9" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1960.93" y="151.5" >io_schedule_timeout</text>
+</g>
+<g >
+<title>Double_write::write_dblwr_pages(buf_flush_t) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="733" width="2.6" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="2384.89" y="743.5" ></text>
+</g>
+<g >
+<title>schedule (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="589" width="155.5" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1304.46" y="599.5" >schedule</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (317,527,170 microseconds, 25.95%)</title><rect x="52.2" y="701" width="617.5" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="55.20" y="711.5" >finish_task_switch.isra.0</text>
+</g>
+<g >
+<title>blk_io_schedule (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="157" width="271.9" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1960.93" y="167.5" >blk_io_schedule</text>
+</g>
+<g >
+<title>do_futex (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="413" width="22.5" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="2315.92" y="423.5" >d..</text>
+</g>
+<g >
+<title>schedule (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="93" width="7.5" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2232.90" y="103.5" ></text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="589" width="19.8" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1205.48" y="599.5" ></text>
+</g>
+<g >
+<title>all (1,223,786,018 microseconds, 100%)</title><rect x="10.0" y="893" width="2380.0" height="15.0" fill="rgb(90,90,213)" rx="2" ry="2" />
+<text  x="13.00" y="903.5" ></text>
+</g>
+<g >
+<title>futex_wait_queue (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="589" width="43.8" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1253.75" y="599.5" >fute..</text>
+</g>
+<g >
+<title>__iomap_dio_rw (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="205" width="27.4" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1597.22" y="215.5" >_..</text>
+</g>
+<g >
+<title>ext4_file_read_iter (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="205" width="271.9" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="1960.93" y="215.5" >ext4_file_read_iter</text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (26,366,452 microseconds, 2.15%)</title><rect x="786.4" y="781" width="51.3" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="789.42" y="791.5" >os_ev..</text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="365" width="27.4" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1597.22" y="375.5" >o..</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (119,332,444 microseconds, 9.75%)</title><rect x="1622.5" y="461" width="232.1" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="1625.48" y="471.5" >buf_page_get_gen(page_id_t con..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="317" width="4.0" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2243.14" y="327.5" ></text>
+</g>
+<g >
+<title>blk_io_schedule (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="125" width="217.4" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1640.18" y="135.5" >blk_io_schedule</text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (26,366,452 microseconds, 2.15%)</title><rect x="786.4" y="749" width="51.3" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="789.42" y="759.5" >pthre..</text>
+</g>
+<g >
+<title>schedule (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="589" width="285.9" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="919.53" y="599.5" >schedule</text>
+</g>
+<g >
+<title>futex_wait (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="637" width="155.5" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1304.46" y="647.5" >futex_wait</text>
+</g>
+<g >
+<title>__pread64 (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="349" width="2.7" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="2240.37" y="359.5" ></text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="749" width="285.9" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="919.53" y="759.5" >__GI___futex_abstimed_wait_cancelable64</text>
+</g>
+<g >
+<title>void Detached_thread::operator()&lt;void (*)()&gt;(void (*&amp;&amp;)()) (279,616,972 microseconds, 22.85%)</title><rect x="916.5" y="813" width="543.8" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="919.53" y="823.5" >void Detached_thread::operator()&lt;void (*)()&gt;(void (*&amp;&amp;)())</text>
+</g>
+<g >
+<title>ext4_dio_write_iter (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="461" width="5.8" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1237.56" y="471.5" ></text>
+</g>
+<g >
+<title>iomap_dio_rw (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="429" width="19.8" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1205.48" y="439.5" ></text>
+</g>
+<g >
+<title>do_futex (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="221" width="62.6" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1898.26" y="231.5" >do_futex</text>
+</g>
+<g >
+<title>os_event::wait_low(long) (32,223,914 microseconds, 2.63%)</title><rect x="1895.3" y="349" width="62.6" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1898.26" y="359.5" >os_eve..</text>
+</g>
+<g >
+<title>futex_wait (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="621" width="52.4" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="865.74" y="631.5" >futex..</text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="781" width="52.4" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="865.74" y="791.5" >os_ev..</text>
+</g>
+<g >
+<title>io_schedule_timeout (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="189" width="12.8" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1583.24" y="199.5" ></text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="301" width="217.4" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1640.18" y="311.5" >os_file_io(IORequest const&amp;,..</text>
+</g>
+<g >
+<title>x64_sys_call (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="669" width="58.3" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="731.09" y="679.5" >x64_sy..</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (1,423,756 microseconds, 0.12%)</title><rect x="2237.4" y="525" width="2.7" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="2240.37" y="535.5" ></text>
+</g>
+<g >
+<title>schedule_timeout (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="381" width="5.8" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1237.56" y="391.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (6,609,438 microseconds, 0.54%)</title><rect x="2300.1" y="541" width="12.8" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="2303.07" y="551.5" ></text>
+</g>
+<g >
+<title>do_futex (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="637" width="58.3" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="731.09" y="647.5" >do_futex</text>
+</g>
+<g >
+<title>__iomap_dio_rw (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="429" width="5.8" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1237.56" y="439.5" ></text>
+</g>
+<g >
+<title>Sql_cmd_insert_values::execute_inner(THD*) (1,424,109 microseconds, 0.12%)</title><rect x="2237.4" y="685" width="2.7" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="2240.37" y="695.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="269" width="7.5" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2232.90" y="279.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="269" width="62.6" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1898.26" y="279.5" >do_sys..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="493" width="25.0" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="840.69" y="503.5" >f..</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="669" width="10.3" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1243.37" y="679.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (21,639,479 microseconds, 1.77%)</title><rect x="10.1" y="733" width="42.1" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="13.11" y="743.5" >fin..</text>
+</g>
+<g >
+<title>vfs_read (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="253" width="2.7" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="2240.37" y="263.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (6,920,564 microseconds, 0.57%)</title><rect x="1579.5" y="493" width="13.5" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="1582.53" y="503.5" ></text>
+</g>
+<g >
+<title>Prepared_statement::execute(THD*, String*, bool) (388,674,836 microseconds, 31.76%)</title><rect x="1579.5" y="733" width="755.9" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1582.53" y="743.5" >Prepared_statement::execute(THD*, String*, bool)</text>
+</g>
+<g >
+<title>mysqld_stmt_execute(THD*, Prepared_statement*, bool, unsigned long, PS_PARAM*) (388,674,836 microseconds, 31.76%)</title><rect x="1579.5" y="765" width="755.9" height="15.0" fill="rgb(130,130,246)" rx="2" ry="2" />
+<text  x="1582.53" y="775.5" >mysqld_stmt_execute(THD*, Prepared_statement*, bool, unsigned long, PS_PARAM*)</text>
+</g>
+<g >
+<title>schedule_timeout (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="189" width="12.7" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="2303.07" y="199.5" ></text>
+</g>
+<g >
+<title>[Missed User Stack] (21,697,309 microseconds, 1.77%)</title><rect x="10.0" y="861" width="42.2" height="15.0" fill="rgb(107,107,227)" rx="2" ry="2" />
+<text  x="13.00" y="871.5" >[Mi..</text>
+</g>
+<g >
+<title>handler::multi_range_read_info_const(unsigned int, RANGE_SEQ_IF*, void*, unsigned int, unsigned int*, unsigned int*, bool*, Cost_estimate*) (140,263,694 microseconds, 11.46%)</title><rect x="1622.5" y="525" width="272.8" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1625.48" y="535.5" >handler::multi_range_read_info_const..</text>
+</g>
+<g >
+<title>vfs_read (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="285" width="12.7" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="2303.07" y="295.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="125" width="27.4" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1597.22" y="135.5" >f..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="557" width="5.8" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1237.56" y="567.5" ></text>
+</g>
+<g >
+<title>__iomap_dio_rw (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="173" width="271.9" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1960.93" y="183.5" >__iomap_dio_rw</text>
+</g>
+<g >
+<title>x64_sys_call (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="685" width="5.7" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1297.50" y="695.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="317" width="217.4" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1640.18" y="327.5" >os_file_read_page(IORequest&amp;..</text>
+</g>
+<g >
+<title>- (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="333" width="27.4" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1597.22" y="343.5" >-</text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="413" width="7.6" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2232.78" y="423.5" ></text>
+</g>
+<g >
+<title>buf_page_init_for_read(unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool) (32,224,355 microseconds, 2.63%)</title><rect x="1895.3" y="397" width="62.6" height="15.0" fill="rgb(114,114,233)" rx="2" ry="2" />
+<text  x="1898.26" y="407.5" >buf_pa..</text>
+</g>
+<g >
+<title>buf_flush_await_no_flushing(buf_pool_t*, buf_flush_t) (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="397" width="4.0" height="15.0" fill="rgb(84,84,208)" rx="2" ry="2" />
+<text  x="2243.14" y="407.5" ></text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="509" width="22.5" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2315.92" y="519.5" >_..</text>
+</g>
+<g >
+<title>handler::ha_multi_range_read_next(char**) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="653" width="28.6" height="15.0" fill="rgb(138,138,253)" rx="2" ry="2" />
+<text  x="1596.20" y="663.5" >ha..</text>
+</g>
+<g >
+<title>blk_io_schedule (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="189" width="27.4" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1597.22" y="199.5" >b..</text>
+</g>
+<g >
+<title>__x64_sys_pread64 (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="221" width="7.5" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="2232.90" y="231.5" ></text>
+</g>
+<g >
+<title>buf_flush_page(buf_pool_t*, buf_page_t*, buf_flush_t, bool) (2,283,406 microseconds, 0.19%)</title><rect x="2381.9" y="797" width="4.4" height="15.0" fill="rgb(93,93,215)" rx="2" ry="2" />
+<text  x="2384.87" y="807.5" ></text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="765" width="155.5" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1304.46" y="775.5" >__GI___pthread_cond..</text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="333" width="271.9" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1960.93" y="343.5" >os_file_io(IORequest const&amp;, int, vo..</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (172,008,571 microseconds, 14.06%)</title><rect x="1895.3" y="413" width="334.5" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1898.26" y="423.5" >buf_read_page_low(dberr_t*, bool, unsigned lo..</text>
+</g>
+<g >
+<title>buf_LRU_get_free_block(buf_pool_t*) (7,559,858 microseconds, 0.62%)</title><rect x="1622.5" y="349" width="14.7" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1625.48" y="359.5" ></text>
+</g>
+<g >
+<title>row_search_index_entry(dict_index_t*, dtuple_t const*, unsigned long, btr_pcur_t*, mtr_t*) (6,609,438 microseconds, 0.54%)</title><rect x="2300.1" y="589" width="12.8" height="15.0" fill="rgb(129,129,245)" rx="2" ry="2" />
+<text  x="2303.07" y="599.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="109" width="14.7" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1625.48" y="119.5" ></text>
+</g>
+<g >
+<title>log_write_up_to(log_t&amp;, unsigned long, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="573" width="22.5" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="2315.92" y="583.5" >l..</text>
+</g>
+<g >
+<title>handler::read_range_first(key_range const*, key_range const*, bool, bool) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="605" width="28.6" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1596.20" y="615.5" >ha..</text>
+</g>
+<g >
+<title>__libc_pwrite (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="637" width="2.6" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2384.89" y="647.5" ></text>
+</g>
+<g >
+<title>do_futex (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="653" width="285.9" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="919.53" y="663.5" >do_futex</text>
+</g>
+<g >
+<title>schedule (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="573" width="43.8" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1253.75" y="583.5" >sche..</text>
+</g>
+<g >
+<title>x64_sys_call (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="237" width="39.9" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1858.42" y="247.5" >x64..</text>
+</g>
+<g >
+<title>iomap_dio_rw (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="221" width="54.5" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="2247.06" y="231.5" >iomap..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="701" width="58.3" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="731.09" y="711.5" >entry_..</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (7,028,067 microseconds, 0.57%)</title><rect x="1579.5" y="541" width="13.7" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="1582.53" y="551.5" ></text>
+</g>
+<g >
+<title>os_event::wait_low(long) (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="381" width="4.0" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="2243.14" y="391.5" ></text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="781" width="43.8" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="1253.75" y="791.5" >os_e..</text>
+</g>
+<g >
+<title>schedule_timeout (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="173" width="12.8" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1583.24" y="183.5" ></text>
+</g>
+<g >
+<title>pc_flush_slot() (3,458,758 microseconds, 0.28%)</title><rect x="2381.9" y="845" width="6.7" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2384.87" y="855.5" ></text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="365" width="217.4" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1640.18" y="375.5" >fil_io(IORequest const&amp;, boo..</text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (6,920,564 microseconds, 0.57%)</title><rect x="1579.5" y="477" width="13.5" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1582.53" y="487.5" ></text>
+</g>
+<g >
+<title>do_futex (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="653" width="155.5" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1304.46" y="663.5" >do_futex</text>
+</g>
+<g >
+<title>dblwr::force_flush(buf_flush_t, unsigned int) (1,175,352 microseconds, 0.10%)</title><rect x="2386.3" y="813" width="2.3" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="2389.31" y="823.5" ></text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="749" width="58.4" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="672.72" y="759.5" >pthrea..</text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="317" width="7.5" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="2232.90" y="327.5" ></text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="317" width="39.9" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1858.42" y="327.5" >os_..</text>
+</g>
+<g >
+<title>row_ins_sec_index_entry(dict_index_t*, dtuple_t*, que_thr_t*, bool) (1,424,105 microseconds, 0.12%)</title><rect x="2237.4" y="573" width="2.7" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="2240.37" y="583.5" ></text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="765" width="43.8" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="1253.75" y="775.5" >os_e..</text>
+</g>
+<g >
+<title>iomap_dio_rw (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="237" width="12.8" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1583.24" y="247.5" ></text>
+</g>
+<g >
+<title>futex_wait_queue (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="589" width="58.3" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="731.09" y="599.5" >futex_..</text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="445" width="12.8" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1583.24" y="455.5" ></text>
+</g>
+<g >
+<title>__iomap_dio_rw (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="237" width="12.7" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="2303.07" y="247.5" ></text>
+</g>
+<g >
+<title>schedule (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="141" width="2.7" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2240.37" y="151.5" ></text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="413" width="2.7" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="2240.37" y="423.5" ></text>
+</g>
+<g >
+<title>Double_write::enqueue(buf_flush_t, buf_page_t*, file::Block const*) (16,551,974 microseconds, 1.35%)</title><rect x="1202.4" y="701" width="32.1" height="15.0" fill="rgb(126,126,244)" rx="2" ry="2" />
+<text  x="1205.35" y="711.5" >Do..</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="477" width="12.7" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2303.07" y="487.5" ></text>
+</g>
+<g >
+<title>row_search_mvcc(unsigned char*, page_cur_mode_t, row_prebuilt_t*, unsigned long, unsigned long) (175,914,290 microseconds, 14.37%)</title><rect x="1895.3" y="525" width="342.1" height="15.0" fill="rgb(100,100,222)" rx="2" ry="2" />
+<text  x="1898.26" y="535.5" >row_search_mvcc(unsigned char*, page_cur_mode_..</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="445" width="58.5" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2243.14" y="455.5" >buf_re..</text>
+</g>
+<g >
+<title>do_futex (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="637" width="52.4" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="865.74" y="647.5" >do_fu..</text>
+</g>
+<g >
+<title>- (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="269" width="217.4" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1640.18" y="279.5" >-</text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="461" width="28.4" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1596.20" y="471.5" >bu..</text>
+</g>
+<g >
+<title>Clone_persist_gtid::periodic_write() (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="797" width="58.4" height="15.0" fill="rgb(95,95,217)" rx="2" ry="2" />
+<text  x="672.72" y="807.5" >Clone_..</text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="397" width="12.7" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="2303.07" y="407.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="589" width="5.7" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1297.50" y="599.5" ></text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="493" width="12.7" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2303.07" y="503.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="285" width="2.7" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2240.37" y="295.5" ></text>
+</g>
+<g >
+<title>schedule_timeout (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="93" width="217.4" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1640.18" y="103.5" >schedule_timeout</text>
+</g>
+<g >
+<title>Sql_cmd_update::update_single_table(THD*) (37,420,924 microseconds, 3.06%)</title><rect x="2240.1" y="685" width="72.8" height="15.0" fill="rgb(134,134,250)" rx="2" ry="2" />
+<text  x="2243.14" y="695.5" >Sql_cmd_..</text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="381" width="54.5" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2247.06" y="391.5" >os_fi..</text>
+</g>
+<g >
+<title>os_file_write_page(IORequest&amp;, char const*, int, unsigned char const*, unsigned long, unsigned long, file::Block const*) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="605" width="19.8" height="15.0" fill="rgb(95,95,217)" rx="2" ry="2" />
+<text  x="1205.48" y="615.5" ></text>
+</g>
+<g >
+<title>os_file_write_page(IORequest&amp;, char const*, int, unsigned char const*, unsigned long, unsigned long, file::Block const*) (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="621" width="5.8" height="15.0" fill="rgb(95,95,217)" rx="2" ry="2" />
+<text  x="1237.56" y="631.5" ></text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="525" width="12.7" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="2303.07" y="535.5" ></text>
+</g>
+<g >
+<title>ext4_file_read_iter (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="237" width="2.7" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="2240.37" y="247.5" ></text>
+</g>
+<g >
+<title>std::thread::_State_impl&lt;std::thread::_Invoker&lt;std::tuple&lt;Detached_thread, void (*)(Clone_persist_gtid*), Clone_persist_gtid*&gt; &gt; &gt;::_M_run() (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="813" width="58.4" height="15.0" fill="rgb(131,131,248)" rx="2" ry="2" />
+<text  x="672.72" y="823.5" >std::t..</text>
+</g>
+<g >
+<title>srv_worker_thread() (81,685,428 microseconds, 6.67%)</title><rect x="1301.5" y="797" width="158.8" height="15.0" fill="rgb(117,117,236)" rx="2" ry="2" />
+<text  x="1304.46" y="807.5" >srv_worker_thread()</text>
+</g>
+<g >
+<title>iomap_dio_rw (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="493" width="2.6" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="2384.89" y="503.5" ></text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="365" width="54.5" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="2247.06" y="375.5" >os_fi..</text>
+</g>
+<g >
+<title>futex_wait (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="621" width="58.4" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="672.72" y="631.5" >futex_..</text>
+</g>
+<g >
+<title>__iomap_dio_rw (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="221" width="12.8" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1583.24" y="231.5" ></text>
+</g>
+<g >
+<title>handler::multi_range_read_next(char**) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="637" width="58.9" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2243.14" y="647.5" >handle..</text>
+</g>
+<g >
+<title>buf_flush_await_no_flushing(buf_pool_t*, buf_flush_t) (32,223,914 microseconds, 2.63%)</title><rect x="1895.3" y="365" width="62.6" height="15.0" fill="rgb(84,84,208)" rx="2" ry="2" />
+<text  x="1898.26" y="375.5" >buf_fl..</text>
+</g>
+<g >
+<title>Double_write::enqueue(buf_flush_t, buf_page_t*, file::Block const*) (2,283,297 microseconds, 0.19%)</title><rect x="2381.9" y="765" width="4.4" height="15.0" fill="rgb(126,126,244)" rx="2" ry="2" />
+<text  x="2384.87" y="775.5" ></text>
+</g>
+<g >
+<title>Batch_segment::write(dblwr::Buffer const&amp;) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="717" width="2.6" height="15.0" fill="rgb(97,97,219)" rx="2" ry="2" />
+<text  x="2384.89" y="727.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="541" width="5.8" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1237.56" y="551.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="557" width="58.4" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="672.72" y="567.5" >finish..</text>
+</g>
+<g >
+<title>__x64_sys_futex (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="429" width="22.5" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="2315.92" y="439.5" >_..</text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="829" width="46.4" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="2338.49" y="839.5" >os_e..</text>
+</g>
+<g >
+<title>__pread64 (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="365" width="12.8" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1583.24" y="375.5" ></text>
+</g>
+<g >
+<title>vfs_read (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="205" width="7.5" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="2232.90" y="215.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (317,527,228 microseconds, 25.95%)</title><rect x="52.2" y="781" width="617.5" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="55.20" y="791.5" >x64_sys_call</text>
+</g>
+<g >
+<title>__iomap_dio_rw (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="413" width="19.8" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1205.48" y="423.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="285" width="27.4" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1597.22" y="295.5" >x..</text>
+</g>
+<g >
+<title>schedule_timeout (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="365" width="19.8" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1205.48" y="375.5" ></text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="493" width="28.4" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1596.20" y="503.5" >Bu..</text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="365" width="2.7" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="2240.37" y="375.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="93" width="271.9" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1960.93" y="103.5" >finish_task_switch.isra.0</text>
+</g>
+<g >
+<title>x64_sys_call (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="525" width="5.8" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1237.56" y="535.5" ></text>
+</g>
+<g >
+<title>iomap_dio_rw (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="173" width="39.9" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1858.42" y="183.5" >iom..</text>
+</g>
+<g >
+<title>__futex_wait (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="541" width="10.3" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="1243.37" y="551.5" ></text>
+</g>
+<g >
+<title>do_futex (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="573" width="10.3" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1243.37" y="583.5" ></text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="845" width="46.4" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="2338.49" y="855.5" >os_e..</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (20,931,244 microseconds, 1.71%)</title><rect x="1854.6" y="477" width="40.7" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="1857.55" y="487.5" >buf..</text>
+</g>
+<g >
+<title>blk_io_schedule (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="189" width="54.5" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2247.06" y="199.5" >blk_i..</text>
+</g>
+<g >
+<title>read_const(TABLE*, Index_lookup*) (175,914,294 microseconds, 14.37%)</title><rect x="1895.3" y="573" width="342.1" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1898.26" y="583.5" >read_const(TABLE*, Index_lookup*)</text>
+</g>
+<g >
+<title>__x64_sys_fdatasync (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="637" width="25.0" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="840.69" y="647.5" >_..</text>
+</g>
+<g >
+<title>schedule (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="493" width="12.2" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1225.25" y="503.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="621" width="46.4" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2338.49" y="631.5" >fini..</text>
+</g>
+<g >
+<title>io_schedule_timeout (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="397" width="5.8" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1237.56" y="407.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="637" width="10.3" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1243.37" y="647.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="685" width="58.4" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="672.72" y="695.5" >do_sys..</text>
+</g>
+<g >
+<title>__x64_sys_pwrite64 (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="509" width="5.8" height="15.0" fill="rgb(119,119,237)" rx="2" ry="2" />
+<text  x="1237.56" y="519.5" ></text>
+</g>
+<g >
+<title>futex_wait (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="205" width="62.6" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1898.26" y="215.5" >futex_..</text>
+</g>
+<g >
+<title>- (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="269" width="14.7" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1625.48" y="279.5" ></text>
+</g>
+<g >
+<title>__x64_sys_pread64 (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="269" width="54.5" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="2247.06" y="279.5" >__x64..</text>
+</g>
+<g >
+<title>__futex_wait (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="605" width="43.8" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="1253.75" y="615.5" >__fu..</text>
+</g>
+<g >
+<title>x64_sys_call (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="445" width="22.5" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2315.92" y="455.5" >x..</text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (119,332,450 microseconds, 9.75%)</title><rect x="1622.5" y="477" width="232.1" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="1625.48" y="487.5" >btr_cur_search_to_nth_level(di..</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_other&gt;::single_page() (20,931,244 microseconds, 1.71%)</title><rect x="1854.6" y="461" width="40.7" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1857.55" y="471.5" >Buf..</text>
+</g>
+<g >
+<title>do_futex (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="701" width="46.4" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="2338.49" y="711.5" >do_f..</text>
+</g>
+<g >
+<title>x64_sys_call (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="685" width="285.9" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="919.53" y="695.5" >x64_sys_call</text>
+</g>
+<g >
+<title>handler::ha_update_row(unsigned char const*, unsigned char*) (7,153,887 microseconds, 0.58%)</title><rect x="2299.0" y="669" width="13.9" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="2302.01" y="679.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="477" width="2.7" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="2240.37" y="487.5" ></text>
+</g>
+<g >
+<title>que_run_threads(que_thr_t*) (1,712,833 microseconds, 0.14%)</title><rect x="1457.0" y="781" width="3.3" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1459.99" y="791.5" ></text>
+</g>
+<g >
+<title>schedule (21,639,479 microseconds, 1.77%)</title><rect x="10.1" y="749" width="42.1" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="13.11" y="759.5" >sch..</text>
+</g>
+<g >
+<title>Prepared_statement::execute_loop(THD*, String*, bool) (388,674,836 microseconds, 31.76%)</title><rect x="1579.5" y="749" width="755.9" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1582.53" y="759.5" >Prepared_statement::execute_loop(THD*, String*, bool)</text>
+</g>
+<g >
+<title>io_schedule_timeout (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="445" width="2.6" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2384.89" y="455.5" ></text>
+</g>
+<g >
+<title>os_file_write_func(IORequest&amp;, char const*, int, void const*, unsigned long, unsigned long) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="685" width="2.6" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2384.89" y="695.5" ></text>
+</g>
+<g >
+<title>schedule (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="173" width="12.7" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2303.07" y="183.5" ></text>
+</g>
+<g >
+<title>schedule (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="573" width="51.3" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="789.42" y="583.5" >sched..</text>
+</g>
+<g >
+<title>futex_wait_queue (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="605" width="155.5" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1304.46" y="615.5" >futex_wait_queue</text>
+</g>
+<g >
+<title>write_record(THD*, TABLE*, COPY_INFO*, COPY_INFO*) (1,424,109 microseconds, 0.12%)</title><rect x="2237.4" y="669" width="2.7" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2240.37" y="679.5" ></text>
+</g>
+<g >
+<title>buf_flush_page_coordinator_thread() (28,028,838 microseconds, 2.29%)</title><rect x="2335.5" y="861" width="54.5" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="2338.49" y="871.5" >buf_f..</text>
+</g>
+<g >
+<title>__x64_sys_io_getevents (317,527,170 microseconds, 25.95%)</title><rect x="52.2" y="765" width="617.5" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="55.20" y="775.5" >__x64_sys_io_getevents</text>
+</g>
+<g >
+<title>ha_innobase::index_read(unsigned char*, unsigned char const*, unsigned int, ha_rkey_function) (175,914,290 microseconds, 14.37%)</title><rect x="1895.3" y="541" width="342.1" height="15.0" fill="rgb(118,118,237)" rx="2" ry="2" />
+<text  x="1898.26" y="551.5" >ha_innobase::index_read(unsigned char*, unsign..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (317,527,348 microseconds, 25.95%)</title><rect x="52.2" y="813" width="617.5" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="55.20" y="823.5" >entry_SYSCALL_64_after_hwframe</text>
+</g>
+<g >
+<title>schedule (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="77" width="217.4" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1640.18" y="87.5" >schedule</text>
+</g>
+<g >
+<title>__futex_wait (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="525" width="12.2" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="1225.25" y="535.5" ></text>
+</g>
+<g >
+<title>fdatasync (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="717" width="25.0" height="15.0" fill="rgb(111,111,231)" rx="2" ry="2" />
+<text  x="840.69" y="727.5" >f..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="637" width="119.2" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1463.32" y="647.5" >entry_SYSCALL_..</text>
+</g>
+<g >
+<title>futex_wait (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="397" width="22.5" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="2315.92" y="407.5" >f..</text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="349" width="217.4" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="1640.18" y="359.5" >Fil_shard::do_io(IORequest c..</text>
+</g>
+<g >
+<title>row_update_for_mysql_using_upd_graph(unsigned char const*, row_prebuilt_t*) [clone .constprop.0] (7,028,255 microseconds, 0.57%)</title><rect x="1579.5" y="621" width="13.7" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1582.53" y="631.5" ></text>
+</g>
+<g >
+<title>__iomap_dio_rw (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="477" width="2.6" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="2384.89" y="487.5" ></text>
+</g>
+<g >
+<title>vio_io_wait(Vio*, enum_vio_io_event, int) (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="685" width="119.2" height="15.0" fill="rgb(134,134,250)" rx="2" ry="2" />
+<text  x="1463.32" y="695.5" >vio_io_wait(Vi..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="269" width="39.9" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1858.42" y="279.5" >ent..</text>
+</g>
+<g >
+<title>- (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="717" width="52.4" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="865.74" y="727.5" >-</text>
+</g>
+<g >
+<title>__x64_sys_pread64 (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="285" width="12.8" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="1583.24" y="295.5" ></text>
+</g>
+<g >
+<title>JOIN::extract_func_dependent_tables() (175,914,294 microseconds, 14.37%)</title><rect x="1895.3" y="605" width="342.1" height="15.0" fill="rgb(130,130,246)" rx="2" ry="2" />
+<text  x="1898.26" y="615.5" >JOIN::extract_func_dependent_tables()</text>
+</g>
+<g >
+<title>common_nsleep (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="653" width="5.7" height="15.0" fill="rgb(107,107,227)" rx="2" ry="2" />
+<text  x="1297.50" y="663.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="333" width="12.7" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2303.07" y="343.5" ></text>
+</g>
+<g >
+<title>__x64_sys_futex (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="669" width="155.5" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1304.46" y="679.5" >__x64_sys_futex</text>
+</g>
+<g >
+<title>do_syscall_64 (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="685" width="43.8" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1253.75" y="695.5" >do_s..</text>
+</g>
+<g >
+<title>iomap_dio_rw (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="221" width="2.7" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="2240.37" y="231.5" ></text>
+</g>
+<g >
+<title>futex_wait (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="541" width="12.2" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1225.25" y="551.5" ></text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="429" width="27.4" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1597.22" y="439.5" >f..</text>
+</g>
+<g >
+<title>futex_wait (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="685" width="46.4" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="2338.49" y="695.5" >fute..</text>
+</g>
+<g >
+<title>io_schedule (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="525" width="25.0" height="15.0" fill="rgb(129,129,245)" rx="2" ry="2" />
+<text  x="840.69" y="535.5" >i..</text>
+</g>
+<g >
+<title>std::thread::_State_impl&lt;std::thread::_Invoker&lt;std::tuple&lt;Detached_thread, void (*)(log_t*), log_t*&gt; &gt; &gt;::_M_run() (96,595,047 microseconds, 7.89%)</title><rect x="728.1" y="813" width="187.8" height="15.0" fill="rgb(94,94,217)" rx="2" ry="2" />
+<text  x="731.09" y="823.5" >std::thread::_State_impl..</text>
+</g>
+<g >
+<title>schedule (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="157" width="12.8" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1583.24" y="167.5" ></text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="653" width="12.2" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1225.25" y="663.5" ></text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="653" width="2.6" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="2384.89" y="663.5" ></text>
+</g>
+<g >
+<title>__iomap_dio_rw (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="205" width="54.5" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="2247.06" y="215.5" >__iom..</text>
+</g>
+<g >
+<title>get_key_scans_params(THD*, RANGE_OPT_PARAM*, SEL_TREE*, bool, bool, enum_order, bool, double, bool, Bitmap&lt;64u&gt;*) (140,263,694 microseconds, 11.46%)</title><rect x="1622.5" y="573" width="272.8" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1625.48" y="583.5" >get_key_scans_params(THD*, RANGE_OPT..</text>
+</g>
+<g >
+<title>schedule (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="157" width="62.6" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1898.26" y="167.5" >schedule</text>
+</g>
+<g >
+<title>schedule (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="413" width="2.6" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2384.89" y="423.5" ></text>
+</g>
+<g >
+<title>schedule (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="141" width="54.5" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2247.06" y="151.5" >sched..</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="509" width="58.5" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="2243.14" y="519.5" >Buf_fe..</text>
+</g>
+<g >
+<title>__futex_wait (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="221" width="4.0" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="2243.14" y="231.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="477" width="28.4" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="1596.20" y="487.5" >Bu..</text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="445" width="12.7" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="2303.07" y="455.5" ></text>
+</g>
+<g >
+<title>__x64_sys_pwrite64 (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="557" width="2.6" height="15.0" fill="rgb(119,119,237)" rx="2" ry="2" />
+<text  x="2384.89" y="567.5" ></text>
+</g>
+<g >
+<title>schedule (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="125" width="14.7" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1625.48" y="135.5" ></text>
+</g>
+<g >
+<title>os_file_write_func(IORequest&amp;, char const*, int, void const*, unsigned long, unsigned long) (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="637" width="5.8" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1237.56" y="647.5" ></text>
+</g>
+<g >
+<title>ext4_file_read_iter (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="189" width="7.5" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="2232.90" y="199.5" ></text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (6,920,564 microseconds, 0.57%)</title><rect x="1579.5" y="461" width="13.5" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1582.53" y="471.5" ></text>
+</g>
+<g >
+<title>io_schedule_timeout (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="125" width="39.9" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1858.42" y="135.5" >io_..</text>
+</g>
+<g >
+<title>x64_sys_call (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="285" width="4.0" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2243.14" y="295.5" ></text>
+</g>
+<g >
+<title>blk_io_schedule (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="413" width="5.8" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1237.56" y="423.5" ></text>
+</g>
+<g >
+<title>blk_io_schedule (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="141" width="39.9" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1858.42" y="151.5" >blk..</text>
+</g>
+<g >
+<title>ext4_file_read_iter (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="173" width="217.4" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="1640.18" y="183.5" >ext4_file_read_iter</text>
+</g>
+<g >
+<title>trx_commit_complete_for_mysql(trx_t*) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="605" width="22.5" height="15.0" fill="rgb(112,112,232)" rx="2" ry="2" />
+<text  x="2315.92" y="615.5" >t..</text>
+</g>
+<g >
+<title>__x64_sys_futex (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="573" width="12.2" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1225.25" y="583.5" ></text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (1,424,105 microseconds, 0.12%)</title><rect x="2237.4" y="541" width="2.7" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="2240.37" y="551.5" ></text>
+</g>
+<g >
+<title>__libc_pwrite (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="589" width="5.8" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1237.56" y="599.5" ></text>
+</g>
+<g >
+<title>vfs_write (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="477" width="19.8" height="15.0" fill="rgb(134,134,250)" rx="2" ry="2" />
+<text  x="1205.48" y="487.5" ></text>
+</g>
+<g >
+<title>ha_innobase::delete_row(unsigned char const*) (7,028,255 microseconds, 0.57%)</title><rect x="1579.5" y="637" width="13.7" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1582.53" y="647.5" ></text>
+</g>
+<g >
+<title>Double_write::force_flush(buf_flush_t) (8,332,108 microseconds, 0.68%)</title><rect x="1234.5" y="733" width="16.2" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="1237.54" y="743.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="125" width="2.7" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2240.37" y="135.5" ></text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="733" width="52.4" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="865.74" y="743.5" >__GI_..</text>
+</g>
+<g >
+<title>__x64_sys_pread64 (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="301" width="12.7" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="2303.07" y="311.5" ></text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="365" width="39.9" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="1858.42" y="375.5" >Fil..</text>
+</g>
+<g >
+<title>net_read_raw_loop(NET*, unsigned long) (61,295,825 microseconds, 5.01%)</title><rect x="1460.3" y="733" width="119.2" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1463.32" y="743.5" >net_read_raw_l..</text>
+</g>
+<g >
+<title>__futex_wait (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="621" width="285.9" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="919.53" y="631.5" >__futex_wait</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="717" width="5.7" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1297.50" y="727.5" ></text>
+</g>
+<g >
+<title>futex_wait (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="557" width="10.3" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1243.37" y="567.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (21,697,127 microseconds, 1.77%)</title><rect x="10.0" y="845" width="42.2" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="13.00" y="855.5" >ent..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="349" width="12.7" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2303.07" y="359.5" ></text>
+</g>
+<g >
+<title>schedule (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="509" width="10.3" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1243.37" y="519.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="749" width="46.4" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2338.49" y="759.5" >do_s..</text>
+</g>
+<g >
+<title>handle_connection (450,008,734 microseconds, 36.77%)</title><rect x="1460.3" y="813" width="875.2" height="15.0" fill="rgb(97,97,219)" rx="2" ry="2" />
+<text  x="1463.32" y="823.5" >handle_connection</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="349" width="39.9" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="1858.42" y="359.5" >os_..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="77" width="7.5" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2232.90" y="87.5" ></text>
+</g>
+<g >
+<title>- (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="717" width="58.4" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="672.72" y="727.5" >-</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="733" width="43.8" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1253.75" y="743.5" >__GI..</text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="413" width="27.4" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="1597.22" y="423.5" >F..</text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="461" width="58.5" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2243.14" y="471.5" >buf_re..</text>
+</g>
+<g >
+<title>__GI___clock_nanosleep (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="749" width="5.7" height="15.0" fill="rgb(112,112,232)" rx="2" ry="2" />
+<text  x="1297.50" y="759.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="685" width="52.4" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="865.74" y="695.5" >do_sy..</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="397" width="27.4" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="1597.22" y="407.5" >o..</text>
+</g>
+<g >
+<title>ext4_sync_file (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="621" width="25.0" height="15.0" fill="rgb(87,87,211)" rx="2" ry="2" />
+<text  x="840.69" y="631.5" >e..</text>
+</g>
+<g >
+<title>JOIN::estimate_rowcount() (140,263,699 microseconds, 11.46%)</title><rect x="1622.5" y="605" width="272.8" height="15.0" fill="rgb(90,90,213)" rx="2" ry="2" />
+<text  x="1625.48" y="615.5" >JOIN::estimate_rowcount()</text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="541" width="22.5" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="2315.92" y="551.5" >o..</text>
+</g>
+<g >
+<title>os_file_write_func(IORequest&amp;, char const*, int, void const*, unsigned long, unsigned long) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="621" width="19.8" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1205.48" y="631.5" ></text>
+</g>
+<g >
+<title>Log_file_handle::fsync() (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="765" width="25.0" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="840.69" y="775.5" >L..</text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (6,920,564 microseconds, 0.57%)</title><rect x="1579.5" y="509" width="13.5" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1582.53" y="519.5" ></text>
+</g>
+<g >
+<title>- (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="365" width="12.7" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2303.07" y="375.5" ></text>
+</g>
+<g >
+<title>row_search_index_entry(dict_index_t*, dtuple_t const*, unsigned long, btr_pcur_t*, mtr_t*) (7,028,067 microseconds, 0.57%)</title><rect x="1579.5" y="573" width="13.7" height="15.0" fill="rgb(129,129,245)" rx="2" ry="2" />
+<text  x="1582.53" y="583.5" ></text>
+</g>
+<g >
+<title>schedule_timeout (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="157" width="27.4" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1597.22" y="167.5" >s..</text>
+</g>
+<g >
+<title>schedule (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="349" width="22.5" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2315.92" y="359.5" >s..</text>
+</g>
+<g >
+<title>handler::ha_write_row(unsigned char*) (1,424,109 microseconds, 0.12%)</title><rect x="2237.4" y="653" width="2.7" height="15.0" fill="rgb(136,136,251)" rx="2" ry="2" />
+<text  x="2240.37" y="663.5" ></text>
+</g>
+<g >
+<title>log_flush_low(log_t&amp;) (12,877,707 microseconds, 1.05%)</title><rect x="837.7" y="781" width="25.0" height="15.0" fill="rgb(114,114,233)" rx="2" ry="2" />
+<text  x="840.69" y="791.5" >l..</text>
+</g>
+<g >
+<title>schedule_timeout (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="109" width="7.5" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="2232.90" y="119.5" ></text>
+</g>
+<g >
+<title>__futex_wait (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="605" width="58.3" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="731.09" y="615.5" >__fute..</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="797" width="46.4" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2338.49" y="807.5" >__GI..</text>
+</g>
+<g >
+<title>blk_io_schedule (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="461" width="2.6" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2384.89" y="471.5" ></text>
+</g>
+<g >
+<title>os_event::wait_low(long) (7,559,542 microseconds, 0.62%)</title><rect x="1622.5" y="317" width="14.7" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1625.48" y="327.5" ></text>
+</g>
+<g >
+<title>trx_purge(unsigned long, unsigned long, bool) (3,576,328 microseconds, 0.29%)</title><rect x="1294.5" y="781" width="7.0" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1297.50" y="791.5" ></text>
+</g>
+<g >
+<title>buf_flush_page_cleaner_thread() (171,855,146 microseconds, 14.04%)</title><rect x="916.5" y="797" width="334.2" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="919.53" y="807.5" >buf_flush_page_cleaner_thread()</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="701" width="58.4" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="672.72" y="711.5" >entry_..</text>
+</g>
+<g >
+<title>os_file_fsync_posix(int) (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="733" width="25.0" height="15.0" fill="rgb(125,125,243)" rx="2" ry="2" />
+<text  x="840.69" y="743.5" >o..</text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="669" width="12.2" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1225.25" y="679.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="477" width="58.5" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="2243.14" y="487.5" >Buf_fe..</text>
+</g>
+<g >
+<title>x64_sys_call (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="653" width="25.0" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="840.69" y="663.5" >x..</text>
+</g>
+<g >
+<title>futex_wait_queue (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="589" width="52.4" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="865.74" y="599.5" >futex..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="285" width="271.9" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1960.93" y="295.5" >entry_SYSCALL_64_after_hwframe</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="445" width="2.7" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2240.37" y="455.5" ></text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (6,609,438 microseconds, 0.54%)</title><rect x="2300.1" y="573" width="12.8" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="2303.07" y="583.5" ></text>
+</g>
+<g >
+<title>srv_purge_coordinator_thread() (26,076,398 microseconds, 2.13%)</title><rect x="1250.7" y="797" width="50.8" height="15.0" fill="rgb(94,94,217)" rx="2" ry="2" />
+<text  x="1253.75" y="807.5" >srv_p..</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="733" width="58.4" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="672.72" y="743.5" >__GI__..</text>
+</g>
+<g >
+<title>x64_sys_call (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="669" width="43.8" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1253.75" y="679.5" >x64_..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="573" width="155.5" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1304.46" y="583.5" >finish_task_switch...</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="701" width="43.8" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1253.75" y="711.5" >entr..</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="397" width="54.5" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="2247.06" y="407.5" >os_fi..</text>
+</g>
+<g >
+<title>handler::ha_index_read_map(unsigned char*, unsigned char const*, unsigned long, ha_rkey_function) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="589" width="28.6" height="15.0" fill="rgb(130,130,246)" rx="2" ry="2" />
+<text  x="1596.20" y="599.5" >ha..</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="477" width="7.6" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="2232.78" y="487.5" ></text>
+</g>
+<g >
+<title>schedule (317,527,170 microseconds, 25.95%)</title><rect x="52.2" y="717" width="617.5" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="55.20" y="727.5" >schedule</text>
+</g>
+<g >
+<title>vfs_read (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="189" width="217.4" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1640.18" y="199.5" >vfs_read</text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="541" width="58.5" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="2243.14" y="551.5" >btr_cu..</text>
+</g>
+<g >
+<title>io_schedule_timeout (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="125" width="7.5" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2232.90" y="135.5" ></text>
+</g>
+<g >
+<title>os_file_write_retry(IORequest&amp;, char const*, pfs_os_file_t, void const*, unsigned long, unsigned long) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="637" width="19.8" height="15.0" fill="rgb(111,111,231)" rx="2" ry="2" />
+<text  x="1205.48" y="647.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_other&gt;::read_page() (20,931,244 microseconds, 1.71%)</title><rect x="1854.6" y="429" width="40.7" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1857.55" y="439.5" >Buf..</text>
+</g>
+<g >
+<title>pc_flush_slot() (24,884,899 microseconds, 2.03%)</title><rect x="1202.4" y="781" width="48.3" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1205.35" y="791.5" >pc_f..</text>
+</g>
+<g >
+<title>do_syscall_64 (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="237" width="217.4" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1640.18" y="247.5" >do_syscall_64</text>
+</g>
+<g >
+<title>futex_wait (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="637" width="285.9" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="919.53" y="647.5" >futex_wait</text>
+</g>
+<g >
+<title>ha_commit_low(THD*, bool, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="637" width="22.5" height="15.0" fill="rgb(84,84,208)" rx="2" ry="2" />
+<text  x="2315.92" y="647.5" >h..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="685" width="25.0" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="840.69" y="695.5" >e..</text>
+</g>
+<g >
+<title>__x64_sys_futex (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="653" width="58.4" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="672.72" y="663.5" >__x64_..</text>
+</g>
+<g >
+<title>handler::ha_index_read_map(unsigned char*, unsigned char const*, unsigned long, ha_rkey_function) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="589" width="58.9" height="15.0" fill="rgb(130,130,246)" rx="2" ry="2" />
+<text  x="2243.14" y="599.5" >handle..</text>
+</g>
+<g >
+<title>row_search_mvcc(unsigned char*, page_cur_mode_t, row_prebuilt_t*, unsigned long, unsigned long) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="557" width="28.6" height="15.0" fill="rgb(100,100,222)" rx="2" ry="2" />
+<text  x="1596.20" y="567.5" >ro..</text>
+</g>
+<g >
+<title>- (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="653" width="119.2" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1463.32" y="663.5" >-</text>
+</g>
+<g >
+<title>schedule_timeout (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="125" width="271.9" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1960.93" y="135.5" >schedule_timeout</text>
+</g>
+<g >
+<title>- (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="701" width="25.0" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="840.69" y="711.5" >-</text>
+</g>
+<g >
+<title>IndexRangeScanIterator::Read() (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="669" width="28.6" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="1596.20" y="679.5" >In..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="621" width="12.2" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1225.25" y="631.5" ></text>
+</g>
+<g >
+<title>vfs_read (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="269" width="12.8" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1583.24" y="279.5" ></text>
+</g>
+<g >
+<title>os_event::wait_low(long) (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="685" width="12.2" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1225.25" y="695.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="141" width="62.6" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1898.26" y="151.5" >finish..</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="461" width="7.6" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="2232.78" y="471.5" ></text>
+</g>
+<g >
+<title>Query_expression::optimize(THD*, TABLE*, bool, bool) (316,178,009 microseconds, 25.84%)</title><rect x="1622.5" y="669" width="614.9" height="15.0" fill="rgb(118,118,237)" rx="2" ry="2" />
+<text  x="1625.48" y="679.5" >Query_expression::optimize(THD*, TABLE*, bool, bool)</text>
+</g>
+<g >
+<title>__futex_wait (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="189" width="62.6" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="1898.26" y="199.5" >__fute..</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="365" width="271.9" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="1960.93" y="375.5" >os_file_read_func(IORequest&amp;, char c..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="317" width="27.4" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1597.22" y="327.5" >e..</text>
+</g>
+<g >
+<title>schedule (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="349" width="19.8" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1205.48" y="359.5" ></text>
+</g>
+<g >
+<title>__x64_sys_futex (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="717" width="46.4" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="2338.49" y="727.5" >__x6..</text>
+</g>
+<g >
+<title>vfs_read (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="253" width="54.5" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="2247.06" y="263.5" >vfs_r..</text>
+</g>
+<g >
+<title>join_read_const_table(JOIN_TAB*, POSITION*) (175,914,294 microseconds, 14.37%)</title><rect x="1895.3" y="589" width="342.1" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1898.26" y="599.5" >join_read_const_table(JOIN_TAB*, POSITION*)</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (119,332,439 microseconds, 9.75%)</title><rect x="1622.5" y="413" width="232.1" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="1625.48" y="423.5" >Buf_fetch&lt;Buf_fetch_normal&gt;::r..</text>
+</g>
+<g >
+<title>- (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="621" width="2.6" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2384.89" y="631.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="605" width="10.3" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1243.37" y="615.5" ></text>
+</g>
+<g >
+<title>Buf_fetch_other::get(buf_block_t*&amp;) (20,931,244 microseconds, 1.71%)</title><rect x="1854.6" y="445" width="40.7" height="15.0" fill="rgb(117,117,236)" rx="2" ry="2" />
+<text  x="1857.55" y="455.5" >Buf..</text>
+</g>
+<g >
+<title>check_quick_select(THD*, RANGE_OPT_PARAM*, unsigned int, bool, SEL_ROOT*, bool, enum_order, bool, unsigned int*, unsigned int*, Cost_estimate*, bool*, bool*) (140,263,694 microseconds, 11.46%)</title><rect x="1622.5" y="557" width="272.8" height="15.0" fill="rgb(111,111,230)" rx="2" ry="2" />
+<text  x="1625.48" y="567.5" >check_quick_select(THD*, RANGE_OPT_P..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="253" width="14.7" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1625.48" y="263.5" ></text>
+</g>
+<g >
+<title>ppoll (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="669" width="119.2" height="15.0" fill="rgb(138,138,254)" rx="2" ry="2" />
+<text  x="1463.32" y="679.5" >ppoll</text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="397" width="271.9" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1960.93" y="407.5" >fil_io(IORequest const&amp;, bool, page_..</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (119,332,439 microseconds, 9.75%)</title><rect x="1622.5" y="381" width="232.1" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1625.48" y="391.5" >buf_read_page_low(dberr_t*, bo..</text>
+</g>
+<g >
+<title>__futex_wait (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="605" width="51.3" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="789.42" y="615.5" >__fut..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="557" width="58.3" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="731.09" y="567.5" >finish..</text>
+</g>
+<g >
+<title>buf_page_init_for_read(unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool) (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="429" width="4.0" height="15.0" fill="rgb(114,114,233)" rx="2" ry="2" />
+<text  x="2243.14" y="439.5" ></text>
+</g>
+<g >
+<title>__x64_sys_futex (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="653" width="51.3" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="789.42" y="663.5" >__x64..</text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (172,008,571 microseconds, 14.06%)</title><rect x="1895.3" y="461" width="334.5" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1898.26" y="471.5" >Buf_fetch_normal::get(buf_block_t*&amp;)</text>
+</g>
+<g >
+<title>buf_LRU_get_free_block(buf_pool_t*) (32,224,355 microseconds, 2.63%)</title><rect x="1895.3" y="381" width="62.6" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1898.26" y="391.5" >buf_LR..</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="429" width="12.7" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="2303.07" y="439.5" ></text>
+</g>
+<g >
+<title>__pread64 (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="349" width="54.5" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="2247.06" y="359.5" >__pre..</text>
+</g>
+<g >
+<title>buf_flush_page_and_try_neighbors(buf_page_t*, buf_flush_t, unsigned long, unsigned long*) [clone .isra.0] (16,552,697 microseconds, 1.35%)</title><rect x="1202.4" y="749" width="32.1" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1205.35" y="759.5" >bu..</text>
+</g>
+<g >
+<title>x64_sys_call (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="509" width="19.8" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1205.48" y="519.5" ></text>
+</g>
+<g >
+<title>Query_block::optimize(THD*, bool) (316,178,009 microseconds, 25.84%)</title><rect x="1622.5" y="653" width="614.9" height="15.0" fill="rgb(114,114,233)" rx="2" ry="2" />
+<text  x="1625.48" y="663.5" >Query_block::optimize(THD*, bool)</text>
+</g>
+<g >
+<title>log_files_governor(log_t*) (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="797" width="58.3" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="731.09" y="807.5" >log_fi..</text>
+</g>
+<g >
+<title>__x64_sys_futex (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="669" width="285.9" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="919.53" y="679.5" >__x64_sys_futex</text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="429" width="2.7" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="2240.37" y="439.5" ></text>
+</g>
+<g >
+<title>do_futex (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="637" width="58.4" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="672.72" y="647.5" >do_futex</text>
+</g>
+<g >
+<title>pfs_spawn_thread (450,008,734 microseconds, 36.77%)</title><rect x="1460.3" y="829" width="875.2" height="15.0" fill="rgb(81,81,205)" rx="2" ry="2" />
+<text  x="1463.32" y="839.5" >pfs_spawn_thread</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="333" width="217.4" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="1640.18" y="343.5" >os_file_read_func(IORequest&amp;..</text>
+</g>
+<g >
+<title>__x64_sys_pread64 (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="205" width="217.4" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="1640.18" y="215.5" >__x64_sys_pread64</text>
+</g>
+<g >
+<title>schedule (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="509" width="119.2" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1463.32" y="519.5" >schedule</text>
+</g>
+<g >
+<title>__x64_sys_pread64 (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="237" width="271.9" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="1960.93" y="247.5" >__x64_sys_pread64</text>
+</g>
+<g >
+<title>x64_sys_call (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="237" width="7.5" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2232.90" y="247.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (21,697,040 microseconds, 1.77%)</title><rect x="10.0" y="813" width="42.2" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="13.00" y="823.5" >x64..</text>
+</g>
+<g >
+<title>ha_innobase::read_range_first(key_range const*, key_range const*, bool, bool) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="621" width="58.9" height="15.0" fill="rgb(101,101,222)" rx="2" ry="2" />
+<text  x="2243.14" y="631.5" >ha_inn..</text>
+</g>
+<g >
+<title>io_schedule_timeout (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="173" width="2.7" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2240.37" y="183.5" ></text>
+</g>
+<g >
+<title>do_sys_poll (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="573" width="119.2" height="15.0" fill="rgb(97,97,219)" rx="2" ry="2" />
+<text  x="1463.32" y="583.5" >do_sys_poll</text>
+</g>
+<g >
+<title>futex_wait (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="621" width="51.3" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="789.42" y="631.5" >futex..</text>
+</g>
+<g >
+<title>__x64_sys_io_getevents (21,639,481 microseconds, 1.77%)</title><rect x="10.1" y="797" width="42.1" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="13.11" y="807.5" >__x..</text>
+</g>
+<g >
+<title>do_syscall_64 (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="685" width="58.3" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="731.09" y="695.5" >do_sys..</text>
+</g>
+<g >
+<title>log_flush_notifier(log_t*) (26,366,465 microseconds, 2.15%)</title><rect x="786.4" y="797" width="51.3" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="789.42" y="807.5" >log_f..</text>
+</g>
+<g >
+<title>blk_io_schedule (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="397" width="19.8" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1205.48" y="407.5" ></text>
+</g>
+<g >
+<title>row_ins_sec_index_entry_low(unsigned int, unsigned long, dict_index_t*, mem_block_info_t*, mem_block_info_t*, dtuple_t*, unsigned long, que_thr_t*, bool) (1,424,105 microseconds, 0.12%)</title><rect x="2237.4" y="557" width="2.7" height="15.0" fill="rgb(110,110,230)" rx="2" ry="2" />
+<text  x="2240.37" y="567.5" ></text>
+</g>
+<g >
+<title>handler::multi_range_read_next(char**) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="637" width="28.6" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1596.20" y="647.5" >ha..</text>
+</g>
+<g >
+<title>- (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="717" width="51.3" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="789.42" y="727.5" >-</text>
+</g>
+<g >
+<title>schedule_timeout (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="429" width="2.6" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="2384.89" y="439.5" ></text>
+</g>
+<g >
+<title>Double_write::flush_to_disk(buf_flush_t) (1,175,352 microseconds, 0.10%)</title><rect x="2386.3" y="781" width="2.3" height="15.0" fill="rgb(93,93,215)" rx="2" ry="2" />
+<text  x="2389.31" y="791.5" ></text>
+</g>
+<g >
+<title>vfs_read (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="221" width="271.9" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1960.93" y="231.5" >vfs_read</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="573" width="285.9" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="919.53" y="583.5" >finish_task_switch.isra.0</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="61" width="217.4" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1640.18" y="71.5" >finish_task_switch.isra.0</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="397" width="7.6" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2232.78" y="407.5" ></text>
+</g>
+<g >
+<title>- (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="349" width="12.8" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1583.24" y="359.5" ></text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="765" width="58.3" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="731.09" y="775.5" >os_eve..</text>
+</g>
+<g >
+<title>__x64_sys_futex (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="653" width="43.8" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1253.75" y="663.5" >__x6..</text>
+</g>
+<g >
+<title>buf_LRU_get_free_block(buf_pool_t*) (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="413" width="4.0" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="2243.14" y="423.5" ></text>
+</g>
+<g >
+<title>io_schedule_timeout (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="173" width="54.5" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2247.06" y="183.5" >io_sc..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="701" width="51.3" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="789.42" y="711.5" >entry..</text>
+</g>
+<g >
+<title>JOIN::optimize(bool) (316,178,009 microseconds, 25.84%)</title><rect x="1622.5" y="637" width="614.9" height="15.0" fill="rgb(99,99,221)" rx="2" ry="2" />
+<text  x="1625.48" y="647.5" >JOIN::optimize(bool)</text>
+</g>
+<g >
+<title>vfs_write (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="493" width="5.8" height="15.0" fill="rgb(134,134,250)" rx="2" ry="2" />
+<text  x="1237.56" y="503.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="701" width="285.9" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="919.53" y="711.5" >do_syscall_64</text>
+</g>
+<g >
+<title>futex_wait (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="621" width="43.8" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1253.75" y="631.5" >fute..</text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="461" width="12.7" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="2303.07" y="471.5" ></text>
+</g>
+<g >
+<title>dispatch_command(THD*, COM_DATA const*, enum_server_command) (388,674,999 microseconds, 31.76%)</title><rect x="1579.5" y="781" width="755.9" height="15.0" fill="rgb(80,80,205)" rx="2" ry="2" />
+<text  x="1582.53" y="791.5" >dispatch_command(THD*, COM_DATA const*, enum_server_command)</text>
+</g>
+<g >
+<title>__iomap_dio_rw (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="205" width="2.7" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="2240.37" y="215.5" ></text>
+</g>
+<g >
+<title>__pread64 (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="301" width="39.9" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1858.42" y="311.5" >__p..</text>
+</g>
+<g >
+<title>handler::ha_multi_range_read_next(char**) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="653" width="58.9" height="15.0" fill="rgb(138,138,253)" rx="2" ry="2" />
+<text  x="2243.14" y="663.5" >handle..</text>
+</g>
+<g >
+<title>__futex_wait (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="605" width="52.4" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="865.74" y="615.5" >__fut..</text>
+</g>
+<g >
+<title>io_schedule_timeout (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="173" width="27.4" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1597.22" y="183.5" >i..</text>
+</g>
+<g >
+<title>row_upd_step(que_thr_t*) (7,153,887 microseconds, 0.58%)</title><rect x="2299.0" y="621" width="13.9" height="15.0" fill="rgb(138,138,253)" rx="2" ry="2" />
+<text  x="2302.01" y="631.5" ></text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="493" width="58.5" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="2243.14" y="503.5" >Buf_fe..</text>
+</g>
+<g >
+<title>do_syscall_64 (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="301" width="4.0" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2243.14" y="311.5" ></text>
+</g>
+<g >
+<title>buf_flush_do_batch(buf_pool_t*, buf_flush_t, unsigned long, unsigned long, unsigned long*) (24,884,899 microseconds, 2.03%)</title><rect x="1202.4" y="765" width="48.3" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1205.35" y="775.5" >buf_..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="557" width="52.4" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="865.74" y="567.5" >finis..</text>
+</g>
+<g >
+<title>x64_sys_call (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="669" width="58.4" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="672.72" y="679.5" >x64_sy..</text>
+</g>
+<g >
+<title>- (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="717" width="43.8" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1253.75" y="727.5" >-</text>
+</g>
+<g >
+<title>do_io_getevents (317,527,170 microseconds, 25.95%)</title><rect x="52.2" y="749" width="617.5" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="55.20" y="759.5" >do_io_getevents</text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="765" width="52.4" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="865.74" y="775.5" >os_ev..</text>
+</g>
+<g >
+<title>do_nanosleep (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="621" width="5.7" height="15.0" fill="rgb(137,137,253)" rx="2" ry="2" />
+<text  x="1297.50" y="631.5" ></text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="445" width="28.4" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1596.20" y="455.5" >bu..</text>
+</g>
+<g >
+<title>__x64_sys_futex (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="205" width="14.7" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1625.48" y="215.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (1,423,756 microseconds, 0.12%)</title><rect x="2237.4" y="509" width="2.7" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="2240.37" y="519.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="701" width="5.7" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1297.50" y="711.5" ></text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="557" width="22.5" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="2315.92" y="567.5" >o..</text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="381" width="39.9" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1858.42" y="391.5" >fil..</text>
+</g>
+<g >
+<title>do_syscall_64 (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="589" width="2.6" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2384.89" y="599.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="221" width="217.4" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1640.18" y="231.5" >x64_sys_call</text>
+</g>
+<g >
+<title>x64_sys_call (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="221" width="14.7" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1625.48" y="231.5" ></text>
+</g>
+<g >
+<title>- (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="733" width="5.7" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1297.50" y="743.5" ></text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="733" width="58.3" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="731.09" y="743.5" >__GI__..</text>
+</g>
+<g >
+<title>do_io_getevents (21,639,481 microseconds, 1.77%)</title><rect x="10.1" y="781" width="42.1" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="13.11" y="791.5" >do_..</text>
+</g>
+<g >
+<title>do_futex (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="253" width="4.0" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="2243.14" y="263.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="381" width="27.4" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1597.22" y="391.5" >o..</text>
+</g>
+<g >
+<title>test_quick_select(THD*, MEM_ROOT*, MEM_ROOT*, Bitmap&lt;64u&gt;, unsigned long, unsigned long, unsigned long long, bool, enum_order, TABLE*, bool, Item*, Bitmap&lt;64u&gt;*, bool, Query_block*, AccessPath**) (140,263,699 microseconds, 11.46%)</title><rect x="1622.5" y="589" width="272.8" height="15.0" fill="rgb(106,106,226)" rx="2" ry="2" />
+<text  x="1625.48" y="599.5" >test_quick_select(THD*, MEM_ROOT*, M..</text>
+</g>
+<g >
+<title>- (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="493" width="22.5" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2315.92" y="503.5" >-</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="493" width="10.3" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1243.37" y="503.5" ></text>
+</g>
+<g >
+<title>Double_write::force_flush(buf_flush_t) (1,175,352 microseconds, 0.10%)</title><rect x="2386.3" y="797" width="2.3" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="2389.31" y="807.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="349" width="271.9" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1960.93" y="359.5" >os_file_read_page(IORequest&amp;, char c..</text>
+</g>
+<g >
+<title>buf_flush_page_and_try_neighbors(buf_page_t*, buf_flush_t, unsigned long, unsigned long*) [clone .isra.0] (2,283,406 microseconds, 0.19%)</title><rect x="2381.9" y="813" width="4.4" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="2384.87" y="823.5" ></text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="413" width="54.5" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="2247.06" y="423.5" >Fil_s..</text>
+</g>
+<g >
+<title>do_futex (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="189" width="14.7" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1625.48" y="199.5" ></text>
+</g>
+<g >
+<title>row_update_for_mysql_using_upd_graph(unsigned char const*, row_prebuilt_t*) [clone .constprop.0] (7,153,887 microseconds, 0.58%)</title><rect x="2299.0" y="637" width="13.9" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2302.01" y="647.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="397" width="12.8" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1583.24" y="407.5" ></text>
+</g>
+<g >
+<title>- (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="333" width="54.5" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2247.06" y="343.5" >-</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (6,609,438 microseconds, 0.54%)</title><rect x="2300.1" y="557" width="12.8" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="2303.07" y="567.5" ></text>
+</g>
+<g >
+<title>schedule (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="573" width="58.3" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="731.09" y="583.5" >schedule</text>
+</g>
+<g >
+<title>schedule (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="109" width="271.9" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1960.93" y="119.5" >schedule</text>
+</g>
+<g >
+<title>ext4_file_write_iter (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="477" width="5.8" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1237.56" y="487.5" ></text>
+</g>
+<g >
+<title>futex_wait_queue (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="173" width="62.6" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1898.26" y="183.5" >futex_..</text>
+</g>
+<g >
+<title>do_syscall_64 (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="237" width="14.7" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1625.48" y="247.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="317" width="12.8" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1583.24" y="327.5" ></text>
+</g>
+<g >
+<title>schedule (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="573" width="52.4" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="865.74" y="583.5" >sched..</text>
+</g>
+<g >
+<title>x64_sys_call (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="317" width="12.7" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2303.07" y="327.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="333" width="22.5" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2315.92" y="343.5" >f..</text>
+</g>
+<g >
+<title>trx_flush_log_if_needed(unsigned long, trx_t*) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="589" width="22.5" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="2315.92" y="599.5" >t..</text>
+</g>
+<g >
+<title>Double_write::write_pages(buf_flush_t) (2,983,965 microseconds, 0.24%)</title><rect x="1234.6" y="701" width="5.8" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1237.56" y="711.5" ></text>
+</g>
+<g >
+<title>trans_commit(THD*, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="701" width="22.5" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="2315.92" y="711.5" >t..</text>
+</g>
+<g >
+<title>x64_sys_call (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="669" width="51.3" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="789.42" y="679.5" >x64_s..</text>
+</g>
+<g >
+<title>- (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="285" width="7.5" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2232.90" y="295.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="333" width="39.9" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1858.42" y="343.5" >os_..</text>
+</g>
+<g >
+<title>handler::read_range_first(key_range const*, key_range const*, bool, bool) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="605" width="58.9" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2243.14" y="615.5" >handle..</text>
+</g>
+<g >
+<title>__iomap_dio_rw (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="157" width="39.9" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1858.42" y="167.5" >__i..</text>
+</g>
+<g >
+<title>row_upd_step(que_thr_t*) (7,028,255 microseconds, 0.57%)</title><rect x="1579.5" y="605" width="13.7" height="15.0" fill="rgb(138,138,253)" rx="2" ry="2" />
+<text  x="1582.53" y="615.5" ></text>
+</g>
+<g >
+<title>__x64_sys_pread64 (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="269" width="27.4" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="1597.22" y="279.5" >_..</text>
+</g>
+<g >
+<title>Batch_segment::write(dblwr::Buffer const&amp;) (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="669" width="5.8" height="15.0" fill="rgb(97,97,219)" rx="2" ry="2" />
+<text  x="1237.56" y="679.5" ></text>
+</g>
+<g >
+<title>iomap_dio_rw (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="253" width="12.7" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="2303.07" y="263.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="685" width="155.5" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1304.46" y="695.5" >x64_sys_call</text>
+</g>
+<g >
+<title>schedule_hrtimeout_range_clock (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="525" width="119.2" height="15.0" fill="rgb(101,101,222)" rx="2" ry="2" />
+<text  x="1463.32" y="535.5" >schedule_hrtim..</text>
+</g>
+<g >
+<title>x64_sys_call (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="253" width="271.9" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1960.93" y="263.5" >x64_sys_call</text>
+</g>
+<g >
+<title>__futex_wait (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="605" width="58.4" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="672.72" y="615.5" >__fute..</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="349" width="7.5" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="2232.90" y="359.5" ></text>
+</g>
+<g >
+<title>ext4_file_read_iter (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="237" width="54.5" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="2247.06" y="247.5" >ext4_..</text>
+</g>
+<g >
+<title>start_thread (856,532,513 microseconds, 69.99%)</title><rect x="669.7" y="845" width="1665.8" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="672.72" y="855.5" >start_thread</text>
+</g>
+<g >
+<title>read_events (317,527,170 microseconds, 25.95%)</title><rect x="52.2" y="733" width="617.5" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="55.20" y="743.5" >read_events</text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (20,931,244 microseconds, 1.71%)</title><rect x="1854.6" y="413" width="40.7" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1857.55" y="423.5" >buf..</text>
+</g>
+<g >
+<title>do_syscall_64 (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="605" width="12.2" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1225.25" y="615.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="701" width="52.4" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="865.74" y="711.5" >entry..</text>
+</g>
+<g >
+<title>file_write_and_wait_range (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="605" width="25.0" height="15.0" fill="rgb(120,120,238)" rx="2" ry="2" />
+<text  x="840.69" y="615.5" >f..</text>
+</g>
+<g >
+<title>row_insert_for_mysql(unsigned char const*, row_prebuilt_t*) (1,424,105 microseconds, 0.12%)</title><rect x="2237.4" y="621" width="2.7" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2240.37" y="631.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="253" width="217.4" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1640.18" y="263.5" >entry_SYSCALL_64_after_hwframe</text>
+</g>
+<g >
+<title>btr_pcur_t::move_to_next(mtr_t*) (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="509" width="7.6" height="15.0" fill="rgb(132,132,248)" rx="2" ry="2" />
+<text  x="2232.78" y="519.5" ></text>
+</g>
+<g >
+<title>vio_socket_io_wait(Vio*, enum_vio_io_event) (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="701" width="119.2" height="15.0" fill="rgb(102,102,223)" rx="2" ry="2" />
+<text  x="1463.32" y="711.5" >vio_socket_io_..</text>
+</g>
+<g >
+<title>my_net_read(NET*) (61,295,825 microseconds, 5.01%)</title><rect x="1460.3" y="765" width="119.2" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1463.32" y="775.5" >my_net_read(NE..</text>
+</g>
+<g >
+<title>do_futex (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="637" width="43.8" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1253.75" y="647.5" >do_f..</text>
+</g>
+<g >
+<title>__x64_sys_futex (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="589" width="10.3" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1243.37" y="599.5" ></text>
+</g>
+<g >
+<title>__x64_sys_futex (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="653" width="58.3" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="731.09" y="663.5" >__x64_..</text>
+</g>
+<g >
+<title>io_schedule_timeout (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="381" width="19.8" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1205.48" y="391.5" ></text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (30,050,052 microseconds, 2.46%)</title><rect x="2240.1" y="525" width="58.5" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="2243.14" y="535.5" >buf_pa..</text>
+</g>
+<g >
+<title>hrtimer_nanosleep (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="637" width="5.7" height="15.0" fill="rgb(118,118,237)" rx="2" ry="2" />
+<text  x="1297.50" y="647.5" ></text>
+</g>
+<g >
+<title>- (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="333" width="4.0" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2243.14" y="343.5" ></text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (172,008,571 microseconds, 14.06%)</title><rect x="1895.3" y="429" width="334.5" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1898.26" y="439.5" >buf_read_page(page_id_t const&amp;, page_size_t c..</text>
+</g>
+<g >
+<title>- (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="301" width="62.6" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1898.26" y="311.5" >-</text>
+</g>
+<g >
+<title>DsMrr_impl::dsmrr_info_const(unsigned int, RANGE_SEQ_IF*, void*, unsigned int, unsigned int*, unsigned int*, Cost_estimate*) (140,263,694 microseconds, 11.46%)</title><rect x="1622.5" y="541" width="272.8" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="1625.48" y="551.5" >DsMrr_impl::dsmrr_info_const(unsigne..</text>
+</g>
+<g >
+<title>dblwr::write(buf_flush_t, buf_page_t*, bool) (16,552,439 microseconds, 1.35%)</title><rect x="1202.4" y="717" width="32.1" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="1205.35" y="727.5" >db..</text>
+</g>
+<g >
+<title>Double_write::write_dblwr_pages(buf_flush_t) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="669" width="19.8" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1205.48" y="679.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="557" width="43.8" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1253.75" y="567.5" >fini..</text>
+</g>
+<g >
+<title>innobase_commit(handlerton*, THD*, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="621" width="22.5" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="2315.92" y="631.5" >i..</text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="445" width="7.6" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="2232.78" y="455.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="285" width="54.5" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2247.06" y="295.5" >x64_s..</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="733" width="51.3" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="789.42" y="743.5" >__GI_..</text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (26,366,452 microseconds, 2.15%)</title><rect x="786.4" y="765" width="51.3" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="789.42" y="775.5" >os_ev..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="333" width="19.8" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1205.48" y="343.5" ></text>
+</g>
+<g >
+<title>blk_io_schedule (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="205" width="12.8" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1583.24" y="215.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="301" width="27.4" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1597.22" y="311.5" >d..</text>
+</g>
+<g >
+<title>__libc_pwrite (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="573" width="19.8" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1205.48" y="583.5" ></text>
+</g>
+<g >
+<title>ext4_file_write_iter (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="461" width="19.8" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1205.48" y="471.5" ></text>
+</g>
+<g >
+<title>handler::ha_delete_row(unsigned char const*) (7,028,255 microseconds, 0.57%)</title><rect x="1579.5" y="653" width="13.7" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="1582.53" y="663.5" ></text>
+</g>
+<g >
+<title>- (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="573" width="5.8" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1237.56" y="583.5" ></text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="461" width="2.7" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2240.37" y="471.5" ></text>
+</g>
+<g >
+<title>iomap_dio_rw (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="445" width="5.8" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1237.56" y="455.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="589" width="12.2" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1225.25" y="599.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="685" width="51.3" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="789.42" y="695.5" >do_sy..</text>
+</g>
+<g >
+<title>TC_LOG_DUMMY::commit(THD*, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="669" width="22.5" height="15.0" fill="rgb(138,138,253)" rx="2" ry="2" />
+<text  x="2315.92" y="679.5" >T..</text>
+</g>
+<g >
+<title>row_ins_step(que_thr_t*) (1,424,105 microseconds, 0.12%)</title><rect x="2237.4" y="589" width="2.7" height="15.0" fill="rgb(130,130,246)" rx="2" ry="2" />
+<text  x="2240.37" y="599.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="253" width="62.6" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1898.26" y="263.5" >x64_sy..</text>
+</g>
+<g >
+<title>__x64_sys_ppoll (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="589" width="119.2" height="15.0" fill="rgb(100,100,222)" rx="2" ry="2" />
+<text  x="1463.32" y="599.5" >__x64_sys_ppoll</text>
+</g>
+<g >
+<title>futex_wait_queue (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="205" width="4.0" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2243.14" y="215.5" ></text>
+</g>
+<g >
+<title>futex_wait_queue (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="605" width="285.9" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="919.53" y="615.5" >futex_wait_queue</text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (7,559,542 microseconds, 0.62%)</title><rect x="1622.5" y="301" width="14.7" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1625.48" y="311.5" ></text>
+</g>
+<g >
+<title>os_file_write_retry(IORequest&amp;, char const*, pfs_os_file_t, void const*, unsigned long, unsigned long) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="701" width="2.6" height="15.0" fill="rgb(111,111,231)" rx="2" ry="2" />
+<text  x="2384.89" y="711.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="525" width="19.8" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1205.48" y="535.5" ></text>
+</g>
+<g >
+<title>- (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="301" width="271.9" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1960.93" y="311.5" >-</text>
+</g>
+<g >
+<title>trx_coordinator::commit_in_engines(THD*, bool, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="653" width="22.5" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="2315.92" y="663.5" >t..</text>
+</g>
+<g >
+<title>dblwr::write(buf_flush_t, buf_page_t*, bool) (2,283,379 microseconds, 0.19%)</title><rect x="2381.9" y="781" width="4.4" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="2384.87" y="791.5" ></text>
+</g>
+<g >
+<title>futex_wait (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="173" width="14.7" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1625.48" y="183.5" ></text>
+</g>
+<g >
+<title>ha_innobase::write_row(unsigned char*) (1,424,109 microseconds, 0.12%)</title><rect x="2237.4" y="637" width="2.7" height="15.0" fill="rgb(100,100,221)" rx="2" ry="2" />
+<text  x="2240.37" y="647.5" ></text>
+</g>
+<g >
+<title>os_event::timed_wait(timespec const*) (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="765" width="58.4" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="672.72" y="775.5" >os_eve..</text>
+</g>
+<g >
+<title>iomap_dio_rw (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="189" width="271.9" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1960.93" y="199.5" >iomap_dio_rw</text>
+</g>
+<g >
+<title>futex_wait_queue (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="589" width="58.4" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="672.72" y="599.5" >futex_..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="333" width="12.8" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1583.24" y="343.5" ></text>
+</g>
+<g >
+<title>schedule_timeout (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="109" width="39.9" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="1858.42" y="119.5" >sch..</text>
+</g>
+<g >
+<title>(anonymous namespace)::DeleteCurrentRowAndProcessTriggers(THD*, TABLE*, bool, bool, unsigned long long*) (7,028,255 microseconds, 0.57%)</title><rect x="1579.5" y="669" width="13.7" height="15.0" fill="rgb(136,136,251)" rx="2" ry="2" />
+<text  x="1582.53" y="679.5" ></text>
+</g>
+<g >
+<title>io_schedule_timeout (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="205" width="12.7" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2303.07" y="215.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="573" width="2.6" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2384.89" y="583.5" ></text>
+</g>
+<g >
+<title>handler::ha_index_read_map(unsigned char*, unsigned char const*, unsigned long, ha_rkey_function) (175,914,290 microseconds, 14.37%)</title><rect x="1895.3" y="557" width="342.1" height="15.0" fill="rgb(130,130,246)" rx="2" ry="2" />
+<text  x="1898.26" y="567.5" >handler::ha_index_read_map(unsigned char*, uns..</text>
+</g>
+<g >
+<title>__iomap_dio_rw (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="141" width="217.4" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="1640.18" y="151.5" >__iomap_dio_rw</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="125" width="54.5" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2247.06" y="135.5" >finis..</text>
+</g>
+<g >
+<title>Protocol_classic::get_command(COM_DATA*, enum_server_command*) (61,295,825 microseconds, 5.01%)</title><rect x="1460.3" y="781" width="119.2" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="1463.32" y="791.5" >Protocol_class..</text>
+</g>
+<g >
+<title>futex_wait_queue (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="509" width="12.2" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1225.25" y="519.5" ></text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="525" width="22.5" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="2315.92" y="535.5" >p..</text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="525" width="28.4" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="1596.20" y="535.5" >bu..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="477" width="22.5" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2315.92" y="487.5" >e..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="477" width="12.2" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1225.25" y="487.5" ></text>
+</g>
+<g >
+<title>buf_page_get_gen(page_id_t const&amp;, page_size_t const&amp;, unsigned long, buf_block_t*, Page_fetch, ut::Location, mtr_t*, bool) (172,008,578 microseconds, 14.06%)</title><rect x="1895.3" y="493" width="334.5" height="15.0" fill="rgb(132,132,249)" rx="2" ry="2" />
+<text  x="1898.26" y="503.5" >buf_page_get_gen(page_id_t const&amp;, page_size_..</text>
+</g>
+<g >
+<title>- (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="781" width="46.4" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2338.49" y="791.5" >-</text>
+</g>
+<g >
+<title>do_poll.constprop.0 (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="557" width="119.2" height="15.0" fill="rgb(117,117,236)" rx="2" ry="2" />
+<text  x="1463.32" y="567.5" >do_poll.constp..</text>
+</g>
+<g >
+<title>futex_wait_queue (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="653" width="46.4" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2338.49" y="663.5" >fute..</text>
+</g>
+<g >
+<title>__x64_sys_pread64 (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="221" width="39.9" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="1858.42" y="231.5" >__x..</text>
+</g>
+<g >
+<title>buf_read_page(page_id_t const&amp;, page_size_t const&amp;, trx_t*) (119,332,439 microseconds, 9.75%)</title><rect x="1622.5" y="397" width="232.1" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="1625.48" y="407.5" >buf_read_page(page_id_t const&amp;..</text>
+</g>
+<g >
+<title>ext4_file_read_iter (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="237" width="27.4" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="1597.22" y="247.5" >e..</text>
+</g>
+<g >
+<title>Sql_cmd_dml::execute(THD*) (377,107,116 microseconds, 30.81%)</title><rect x="1579.5" y="701" width="733.4" height="15.0" fill="rgb(94,94,216)" rx="2" ry="2" />
+<text  x="1582.53" y="711.5" >Sql_cmd_dml::execute(THD*)</text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="381" width="271.9" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="1960.93" y="391.5" >Fil_shard::do_io(IORequest const&amp;, b..</text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="493" width="2.7" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="2240.37" y="503.5" ></text>
+</g>
+<g >
+<title>futex_wait (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="237" width="4.0" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="2243.14" y="247.5" ></text>
+</g>
+<g >
+<title>ext4_dio_write_iter (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="509" width="2.6" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="2384.89" y="519.5" ></text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="157" width="12.7" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2303.07" y="167.5" ></text>
+</g>
+<g >
+<title>__pread64 (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="301" width="7.5" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="2232.90" y="311.5" ></text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="749" width="52.4" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="865.74" y="759.5" >pthre..</text>
+</g>
+<g >
+<title>JOIN::make_join_plan() (316,177,993 microseconds, 25.84%)</title><rect x="1622.5" y="621" width="614.9" height="15.0" fill="rgb(105,105,226)" rx="2" ry="2" />
+<text  x="1625.48" y="631.5" >JOIN::make_join_plan()</text>
+</g>
+<g >
+<title>do_syscall_64 (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="253" width="7.5" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2232.90" y="263.5" ></text>
+</g>
+<g >
+<title>row_insert_for_mysql_using_ins_graph(unsigned char const*, row_prebuilt_t*) (1,424,105 microseconds, 0.12%)</title><rect x="2237.4" y="605" width="2.7" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2240.37" y="615.5" ></text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="429" width="54.5" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="2247.06" y="439.5" >fil_i..</text>
+</g>
+<g >
+<title>buf_flush_await_no_flushing(buf_pool_t*, buf_flush_t) (7,559,542 microseconds, 0.62%)</title><rect x="1622.5" y="333" width="14.7" height="15.0" fill="rgb(84,84,208)" rx="2" ry="2" />
+<text  x="1625.48" y="343.5" ></text>
+</g>
+<g >
+<title>log_write_notifier(log_t*) (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="797" width="52.4" height="15.0" fill="rgb(136,136,251)" rx="2" ry="2" />
+<text  x="865.74" y="807.5" >log_w..</text>
+</g>
+<g >
+<title>schedule_timeout (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="157" width="54.5" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="2247.06" y="167.5" >sched..</text>
+</g>
+<g >
+<title>vfs_write (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="541" width="2.6" height="15.0" fill="rgb(134,134,250)" rx="2" ry="2" />
+<text  x="2384.89" y="551.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (172,008,578 microseconds, 14.06%)</title><rect x="1895.3" y="477" width="334.5" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="1898.26" y="487.5" >Buf_fetch&lt;Buf_fetch_normal&gt;::single_page()</text>
+</g>
+<g >
+<title>__pread64 (111,772,581 microseconds, 9.13%)</title><rect x="1637.2" y="285" width="217.4" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1640.18" y="295.5" >__pread64</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="317" width="54.5" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2247.06" y="327.5" >entry..</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="509" width="28.4" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="1596.20" y="519.5" >Bu..</text>
+</g>
+<g >
+<title>futex_wait (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="621" width="58.3" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="731.09" y="631.5" >futex_..</text>
+</g>
+<g >
+<title>__pread64 (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="381" width="12.7" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="2303.07" y="391.5" ></text>
+</g>
+<g >
+<title>nanosleep (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="765" width="5.7" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1297.50" y="775.5" ></text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="749" width="58.3" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="731.09" y="759.5" >pthrea..</text>
+</g>
+<g >
+<title>Buf_fetch_normal::get(buf_block_t*&amp;) (119,332,444 microseconds, 9.75%)</title><rect x="1622.5" y="429" width="232.1" height="15.0" fill="rgb(99,99,220)" rx="2" ry="2" />
+<text  x="1625.48" y="439.5" >Buf_fetch_normal::get(buf_bloc..</text>
+</g>
+<g >
+<title>folio_wait_bit (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="557" width="25.0" height="15.0" fill="rgb(114,114,233)" rx="2" ry="2" />
+<text  x="840.69" y="567.5" >f..</text>
+</g>
+<g >
+<title>btr_pcur_t::move_to_next_page(mtr_t*) (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="493" width="7.6" height="15.0" fill="rgb(94,94,217)" rx="2" ry="2" />
+<text  x="2232.78" y="503.5" ></text>
+</g>
+<g >
+<title>futex_wait_queue (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="365" width="22.5" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2315.92" y="375.5" >f..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="765" width="46.4" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2338.49" y="775.5" >entr..</text>
+</g>
+<g >
+<title>__filemap_fdatawait_range (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="589" width="25.0" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="840.69" y="599.5" >_..</text>
+</g>
+<g >
+<title>mysql_execute_command(THD*, bool) (388,674,831 microseconds, 31.76%)</title><rect x="1579.5" y="717" width="755.9" height="15.0" fill="rgb(82,82,207)" rx="2" ry="2" />
+<text  x="1582.53" y="727.5" >mysql_execute_command(THD*, bool)</text>
+</g>
+<g >
+<title>buf_read_page_low(dberr_t*, bool, unsigned long, unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool, trx_t*, bool) (20,931,244 microseconds, 1.71%)</title><rect x="1854.6" y="397" width="40.7" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1857.55" y="407.5" >buf..</text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (172,008,578 microseconds, 14.06%)</title><rect x="1895.3" y="509" width="334.5" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="1898.26" y="519.5" >btr_cur_search_to_nth_level(dict_index_t*, un..</text>
+</g>
+<g >
+<title>os_file_write_page(IORequest&amp;, char const*, int, unsigned char const*, unsigned long, unsigned long, file::Block const*) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="669" width="2.6" height="15.0" fill="rgb(95,95,217)" rx="2" ry="2" />
+<text  x="2384.89" y="679.5" ></text>
+</g>
+<g >
+<title>do_futex (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="637" width="51.3" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="789.42" y="647.5" >do_fu..</text>
+</g>
+<g >
+<title>folio_wait_bit_common (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="541" width="25.0" height="15.0" fill="rgb(106,106,227)" rx="2" ry="2" />
+<text  x="840.69" y="551.5" >f..</text>
+</g>
+<g >
+<title>log_flusher(log_t*) (12,877,707 microseconds, 1.05%)</title><rect x="837.7" y="797" width="25.0" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="840.69" y="807.5" >l..</text>
+</g>
+<g >
+<title>row_upd_sec_index_entry_low(upd_node_t*, dtuple_t*, que_thr_t*) (7,028,067 microseconds, 0.57%)</title><rect x="1579.5" y="589" width="13.7" height="15.0" fill="rgb(108,108,228)" rx="2" ry="2" />
+<text  x="1582.53" y="599.5" ></text>
+</g>
+<g >
+<title>__futex_wait (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="157" width="14.7" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="1625.48" y="167.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="381" width="2.7" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2240.37" y="391.5" ></text>
+</g>
+<g >
+<title>__x64_sys_pread64 (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="269" width="2.7" height="15.0" fill="rgb(88,88,211)" rx="2" ry="2" />
+<text  x="2240.37" y="279.5" ></text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="429" width="12.8" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="1583.24" y="439.5" ></text>
+</g>
+<g >
+<title>syscall (317,527,354 microseconds, 25.95%)</title><rect x="52.2" y="845" width="617.5" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="55.20" y="855.5" >syscall</text>
+</g>
+<g >
+<title>- (317,527,354 microseconds, 25.95%)</title><rect x="52.2" y="829" width="617.5" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="55.20" y="839.5" >-</text>
+</g>
+<g >
+<title>[unknown] (406,523,779 microseconds, 33.22%)</title><rect x="669.7" y="829" width="790.6" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="672.72" y="839.5" >[unknown]</text>
+</g>
+<g >
+<title>x64_sys_call (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="605" width="119.2" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1463.32" y="615.5" >x64_sys_call</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="173" width="4.0" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2243.14" y="183.5" ></text>
+</g>
+<g >
+<title>iomap_dio_rw (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="173" width="7.5" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="2232.90" y="183.5" ></text>
+</g>
+<g >
+<title>__futex_wait (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="381" width="22.5" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="2315.92" y="391.5" >_..</text>
+</g>
+<g >
+<title>schedule (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="93" width="39.9" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1858.42" y="103.5" >sch..</text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="365" width="4.0" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="2243.14" y="375.5" ></text>
+</g>
+<g >
+<title>__futex_wait (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="669" width="46.4" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="2338.49" y="679.5" >__fu..</text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="413" width="12.7" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2303.07" y="423.5" ></text>
+</g>
+<g >
+<title>ext4_file_read_iter (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="269" width="12.7" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="2303.07" y="279.5" ></text>
+</g>
+<g >
+<title>ha_commit_trans(THD*, bool, bool) (11,567,700 microseconds, 0.95%)</title><rect x="2312.9" y="685" width="22.5" height="15.0" fill="rgb(105,105,226)" rx="2" ry="2" />
+<text  x="2315.92" y="695.5" >h..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="605" width="2.6" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2384.89" y="615.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="541" width="19.8" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1205.48" y="551.5" ></text>
+</g>
+<g >
+<title>__pread64 (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="349" width="27.4" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1597.22" y="359.5" >_..</text>
+</g>
+<g >
+<title>- (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="733" width="285.9" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="919.53" y="743.5" >-</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="285" width="14.7" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1625.48" y="295.5" ></text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (7,028,067 microseconds, 0.57%)</title><rect x="1579.5" y="557" width="13.7" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="1582.53" y="567.5" ></text>
+</g>
+<g >
+<title>Sql_cmd_dml::execute_inner(THD*) (316,505,501 microseconds, 25.86%)</title><rect x="1621.8" y="685" width="615.6" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="1624.84" y="695.5" >Sql_cmd_dml::execute_inner(THD*)</text>
+</g>
+<g >
+<title>fil_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="381" width="7.5" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="2232.90" y="391.5" ></text>
+</g>
+<g >
+<title>__x64_sys_pwrite64 (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="493" width="19.8" height="15.0" fill="rgb(119,119,237)" rx="2" ry="2" />
+<text  x="1205.48" y="503.5" ></text>
+</g>
+<g >
+<title>IndexRangeScanIterator::Read() (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="669" width="58.9" height="15.0" fill="rgb(126,126,243)" rx="2" ry="2" />
+<text  x="2243.14" y="679.5" >IndexR..</text>
+</g>
+<g >
+<title>schedule (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="141" width="27.4" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1597.22" y="151.5" >s..</text>
+</g>
+<g >
+<title>ext4_file_write_iter (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="525" width="2.6" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2384.89" y="535.5" ></text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (22,498,787 microseconds, 1.84%)</title><rect x="1250.7" y="749" width="43.8" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="1253.75" y="759.5" >pthr..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="493" width="119.2" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1463.32" y="503.5" >finish_task_sw..</text>
+</g>
+<g >
+<title>__x64_sys_futex (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="269" width="4.0" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="2243.14" y="279.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (12,877,649 microseconds, 1.05%)</title><rect x="837.7" y="669" width="25.0" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="840.69" y="679.5" >d..</text>
+</g>
+<g >
+<title>ext4_dio_write_iter (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="445" width="19.8" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1205.48" y="455.5" ></text>
+</g>
+<g >
+<title>schedule (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="365" width="5.8" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1237.56" y="375.5" ></text>
+</g>
+<g >
+<title>Double_write::write_dblwr_pages(buf_flush_t) (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="685" width="5.8" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1237.56" y="695.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (28,036,139 microseconds, 2.29%)</title><rect x="2244.1" y="301" width="54.5" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2247.06" y="311.5" >do_sy..</text>
+</g>
+<g >
+<title>do_syscall_64 (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="269" width="271.9" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1960.93" y="279.5" >do_syscall_64</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="397" width="2.6" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="2384.89" y="407.5" ></text>
+</g>
+<g >
+<title>ext4_file_read_iter (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="253" width="12.8" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="1583.24" y="263.5" ></text>
+</g>
+<g >
+<title>os_file_read_page(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, unsigned long*, bool, trx_t*) (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="333" width="7.5" height="15.0" fill="rgb(98,98,220)" rx="2" ry="2" />
+<text  x="2232.90" y="343.5" ></text>
+</g>
+<g >
+<title>ha_innobase::records_in_range(unsigned int, key_range*, key_range*) (140,263,694 microseconds, 11.46%)</title><rect x="1622.5" y="509" width="272.8" height="15.0" fill="rgb(117,117,236)" rx="2" ry="2" />
+<text  x="1625.48" y="519.5" >ha_innobase::records_in_range(unsign..</text>
+</g>
+<g >
+<title>ha_innobase::index_read(unsigned char*, unsigned char const*, unsigned int, ha_rkey_function) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="573" width="28.6" height="15.0" fill="rgb(118,118,237)" rx="2" ry="2" />
+<text  x="1596.20" y="583.5" >ha..</text>
+</g>
+<g >
+<title>- (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="717" width="58.3" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="731.09" y="727.5" >-</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="317" width="62.6" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1898.26" y="327.5" >__GI__..</text>
+</g>
+<g >
+<title>do_syscall_64 (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="253" width="39.9" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1858.42" y="263.5" >do_..</text>
+</g>
+<g >
+<title>do_syscall_64 (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="701" width="155.5" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1304.46" y="711.5" >do_syscall_64</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="397" width="2.7" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="2240.37" y="407.5" ></text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="685" width="10.3" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1243.37" y="695.5" ></text>
+</g>
+<g >
+<title>Batch_segment::write(dblwr::Buffer const&amp;) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="653" width="19.8" height="15.0" fill="rgb(97,97,219)" rx="2" ry="2" />
+<text  x="1205.48" y="663.5" ></text>
+</g>
+<g >
+<title>do_command(THD*) (449,970,824 microseconds, 36.77%)</title><rect x="1460.3" y="797" width="875.1" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="1463.32" y="807.5" >do_command(THD*)</text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="605" width="5.8" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1237.56" y="615.5" ></text>
+</g>
+<g >
+<title>os_file_io(IORequest const&amp;, int, void*, unsigned long, unsigned long, dberr_t*, file::Block const*) (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="381" width="12.8" height="15.0" fill="rgb(136,136,252)" rx="2" ry="2" />
+<text  x="1583.24" y="391.5" ></text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="749" width="155.5" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="1304.46" y="759.5" >__GI___futex_abstim..</text>
+</g>
+<g >
+<title>iomap_dio_rw (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="221" width="27.4" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1597.22" y="231.5" >i..</text>
+</g>
+<g >
+<title>Sql_cmd_delete::delete_from_single_table(THD*) (21,756,554 microseconds, 1.78%)</title><rect x="1579.5" y="685" width="42.3" height="15.0" fill="rgb(106,106,227)" rx="2" ry="2" />
+<text  x="1582.53" y="695.5" >Sql..</text>
+</g>
+<g >
+<title>__iomap_dio_rw (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="157" width="7.5" height="15.0" fill="rgb(89,89,212)" rx="2" ry="2" />
+<text  x="2232.90" y="167.5" ></text>
+</g>
+<g >
+<title>futex_wait_queue (7,559,538 microseconds, 0.62%)</title><rect x="1622.5" y="141" width="14.7" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1625.48" y="151.5" ></text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="781" width="58.4" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="672.72" y="791.5" >os_eve..</text>
+</g>
+<g >
+<title>ha_innobase::index_read(unsigned char*, unsigned char const*, unsigned int, ha_rkey_function) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="573" width="58.9" height="15.0" fill="rgb(118,118,237)" rx="2" ry="2" />
+<text  x="2243.14" y="583.5" >ha_inn..</text>
+</g>
+<g >
+<title>__pread64 (139,784,216 microseconds, 11.42%)</title><rect x="1957.9" y="317" width="271.9" height="15.0" fill="rgb(93,93,216)" rx="2" ry="2" />
+<text  x="1960.93" y="327.5" >__pread64</text>
+</g>
+<g >
+<title>do_futex (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="557" width="12.2" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1225.25" y="567.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (3,905,712 microseconds, 0.32%)</title><rect x="2229.8" y="429" width="7.6" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="2232.78" y="439.5" ></text>
+</g>
+<g >
+<title>buf_flush_do_batch(buf_pool_t*, buf_flush_t, unsigned long, unsigned long, unsigned long*) (3,458,758 microseconds, 0.28%)</title><rect x="2381.9" y="829" width="6.7" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="2384.87" y="839.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="317" width="2.7" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="2240.37" y="327.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="285" width="62.6" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1898.26" y="295.5" >entry_..</text>
+</g>
+<g >
+<title>os_file_read_func(IORequest&amp;, char const*, int, void*, unsigned long, unsigned long, trx_t*) (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="413" width="12.8" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="1583.24" y="423.5" ></text>
+</g>
+<g >
+<title>ha_innobase::update_row(unsigned char const*, unsigned char*) (7,153,887 microseconds, 0.58%)</title><rect x="2299.0" y="653" width="13.9" height="15.0" fill="rgb(112,112,231)" rx="2" ry="2" />
+<text  x="2302.01" y="663.5" ></text>
+</g>
+<g >
+<title>os_event::wait_low(long) (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="781" width="155.5" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1304.46" y="791.5" >os_event::wait_low(..</text>
+</g>
+<g >
+<title>ha_innobase::read_range_first(key_range const*, key_range const*, bool, bool) (14,728,299 microseconds, 1.20%)</title><rect x="1593.2" y="621" width="28.6" height="15.0" fill="rgb(101,101,222)" rx="2" ry="2" />
+<text  x="1596.20" y="631.5" >ha..</text>
+</g>
+<g >
+<title>io_schedule_timeout (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="109" width="217.4" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1640.18" y="119.5" >io_schedule_timeout</text>
+</g>
+<g >
+<title>schedule (2,907,163 microseconds, 0.24%)</title><rect x="1294.5" y="605" width="5.7" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="1297.50" y="615.5" ></text>
+</g>
+<g >
+<title>vfs_read (14,100,731 microseconds, 1.15%)</title><rect x="1594.2" y="253" width="27.4" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1597.22" y="263.5" >v..</text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (146,970,215 microseconds, 12.01%)</title><rect x="916.5" y="717" width="285.9" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="919.53" y="727.5" >entry_SYSCALL_64_after_hwframe</text>
+</g>
+<g >
+<title>__GI___pthread_cond_wait (32,223,914 microseconds, 2.63%)</title><rect x="1895.3" y="333" width="62.6" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1898.26" y="343.5" >__GI__..</text>
+</g>
+<g >
+<title>pthread_cond_timedwait@@GLIBC_2.3.2 (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="813" width="46.4" height="15.0" fill="rgb(101,101,223)" rx="2" ry="2" />
+<text  x="2338.49" y="823.5" >pthr..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="77" width="39.9" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1858.42" y="87.5" >fin..</text>
+</g>
+<g >
+<title>__x64_sys_futex (32,223,909 microseconds, 2.63%)</title><rect x="1895.3" y="237" width="62.6" height="15.0" fill="rgb(121,121,239)" rx="2" ry="2" />
+<text  x="1898.26" y="247.5" >__x64_..</text>
+</g>
+<g >
+<title>x64_sys_call (26,929,380 microseconds, 2.20%)</title><rect x="862.7" y="669" width="52.4" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="865.74" y="679.5" >x64_s..</text>
+</g>
+<g >
+<title>do_syscall_64 (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="301" width="2.7" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2240.37" y="311.5" ></text>
+</g>
+<g >
+<title>vfs_read (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="205" width="39.9" height="15.0" fill="rgb(103,103,224)" rx="2" ry="2" />
+<text  x="1858.42" y="215.5" >vfs..</text>
+</g>
+<g >
+<title>futex_wait_queue (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="589" width="51.3" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="789.42" y="599.5" >futex..</text>
+</g>
+<g >
+<title>futex_wait_queue (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="525" width="10.3" height="15.0" fill="rgb(104,104,225)" rx="2" ry="2" />
+<text  x="1243.37" y="535.5" ></text>
+</g>
+<g >
+<title>row_search_mvcc(unsigned char*, page_cur_mode_t, row_prebuilt_t*, unsigned long, unsigned long) (30,267,037 microseconds, 2.47%)</title><rect x="2240.1" y="557" width="58.9" height="15.0" fill="rgb(100,100,222)" rx="2" ry="2" />
+<text  x="2243.14" y="567.5" >row_se..</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (6,553,576 microseconds, 0.54%)</title><rect x="1580.2" y="141" width="12.8" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1583.24" y="151.5" ></text>
+</g>
+<g >
+<title>os_event::wait_low(long) (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="701" width="10.3" height="15.0" fill="rgb(109,109,229)" rx="2" ry="2" />
+<text  x="1243.37" y="711.5" ></text>
+</g>
+<g >
+<title>net_read_packet(NET*, unsigned long*) (61,295,825 microseconds, 5.01%)</title><rect x="1460.3" y="749" width="119.2" height="15.0" fill="rgb(99,99,221)" rx="2" ry="2" />
+<text  x="1463.32" y="759.5" >net_read_packe..</text>
+</g>
+<g >
+<title>Double_write::write_pages(buf_flush_t) (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="685" width="19.8" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="1205.48" y="695.5" ></text>
+</g>
+<g >
+<title>blk_io_schedule (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="189" width="2.7" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2240.37" y="199.5" ></text>
+</g>
+<g >
+<title>schedule (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="509" width="25.0" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="840.69" y="519.5" >s..</text>
+</g>
+<g >
+<title>- (10,166,571 microseconds, 0.83%)</title><rect x="1202.5" y="557" width="19.8" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1205.48" y="567.5" ></text>
+</g>
+<g >
+<title>schedule (30,015,933 microseconds, 2.45%)</title><rect x="669.7" y="573" width="58.4" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="672.72" y="583.5" >schedule</text>
+</g>
+<g >
+<title>__GI___futex_abstimed_wait_cancelable64 (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="349" width="4.0" height="15.0" fill="rgb(92,92,215)" rx="2" ry="2" />
+<text  x="2243.14" y="359.5" ></text>
+</g>
+<g >
+<title>entry_SYSCALL_64_after_hwframe (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="717" width="155.5" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="1304.46" y="727.5" >entry_SYSCALL_64_af..</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (119,332,444 microseconds, 9.75%)</title><rect x="1622.5" y="445" width="232.1" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="1625.48" y="455.5" >Buf_fetch&lt;Buf_fetch_normal&gt;::s..</text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="509" width="12.7" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="2303.07" y="519.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::single_page() (7,028,067 microseconds, 0.57%)</title><rect x="1579.5" y="525" width="13.7" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="1582.53" y="535.5" ></text>
+</g>
+<g >
+<title>- (6,318,190 microseconds, 0.52%)</title><rect x="1222.3" y="637" width="12.2" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1225.25" y="647.5" ></text>
+</g>
+<g >
+<title>buf_page_init_for_read(unsigned long, page_id_t const&amp;, page_size_t const&amp;, bool) (7,559,858 microseconds, 0.62%)</title><rect x="1622.5" y="365" width="14.7" height="15.0" fill="rgb(114,114,233)" rx="2" ry="2" />
+<text  x="1625.48" y="375.5" ></text>
+</g>
+<g >
+<title>- (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="333" width="2.7" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="2240.37" y="343.5" ></text>
+</g>
+<g >
+<title>row_upd_sec_index_entry_low(upd_node_t*, dtuple_t*, que_thr_t*) (7,146,295 microseconds, 0.58%)</title><rect x="2299.0" y="605" width="13.9" height="15.0" fill="rgb(108,108,228)" rx="2" ry="2" />
+<text  x="2302.02" y="615.5" ></text>
+</g>
+<g >
+<title>x64_sys_call (23,849,840 microseconds, 1.95%)</title><rect x="2335.5" y="733" width="46.4" height="15.0" fill="rgb(130,130,247)" rx="2" ry="2" />
+<text  x="2338.49" y="743.5" >x64_..</text>
+</g>
+<g >
+<title>Fil_shard::do_io(IORequest const&amp;, bool, page_id_t const&amp;, page_size_t const&amp;, unsigned long, unsigned long, void*, void*, trx_t*, bool) (3,845,310 microseconds, 0.31%)</title><rect x="2229.9" y="365" width="7.5" height="15.0" fill="rgb(118,118,236)" rx="2" ry="2" />
+<text  x="2232.90" y="375.5" ></text>
+</g>
+<g >
+<title>- (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="285" width="39.9" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1858.42" y="295.5" >-</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (2,983,962 microseconds, 0.24%)</title><rect x="1234.6" y="349" width="5.8" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="1237.56" y="359.5" ></text>
+</g>
+<g >
+<title>folio_wait_writeback (12,868,994 microseconds, 1.05%)</title><rect x="837.7" y="573" width="25.0" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="840.69" y="583.5" >f..</text>
+</g>
+<g >
+<title>__GI___clone3 (856,532,513 microseconds, 69.99%)</title><rect x="669.7" y="861" width="1665.8" height="15.0" fill="rgb(95,95,218)" rx="2" ry="2" />
+<text  x="672.72" y="871.5" >__GI___clone3</text>
+</g>
+<g >
+<title>read_events (21,639,481 microseconds, 1.77%)</title><rect x="10.1" y="765" width="42.1" height="15.0" fill="rgb(96,96,218)" rx="2" ry="2" />
+<text  x="13.11" y="775.5" >rea..</text>
+</g>
+<g >
+<title>btr_cur_search_to_nth_level(dict_index_t*, unsigned long, dtuple_t const*, page_cur_mode_t, unsigned long, btr_cur_t*, unsigned long, char const*, unsigned long, mtr_t*) (14,627,596 microseconds, 1.20%)</title><rect x="1593.2" y="541" width="28.4" height="15.0" fill="rgb(123,123,241)" rx="2" ry="2" />
+<text  x="1596.20" y="551.5" >bt..</text>
+</g>
+<g >
+<title>- (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="653" width="10.3" height="15.0" fill="rgb(200,200,200)" rx="2" ry="2" />
+<text  x="1243.37" y="663.5" ></text>
+</g>
+<g >
+<title>schedule (2,013,913 microseconds, 0.16%)</title><rect x="2240.1" y="189" width="4.0" height="15.0" fill="rgb(139,139,254)" rx="2" ry="2" />
+<text  x="2243.14" y="199.5" ></text>
+</g>
+<g >
+<title>do_syscall_64 (5,337,798 microseconds, 0.44%)</title><rect x="1240.4" y="621" width="10.3" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="1243.37" y="631.5" ></text>
+</g>
+<g >
+<title>schedule_timeout (1,417,030 microseconds, 0.12%)</title><rect x="2237.4" y="157" width="2.7" height="15.0" fill="rgb(115,115,234)" rx="2" ry="2" />
+<text  x="2240.37" y="167.5" ></text>
+</g>
+<g >
+<title>ext4_file_read_iter (20,485,470 microseconds, 1.67%)</title><rect x="1855.4" y="189" width="39.9" height="15.0" fill="rgb(127,127,244)" rx="2" ry="2" />
+<text  x="1858.42" y="199.5" >ext..</text>
+</g>
+<g >
+<title>schedule_hrtimeout_range (61,295,802 microseconds, 5.01%)</title><rect x="1460.3" y="541" width="119.2" height="15.0" fill="rgb(99,99,221)" rx="2" ry="2" />
+<text  x="1463.32" y="551.5" >schedule_hrtim..</text>
+</g>
+<g >
+<title>iomap_dio_rw (111,772,576 microseconds, 9.13%)</title><rect x="1637.2" y="157" width="217.4" height="15.0" fill="rgb(122,122,240)" rx="2" ry="2" />
+<text  x="1640.18" y="167.5" >iomap_dio_rw</text>
+</g>
+<g >
+<title>buf_flush_page(buf_pool_t*, buf_page_t*, buf_flush_t, bool) (16,552,680 microseconds, 1.35%)</title><rect x="1202.4" y="733" width="32.1" height="15.0" fill="rgb(93,93,215)" rx="2" ry="2" />
+<text  x="1205.35" y="743.5" >bu..</text>
+</g>
+<g >
+<title>blk_io_schedule (6,537,376 microseconds, 0.53%)</title><rect x="2300.1" y="221" width="12.7" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="2303.07" y="231.5" ></text>
+</g>
+<g >
+<title>dblwr::force_flush(buf_flush_t, unsigned int) (8,332,108 microseconds, 0.68%)</title><rect x="1234.5" y="749" width="16.2" height="15.0" fill="rgb(91,91,214)" rx="2" ry="2" />
+<text  x="1237.54" y="759.5" ></text>
+</g>
+<g >
+<title>mysqld (1,223,786,018 microseconds, 100.00%)</title><rect x="10.0" y="877" width="2380.0" height="15.0" fill="rgb(87,87,211)" rx="2" ry="2" />
+<text  x="13.00" y="887.5" >mysqld</text>
+</g>
+<g >
+<title>__futex_wait (79,972,595 microseconds, 6.53%)</title><rect x="1301.5" y="621" width="155.5" height="15.0" fill="rgb(83,83,207)" rx="2" ry="2" />
+<text  x="1304.46" y="631.5" >__futex_wait</text>
+</g>
+<g >
+<title>Double_write::write_pages(buf_flush_t) (1,347,715 microseconds, 0.11%)</title><rect x="2381.9" y="749" width="2.6" height="15.0" fill="rgb(116,116,235)" rx="2" ry="2" />
+<text  x="2384.89" y="759.5" ></text>
+</g>
+<g >
+<title>Buf_fetch&lt;Buf_fetch_normal&gt;::read_page() (172,008,571 microseconds, 14.06%)</title><rect x="1895.3" y="445" width="334.5" height="15.0" fill="rgb(133,133,249)" rx="2" ry="2" />
+<text  x="1898.26" y="455.5" >Buf_fetch&lt;Buf_fetch_normal&gt;::read_page()</text>
+</g>
+<g >
+<title>[unknown] (317,527,354 microseconds, 25.95%)</title><rect x="52.2" y="861" width="617.5" height="15.0" fill="rgb(86,86,210)" rx="2" ry="2" />
+<text  x="55.20" y="871.5" >[unknown]</text>
+</g>
+<g >
+<title>row_purge_step(que_thr_t*) (1,712,833 microseconds, 0.14%)</title><rect x="1457.0" y="765" width="3.3" height="15.0" fill="rgb(128,128,245)" rx="2" ry="2" />
+<text  x="1459.99" y="775.5" ></text>
+</g>
+<g >
+<title>os_event::wait_time_low(std::chrono::duration&lt;long, std::ratio&lt;1l, 1000000l&gt; &gt;, long) (29,989,514 microseconds, 2.45%)</title><rect x="728.1" y="781" width="58.3" height="15.0" fill="rgb(135,135,251)" rx="2" ry="2" />
+<text  x="731.09" y="791.5" >os_eve..</text>
+</g>
+<g >
+<title>do_syscall_64 (11,567,624 microseconds, 0.95%)</title><rect x="2312.9" y="461" width="22.5" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="2315.92" y="471.5" >d..</text>
+</g>
+<g >
+<title>do_syscall_64 (317,527,348 microseconds, 25.95%)</title><rect x="52.2" y="797" width="617.5" height="15.0" fill="rgb(85,85,209)" rx="2" ry="2" />
+<text  x="55.20" y="807.5" >do_syscall_64</text>
+</g>
+<g >
+<title>finish_task_switch.isra.0 (26,365,921 microseconds, 2.15%)</title><rect x="786.4" y="557" width="51.3" height="15.0" fill="rgb(129,129,246)" rx="2" ry="2" />
+<text  x="789.42" y="567.5" >finis..</text>
+</g>
+</g>
+</svg>

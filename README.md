@@ -194,11 +194,24 @@ python3 visuals/generate_index.py
 
 # 5. Generate index-pmp.html (tree view of all pt-pmp stack trace files)
 python3 visuals/generate_pmp_index.py
+
+# 6. Generate off-CPU flame graphs from offcpu.txt files
+bash visuals/generate_offcpu_flamegraphs.sh
+```
+
+**Off-CPU Flame Graph Notes**:
+- Flame graphs visualize where threads spend time blocked (off-CPU)
+- Wide towers ending in `futex_wait`, `pthread_mutex_lock`, or `__lll_lock_wait` indicate contention hotspots
+- The stacks above these functions show which code path is experiencing contention
+- Blue color scheme represents blocking/waiting time (cold = waiting)
+- Open `.offcpu.svg` files in a web browser to view interactive flame graphs
 ```
 
 **Generated files**:
 - `index.html` - Navigation page with links to all reports
 - `index-pmp.html` - Tree view index of all pt-pmp stack trace files
+- `index-offcpu.html` - Gallery of all off-CPU flame graphs with auto-search links
+- `*.offcpu.svg` - Off-CPU flame graphs (one per benchmark run)
 - `disabled_binlog_sysbench_average.html` - Performance averages (binlog disabled)
 - `disabled_binlog_sysbench_individual.html` - Individual run results (binlog disabled)
 - `enabled_binlog_sysbench_average.html` - Performance averages (binlog enabled)

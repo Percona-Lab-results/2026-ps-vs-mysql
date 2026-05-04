@@ -328,17 +328,35 @@ def generate_index_html(reports: Dict[str, List[Tuple[str, Path, str]]], output_
 
     # Stack Traces Section
     pmp_index = base_dir / 'index-pmp.html'
-    if pmp_index.exists():
+    offcpu_index = base_dir / 'index-offcpu.html'
+
+    if pmp_index.exists() or offcpu_index.exists():
         html += '''
         <div class="section">
             <h2>🔬 Stack Trace Analysis</h2>
-            <p>Browse pt-pmp stack profiling files collected during benchmark runs. View thread blocking patterns and function call stacks.</p>
+            <p>Browse pt-pmp stack profiling and off-CPU flame graphs collected during benchmark runs. View thread blocking patterns and contention hotspots.</p>
             <div class="report-grid">
+'''
+
+        if pmp_index.exists():
+            html += '''
                 <a href="index-pmp.html" class="report-card">
                     <h3>pt-pmp Stack Traces Index</h3>
                     <div class="description">Tree view of all stack trace files across all runs</div>
                     <div class="filename">index-pmp.html</div>
                 </a>
+'''
+
+        if offcpu_index.exists():
+            html += '''
+                <a href="index-offcpu.html" class="report-card">
+                    <h3>Off-CPU Flame Graphs</h3>
+                    <div class="description">Interactive flame graphs showing thread blocking and contention</div>
+                    <div class="filename">index-offcpu.html</div>
+                </a>
+'''
+
+        html += '''
             </div>
         </div>
 '''

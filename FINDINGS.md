@@ -27,6 +27,8 @@ Percona Server 8.4.8-8 is **12-13% slower** than MySQL 8.4.8 at 64 threads acros
 3. **Cascade pattern**: The buffer pool waits correlate with elevated transaction log waits (+111%) and lock contention (+12-17%)
 4. **Thread blocking distribution**: The 361 wait samples occur across diverse operations (index searches, row updates, range estimation), indicating a systemic serialization point rather than a specific query pattern
 
+**Mitigation Testing**: Increasing `innodb_buffer_pool_instances` from default (2) to 4 or 8 reduces the performance gap but does not eliminate it entirely, confirming buffer pool contention as a contributing factor.
+
 ---
 
 ## Benchmark Results
@@ -210,6 +212,8 @@ At **64 threads**, the data suggests Percona Server's buffer pool management may
 - Overall throughput is consistently 12-13% lower across all configurations
 
 **Observed Difference**: MySQL 8.4.8's buffer pool page cleaner shows no blocking in pt-pmp traces (0 occurrences), suggesting better scalability at high concurrency.
+
+**Configuration Impact**: Testing with increased `innodb_buffer_pool_instances` (4 and 8 vs default 2) shows partial mitigation of the performance gap, but the issue persists even with more instances.
 
 ---
 
