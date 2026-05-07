@@ -17,7 +17,7 @@ auto_increment_offset	1
 autocommit	ON
 automatic_sp_privileges	ON
 back_log	4096
-basedir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/
+basedir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.34-lru-patch3/
 big_tables	OFF
 bind_address	0.0.0.0
 binlog_cache_size	32768
@@ -49,7 +49,7 @@ binlog_transaction_dependency_history_size	25000
 block_encryption_mode	aes-128-ecb
 buffered_error_log_filename	
 buffered_error_log_size	0
-build_id	d5b911c769093eb95437bef51659b2454354168c
+build_id	2669afd480c3e2c292fe1408982baa29b407d5cb
 bulk_insert_buffer_size	268435456
 caching_sha2_password_auto_generate_rsa_keys	ON
 caching_sha2_password_digest_rounds	5000
@@ -62,7 +62,7 @@ character_set_filesystem	binary
 character_set_results	utf8mb4
 character_set_server	utf8mb4
 character_set_system	utf8mb3
-character_sets_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/share/charsets/
+character_sets_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.34-lru-patch3/share/charsets/
 check_proxy_users	OFF
 collation_connection	utf8mb4_0900_ai_ci
 collation_database	utf8mb4_unicode_ci
@@ -326,7 +326,7 @@ large_page_size	0
 large_pages	OFF
 last_insert_id	0
 lc_messages	en_US
-lc_messages_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/share/
+lc_messages_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.34-lru-patch3/share/
 lc_time_names	en_US
 license	GPL
 local_infile	OFF
@@ -507,7 +507,7 @@ persist_only_admin_x509_subject
 persist_sensitive_variables_in_plaintext	ON
 persisted_globals_load	ON
 pid_file	/tmp/mysql_benchmark.pid
-plugin_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.35/lib/plugin/
+plugin_dir	/home/bogdan.degtyariov/mysql-nvme/servers/Percona-Server-8.4.8-8-Linux.x86_64.glibc2.34-lru-patch3/lib/plugin/
 port	3306
 preload_buffer_size	32768
 print_identified_with_as_hex	OFF
@@ -577,7 +577,7 @@ select_into_disk_sync	OFF
 select_into_disk_sync_delay	0
 server_id	1
 server_id_bits	32
-server_uuid	4fc45544-4491-11f1-8fc9-ac1f6bc846a9
+server_uuid	c9ed7daf-49ea-11f1-a4b8-ac1f6bc846a9
 session_track_gtids	OFF
 session_track_schema	ON
 session_track_state_change	OFF
@@ -679,7 +679,7 @@ thread_pool_stall_limit	500
 thread_stack	524288
 thread_statistics	OFF
 time_zone	SYSTEM
-timestamp	1777552655.490942
+timestamp	1778140842.491603
 tls_certificates_enforced_validation	OFF
 tls_ciphersuites	
 tls_version	TLSv1.2,TLSv1.3

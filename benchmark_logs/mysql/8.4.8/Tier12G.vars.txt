@@ -532,7 +532,7 @@ select_into_disk_sync	OFF
 select_into_disk_sync_delay	0
 server_id	1
 server_id_bits	32
-server_uuid	525cb486-4482-11f1-8d63-ac1f6bc846a9
+server_uuid	e4aef67a-49d4-11f1-8425-ac1f6bc846a9
 session_track_gtids	OFF
 session_track_schema	ON
 session_track_state_change	OFF
@@ -622,7 +622,7 @@ thread_cache_size	256
 thread_handling	one-thread-per-connection
 thread_stack	524288
 time_zone	SYSTEM
-timestamp	1777546217.218581
+timestamp	1778131437.242012
 tls_certificates_enforced_validation	OFF
 tls_ciphersuites	
 tls_version	TLSv1.2,TLSv1.3
