@@ -8,7 +8,6 @@ log_error                       = /home/bogdan.degtyariov/mysql-nvme/data/percon
 user                            = bogdan.degtyariov
 bind-address                    = 0.0.0.0
 skip-name-resolve               = ON
-performance_schema              = OFF
 
 # --- Connection & Threading ----------------------------------------------------
 max_connections                 = 2000

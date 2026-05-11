@@ -32,7 +32,8 @@ fi
 IS_READ_ONLY="0"
 
 # Loop through both binlog configurations
-for ENABLE_BINLOG in 0 1; do
+# for ENABLE_BINLOG in 0 1; do
+for ENABLE_BINLOG in 0; do
   if [ "$ENABLE_BINLOG" == "1" ]; then
     BINLOG_MODE="with binlog"
   else
@@ -40,11 +41,11 @@ for ENABLE_BINLOG in 0 1; do
   fi
 
   # Run MySQL 8.4.8 benchmarks
-  echo ""
-  echo "=========================================================================="
-  echo "Starting MySQL 8.4.8 benchmarks ($BINLOG_MODE)"
-  echo "=========================================================================="
-  ./run_metrics.sh "mysql" "8.4.8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
+  # echo ""
+  # echo "=========================================================================="
+  # echo "Starting MySQL 8.4.8 benchmarks ($BINLOG_MODE)"
+  # echo "=========================================================================="
+  # ./run_metrics.sh "mysql" "8.4.8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
 
   # Run Percona Server 8.4.8-8 benchmarks
   echo ""

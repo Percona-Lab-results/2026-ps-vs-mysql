@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnoDB Metrics Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <!-- Auto-load metrics data -->
+    <script src="benchmark_logs/percona-server/8.4.8-8/run1_Tier12G_RW_64th.lru_metrics.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:hover {
+            border-color: #4CAF50;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-card:nth-child(4) {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stat-card:nth-child(5) {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin-bottom: 20px;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .zoom-controls button {
+            padding: 8px 16px;
+            border: 2px solid #4CAF50;
+            background: white;
+            color: #4CAF50;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .zoom-controls button:hover {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .zoom-controls button:active {
+            transform: scale(0.95);
+        }
+
+        .zoom-info {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 35px 10px 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .search-box .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 5px;
+            display: none;
+        }
+
+        .search-box .clear-btn:hover {
+            color: #333;
+        }
+
+        .search-box input:not(:placeholder-shown) + .clear-btn {
+            display: block;
+        }
+
+        .metric-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            padding: 5px;
+        }
+
+        .metric-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-item:hover {
+            background: #f0f0f0;
+        }
+
+        .metric-item.selected {
+            background: #e3f2fd;
+            border-left: 3px solid #2196F3;
+        }
+
+        .metric-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .metric-item label {
+            flex: 1;
+            cursor: pointer;
+            margin: 0;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .selected-count {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 InnoDB Metrics Viewer</h1>
+        <div class="subtitle">Interactive visualization of InnoDB performance metrics - run1_Tier12G_RW_64th.lru_metrics.js</div>
+
+        <div id="mainContent">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Select Metrics (multi-select):</label>
+                    <div class="search-box">
+                        <input type="text" id="metricSearch" placeholder="🔍 Search metrics...">
+                        <button class="clear-btn" id="clearSearch">✕</button>
+                    </div>
+                    <div class="metric-list" id="metricList"></div>
+                    <div class="selected-count" id="selectedCount">0 metrics selected</div>
+                </div>
+
+                <div class="control-group">
+                    <label>Values to Display:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showCount" checked>
+                            <label for="showCount">Count</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showCountReset" checked>
+                            <label for="showCountReset">Count Reset</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showAvgCount">
+                            <label for="showAvgCount">Avg Count</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Chart Type:</label>
+                    <select id="chartType">
+                        <option value="line">Line Chart</option>
+                        <option value="bar">Bar Chart</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="stats" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-label">Total Metrics</div>
+                    <div class="stat-value" id="totalMetrics">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Data Points</div>
+                    <div class="stat-value" id="dataPoints">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Min Value</div>
+                    <div class="stat-value" id="minValue">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Max Value</div>
+                    <div class="stat-value" id="maxValue">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Duration</div>
+                    <div class="stat-value" id="duration">-</div>
+                </div>
+            </div>
+
+            <div class="zoom-info">
+                🖱️ Scroll to zoom • Click and drag to pan • Double-click to reset
+            </div>
+            <div class="zoom-controls">
+                <button id="zoomIn">🔍+ Zoom In</button>
+                <button id="zoomOut">🔍- Zoom Out</button>
+                <button id="resetZoom">↺ Reset View</button>
+                <button id="panLeft">← Pan Left</button>
+                <button id="panRight">→ Pan Right</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="metricsChart"></canvas>
+            </div>
+        </div>
+
+        <div id="noData" class="no-data" style="display: none;">
+            ⬆️ Please load a metrics JavaScript file to begin
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        let metricsData = {};
+        let selectedMetrics = new Set();
+        let allMetricNames = [];
+
+        // Auto-load metrics on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            autoLoadMetrics();
+        });
+
+        // Auto-load metrics from included script
+        function autoLoadMetrics() {
+            try {
+                // Get all global variables that look like metrics (arrays)
+                metricsData = {};
+
+                for (let key in window) {
+                    try {
+                        const value = window[key];
+                        // Check if it's an array of arrays with 3 elements
+                        if (Array.isArray(value) && value.length > 0 &&
+                            Array.isArray(value[0]) && value[0].length === 3) {
+                            metricsData[key] = value;
+                        }
+                    } catch (e) {
+                        // Skip variables that can't be accessed
+                    }
+                }
+
+                allMetricNames = Object.keys(metricsData).sort();
+
+                if (allMetricNames.length === 0) {
+                    document.getElementById('noData').style.display = 'block';
+                    return;
+                }
+
+                // Populate metric list
+                renderMetricList(allMetricNames);
+
+                // Update total metrics
+                document.getElementById('totalMetrics').textContent = allMetricNames.length;
+
+                // Show main content
+                document.getElementById('noData').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+
+                console.log(`Auto-loaded ${allMetricNames.length} metrics`);
+            } catch (error) {
+                console.error('Error auto-loading metrics:', error);
+                document.getElementById('noData').style.display = 'block';
+            }
+        }
+
+        // Render metric list with checkboxes
+        function renderMetricList(metrics) {
+            const list = document.getElementById('metricList');
+            list.innerHTML = '';
+
+            metrics.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'metric-item';
+                if (selectedMetrics.has(name)) {
+                    item.classList.add('selected');
+                }
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `metric_${name}`;
+                checkbox.checked = selectedMetrics.has(name);
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        selectedMetrics.add(name);
+                    } else {
+                        selectedMetrics.delete(name);
+                    }
+                    item.classList.toggle('selected', this.checked);
+                    updateSelectedCount();
+                    updateChart();
+                });
+
+                const label = document.createElement('label');
+                label.htmlFor = `metric_${name}`;
+                label.textContent = name;
+                label.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                });
+
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                list.appendChild(item);
+            });
+
+            updateSelectedCount();
+        }
+
+        // Update selected count display
+        function updateSelectedCount() {
+            const count = selectedMetrics.size;
+            document.getElementById('selectedCount').textContent =
+                `${count} metric${count !== 1 ? 's' : ''} selected`;
+        }
+
+        // Search functionality
+        document.getElementById('metricSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allMetricNames.filter(name =>
+                name.toLowerCase().includes(searchTerm)
+            );
+            renderMetricList(filtered);
+        });
+
+        // Clear search button
+        document.getElementById('clearSearch').addEventListener('click', function() {
+            document.getElementById('metricSearch').value = '';
+            renderMetricList(allMetricNames);
+        });
+
+        // Value checkboxes handler
+        document.getElementById('showCount').addEventListener('change', updateChart);
+        document.getElementById('showCountReset').addEventListener('change', updateChart);
+        document.getElementById('showAvgCount').addEventListener('change', updateChart);
+        document.getElementById('chartType').addEventListener('change', updateChart);
+
+        function updateChart() {
+            if (selectedMetrics.size === 0) {
+                if (chart) {
+                    chart.destroy();
+                    chart = null;
+                }
+                document.getElementById('dataPoints').textContent = '0';
+                document.getElementById('duration').textContent = '-';
+                document.getElementById('minValue').textContent = '-';
+                document.getElementById('maxValue').textContent = '-';
+                return;
+            }
+
+            // Get first selected metric for duration calculation
+            const firstMetric = Array.from(selectedMetrics)[0];
+            const firstData = metricsData[firstMetric];
+
+            // Update data points stat
+            document.getElementById('dataPoints').textContent = firstData.length;
+
+            // Calculate duration (assuming 1 second intervals)
+            const durationSeconds = firstData.length;
+            const minutes = Math.floor(durationSeconds / 60);
+            const seconds = durationSeconds % 60;
+            document.getElementById('duration').textContent = `${minutes}m ${seconds}s`;
+
+            // Extract data series
+            const showCount = document.getElementById('showCount').checked;
+            const showCountReset = document.getElementById('showCountReset').checked;
+            const showAvgCount = document.getElementById('showAvgCount').checked;
+
+            const labels = firstData.map((_, i) => i); // Time in seconds
+            const datasets = [];
+
+            // Color palette for multiple metrics
+            const colors = [
+                { border: 'rgb(75, 192, 192)', bg: 'rgba(75, 192, 192, 0.2)' },
+                { border: 'rgb(255, 99, 132)', bg: 'rgba(255, 99, 132, 0.2)' },
+                { border: 'rgb(153, 102, 255)', bg: 'rgba(153, 102, 255, 0.2)' },
+                { border: 'rgb(255, 159, 64)', bg: 'rgba(255, 159, 64, 0.2)' },
+                { border: 'rgb(54, 162, 235)', bg: 'rgba(54, 162, 235, 0.2)' },
+                { border: 'rgb(255, 206, 86)', bg: 'rgba(255, 206, 86, 0.2)' },
+                { border: 'rgb(231, 233, 237)', bg: 'rgba(231, 233, 237, 0.2)' },
+                { border: 'rgb(255, 99, 71)', bg: 'rgba(255, 99, 71, 0.2)' },
+                { border: 'rgb(144, 238, 144)', bg: 'rgba(144, 238, 144, 0.2)' },
+                { border: 'rgb(173, 216, 230)', bg: 'rgba(173, 216, 230, 0.2)' }
+            ];
+
+            let colorIndex = 0;
+            selectedMetrics.forEach(metricName => {
+                const data = metricsData[metricName];
+                const color = colors[colorIndex % colors.length];
+
+                if (showCount) {
+                    const countData = data.map(d => d[0]);
+                    datasets.push({
+                        label: `${metricName} (count)`,
+                        data: countData,
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        tension: 0.4,
+                        borderWidth: 1.5,
+                        pointRadius: 1,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 10
+                    });
+                }
+
+                if (showCountReset) {
+                    const countResetData = data.map(d => d[1]);
+                    datasets.push({
+                        label: `${metricName} (count_reset)`,
+                        data: countResetData,
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        tension: 0.4,
+                        borderWidth: 1.5,
+                        pointRadius: 1,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 10,
+                        borderDash: [5, 5]
+                    });
+                }
+
+                if (showAvgCount) {
+                    const avgCountData = data.map(d => d[2]);
+                    datasets.push({
+                        label: `${metricName} (avg_count)`,
+                        data: avgCountData,
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        tension: 0.4,
+                        borderWidth: 1.5,
+                        pointRadius: 1,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 10,
+                        borderDash: [10, 5]
+                    });
+                }
+
+                colorIndex++;
+            });
+
+            // Calculate min/max from visible datasets
+            let allValues = [];
+            datasets.forEach(ds => allValues.push(...ds.data));
+
+            if (allValues.length > 0) {
+                const minVal = Math.min(...allValues);
+                const maxVal = Math.max(...allValues);
+                document.getElementById('minValue').textContent = minVal.toLocaleString();
+                document.getElementById('maxValue').textContent = maxVal.toLocaleString();
+            }
+
+            // Destroy existing chart
+            if (chart) {
+                chart.destroy();
+            }
+
+            // Create new chart
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            const chartType = document.getElementById('chartType').value;
+
+            const chartTitle = selectedMetrics.size === 1
+                ? Array.from(selectedMetrics)[0].replace(/_/g, ' ').toUpperCase()
+                : `${selectedMetrics.size} Metrics Comparison`;
+
+            chart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: chartTitle,
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return `Time: ${context[0].label}s`;
+                                }
+                            }
+                        },
+                        zoom: {
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                    speed: 0.1
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'x',
+                                onZoomComplete: function({chart}) {
+                                    console.log('Zoomed');
+                                }
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                                modifierKey: null
+                            },
+                            limits: {
+                                x: {min: 'original', max: 'original'}
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time (seconds)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                maxTicksLimit: 20
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Zoom controls
+        document.getElementById('zoomIn').addEventListener('click', function() {
+            if (chart) chart.zoom(1.2);
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', function() {
+            if (chart) chart.zoom(0.8);
+        });
+
+        document.getElementById('resetZoom').addEventListener('click', function() {
+            if (chart) chart.resetZoom();
+        });
+
+        document.getElementById('panLeft').addEventListener('click', function() {
+            if (chart) chart.pan({x: -100}, undefined, 'default');
+        });
+
+        document.getElementById('panRight').addEventListener('click', function() {
+            if (chart) chart.pan({x: 100}, undefined, 'default');
+        });
+
+    </script>
+</body>
+</html>

@@ -14,8 +14,8 @@ DATADIR_BASE="/home/bogdan.degtyariov/mysql-nvme/data"
 # POOL_SIZES=(32 12 2)      # The 3 Tiers (GB)
 POOL_SIZES=(12)
 
-#THREADS=(1 4 16 32 64 128 256 512)
-THREADS=(32 64)
+#THREADS=(1 4 16 32 64 128 256 512 1024)
+THREADS=(64)
 
 # --- DEBUG SETTINGS ---
 TABLE_ROWS=5000000
@@ -39,7 +39,7 @@ echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============
 
 # Determine server directory and binaries
 if [[ "$DBMS_NAME" == "percona-server" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.35"
+    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
     ADMIN_TOOL="mysqladmin"
 elif [[ "$DBMS_NAME" == "mysql" ]]; then
     SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64"
@@ -282,7 +282,7 @@ generate_config() {
     echo "user                            = $(whoami)" >> "$CFG"
     echo "bind-address                    = 0.0.0.0" >> "$CFG"
     echo "skip-name-resolve               = ON" >> "$CFG"
-    echo "performance_schema              = OFF" >> "$CFG"
+    #echo "performance_schema              = OFF" >> "$CFG"
     echo "" >> "$CFG"
 
     echo "# --- Connection & Threading ----------------------------------------------------" >> "$CFG"
@@ -383,12 +383,16 @@ generate_config() {
     [ "$INSTANCES" -lt 1 ] && INSTANCES=1
     [ "$INSTANCES" -gt 8 ] && INSTANCES=8
 
-
     # MySQL 8.4+ / 9.x
     echo "innodb_redo_log_capacity = 4G" >> "$CFG"
     echo "innodb_change_buffering = none" >> "$CFG"
     echo "innodb_flush_method = O_DIRECT" >> "$CFG"
     echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
+
+    # Percona Server specific settings
+    # if [[ "$DBMS_NAME" == "percona-server" ]]; then
+    #     echo "innodb_empty_free_list_algorithm = backoff" >> "$CFG"
+    # fi
 
     # 4. Deploy Config
     mkdir -p "$CONFIG_DIR"
@@ -434,6 +438,36 @@ start_innodb_metrics() {
     echo $! > /tmp/innodb.pid
 }
 
+start_lru_metrics() {
+    local PREFIX=$1
+    local OUT="${PREFIX}.lru_metrics.csv"
+    echo "all enabled InnoDB metrics (long format) -> ${OUT}"
+
+    # Get the directory of this script
+    local SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local COLLECTOR="${SCRIPT_DIR}/collect_lru_metrics.sh"
+
+    if [ ! -x "$COLLECTOR" ]; then
+        echo "WARNING: InnoDB metrics collector not found or not executable: $COLLECTOR"
+        return 1
+    fi
+
+    # Start the collector in the background
+    "$COLLECTOR" "$DB_HOST" "$DB_PORT" "$DB_USER" "$DB_PASS" "$OUT" 2>/dev/null &
+    local pid=$!
+    echo $pid > /tmp/lru_metrics.pid
+
+    # Verify it started successfully
+    sleep 0.5
+    if ! kill -0 $pid 2>/dev/null; then
+        echo "WARNING: Failed to start InnoDB metrics collector"
+        rm -f /tmp/lru_metrics.pid
+        return 1
+    fi
+
+    return 0
+}
+
 enable_innodb_metrics() {
     echo ">>> Enabling all InnoDB metrics counters..."
     "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N \
@@ -443,6 +477,8 @@ enable_innodb_metrics() {
     else
         echo "    ERROR: Failed to set innodb_monitor_enable"
     fi
+
+    # Note: 'all' enables all available metrics including buffer_LRU_% if present
 }
 
 start_gdb_snapshots() {
@@ -486,11 +522,23 @@ start_metrics() {
     dstat -t 1 > "${PREFIX}.dstat.txt" & echo $! > /tmp/dstat.pid
 
     start_innodb_metrics "$PREFIX"
+    start_lru_metrics "$PREFIX"
     start_gdb_snapshots "$PREFIX"
 }
 
 stop_metrics() {
-    kill $(cat /tmp/iostat.pid) $(cat /tmp/vmstat.pid) $(cat /tmp/mpstat.pid) $(cat /tmp/dstat.pid) $(cat /tmp/innodb.pid) $(cat /tmp/gdb.pid 2>/dev/null) 2>/dev/null
+    # Stop all monitoring processes
+    local pids_to_kill=""
+
+    for pidfile in /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/gdb.pid; do
+        if [ -f "$pidfile" ]; then
+            pids_to_kill="$pids_to_kill $(cat $pidfile)"
+        fi
+    done
+
+    if [ -n "$pids_to_kill" ]; then
+        kill $pids_to_kill 2>/dev/null
+    fi
 
     # Give GDB snapshot a moment to finish if still running
     if [ -f /tmp/gdb.pid ]; then
@@ -500,6 +548,9 @@ stop_metrics() {
             sleep 2
         fi
     fi
+
+    # Clean up PID files
+    rm -f /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/gdb.pid
 }
 
 trap 'stop_metrics; stop_server' EXIT
@@ -565,7 +616,8 @@ for SIZE in "${POOL_SIZES[@]}"; do
 
   # 3. MEASUREMENT (three runs per thread count for stability)
   for THREAD in "${THREADS[@]}"; do
-    for RUN in 1 2 3; do
+    for RUN in 1; do
+    #for RUN in 1 2 3; do
       FILE_PREFIX="${LOG_DIR}/run${RUN}_Tier${SIZE}G_RW_${THREAD}th"
       echo "   >>> Testing ${THREAD} Threads (run ${RUN}/3)..."
 
