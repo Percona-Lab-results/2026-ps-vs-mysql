@@ -26,7 +26,7 @@ DURATION=900
 # TABLE_ROWS=50000
 # WARMUP_RO_TIME=10
 # WARMUP_RW_TIME=10
-# DURATION=10
+# DURATION=15
 
 DBMS_NAME="$1"
 DBMS_VER="$2"
@@ -42,7 +42,7 @@ if [[ "$DBMS_NAME" == "percona-server" ]]; then
     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
     ADMIN_TOOL="mysqladmin"
 elif [[ "$DBMS_NAME" == "mysql" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64"
+    SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64-patch4-62c9244"
     ADMIN_TOOL="mysqladmin"
 else
     echo "Unknown DBMS: ${DBMS_NAME}"
@@ -468,12 +468,42 @@ start_lru_metrics() {
     return 0
 }
 
+start_mutex_metrics() {
+    local PREFIX=$1
+    local OUT="${PREFIX}.mutex_metrics.csv"
+    echo "InnoDB mutex metrics -> ${OUT}"
+
+    # Get the directory of this script
+    local SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local COLLECTOR="${SCRIPT_DIR}/collect_mutex_metrics.sh"
+
+    if [ ! -x "$COLLECTOR" ]; then
+        echo "WARNING: Mutex metrics collector not found or not executable: $COLLECTOR"
+        return 1
+    fi
+
+    # Start the collector in the background
+    "$COLLECTOR" "$DB_HOST" "$DB_PORT" "$DB_USER" "$DB_PASS" "$OUT" 2>/dev/null &
+    local pid=$!
+    echo $pid > /tmp/mutex_metrics.pid
+
+    # Verify it started successfully
+    sleep 0.5
+    if ! kill -0 $pid 2>/dev/null; then
+        echo "WARNING: Failed to start mutex metrics collector"
+        rm -f /tmp/mutex_metrics.pid
+        return 1
+    fi
+
+    return 0
+}
+
 enable_innodb_metrics() {
     echo ">>> Enabling all InnoDB metrics counters..."
     "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N \
-        -e "SET GLOBAL innodb_monitor_enable = 'all';" 2>/dev/null
+        -e "SET GLOBAL innodb_monitor_enable = 'latch';" 2>/dev/null
     if [ $? -eq 0 ]; then
-        echo "    innodb_monitor_enable = 'all'"
+        echo "    innodb_monitor_enable = 'latch'"
     else
         echo "    ERROR: Failed to set innodb_monitor_enable"
     fi
@@ -523,6 +553,7 @@ start_metrics() {
 
     start_innodb_metrics "$PREFIX"
     start_lru_metrics "$PREFIX"
+    start_mutex_metrics "$PREFIX"
     start_gdb_snapshots "$PREFIX"
 }
 
@@ -530,7 +561,7 @@ stop_metrics() {
     # Stop all monitoring processes
     local pids_to_kill=""
 
-    for pidfile in /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/gdb.pid; do
+    for pidfile in /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/mutex_metrics.pid /tmp/gdb.pid; do
         if [ -f "$pidfile" ]; then
             pids_to_kill="$pids_to_kill $(cat $pidfile)"
         fi
@@ -550,7 +581,7 @@ stop_metrics() {
     fi
 
     # Clean up PID files
-    rm -f /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/gdb.pid
+    rm -f /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/mutex_metrics.pid /tmp/gdb.pid
 }
 
 trap 'stop_metrics; stop_server' EXIT

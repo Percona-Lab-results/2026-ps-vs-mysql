@@ -245,7 +245,7 @@ innodb_max_purge_lag	0
 innodb_max_purge_lag_delay	0
 innodb_max_undo_log_size	1073741824
 innodb_monitor_disable	
-innodb_monitor_enable	all
+innodb_monitor_enable	latch
 innodb_monitor_reset	
 innodb_monitor_reset_all	
 innodb_numa_interleave	ON
@@ -577,7 +577,7 @@ select_into_disk_sync	OFF
 select_into_disk_sync_delay	0
 server_id	1
 server_id_bits	32
-server_uuid	ecf89401-4cff-11f1-b043-ac1f6bc846a9
+server_uuid	864aad80-4fa9-11f1-be80-ac1f6bc846a9
 session_track_gtids	OFF
 session_track_schema	ON
 session_track_state_change	OFF
@@ -679,7 +679,7 @@ thread_pool_stall_limit	500
 thread_stack	524288
 thread_statistics	OFF
 time_zone	SYSTEM
-timestamp	1778479773.185156
+timestamp	1778772517.675376
 tls_certificates_enforced_validation	OFF
 tls_ciphersuites	
 tls_version	TLSv1.2,TLSv1.3

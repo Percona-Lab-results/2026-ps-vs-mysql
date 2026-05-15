@@ -1,4 +1,4 @@
 #!/bin/bash
 
 python3 visuals/generate_variable_comparisons.py benchmark_logs disabled_binlog
-python3 visuals/generate_variable_comparisons.py benchmark_logs_binlog enabled_binlog
+# python3 visuals/generate_variable_comparisons.py benchmark_logs_binlog enabled_binlog
