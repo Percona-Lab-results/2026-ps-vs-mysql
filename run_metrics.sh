@@ -15,7 +15,7 @@ DATADIR_BASE="/home/bogdan.degtyariov/mysql-nvme/data"
 POOL_SIZES=(12)
 
 #THREADS=(1 4 16 32 64 128 256 512 1024)
-THREADS=(64)
+THREADS=(32 64 128 256)
 
 # --- DEBUG SETTINGS ---
 TABLE_ROWS=5000000
@@ -38,7 +38,10 @@ sudo cpupower frequency-set -g performance > /dev/null
 echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============="
 
 # Determine server directory and binaries
-if [[ "$DBMS_NAME" == "percona-server" ]]; then
+if [[ "$DBMS_NAME" == "percona-server-no-optimization" ]]; then
+    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch3"
+    ADMIN_TOOL="mysqladmin"
+elif [[ "$DBMS_NAME" == "percona-server-optimization" ]]; then
     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
     ADMIN_TOOL="mysqladmin"
 elif [[ "$DBMS_NAME" == "mysql" ]]; then

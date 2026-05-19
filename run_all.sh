@@ -50,9 +50,14 @@ for ENABLE_BINLOG in 0; do
   # Run Percona Server 8.4.8-8 benchmarks
   echo ""
   echo "=========================================================================="
-  echo "Starting Percona Server 8.4.8-8 benchmarks ($BINLOG_MODE)"
+  echo "Starting Percona Server 8.4.8-8 benchmarks With Optimization ($BINLOG_MODE)"
   echo "=========================================================================="
-  ./run_metrics.sh "percona-server" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
+  ./run_metrics.sh "percona-server-optimization" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
+  echo ""
+  echo "=========================================================================="
+  echo "Starting Percona Server 8.4.8-8 benchmarks Without Optimization ($BINLOG_MODE)"
+  echo "=========================================================================="
+  ./run_metrics.sh "percona-server-no-optimization" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
 done
 
 
