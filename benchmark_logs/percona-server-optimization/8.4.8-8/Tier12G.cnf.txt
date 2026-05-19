@@ -1,9 +1,9 @@
 [mysqld]
 port                            = 3306
 socket                          = /tmp/mysql_benchmark.sock
-datadir                         = /home/bogdan.degtyariov/mysql-nvme/data/percona-server-optimization_8.4.8-8_tier12G
+datadir                         = /home/bogdan.degtyariov/mysql-nvme/data/percona-server-optimization_8.4.8-8_tier12G_threadpool
 log_error_verbosity             = 3
-log_error                       = /home/bogdan.degtyariov/mysql-nvme/data/percona-server-optimization_8.4.8-8_tier12G/mysql-error.log
+log_error                       = /home/bogdan.degtyariov/mysql-nvme/data/percona-server-optimization_8.4.8-8_tier12G_threadpool/mysql-error.log
 # --- General -------------------------------------------------------------------
 user                            = bogdan.degtyariov
 bind-address                    = 0.0.0.0
@@ -19,6 +19,12 @@ back_log                        = 4096
 wait_timeout                    = 300
 interactive_timeout             = 300
 connect_timeout                 = 60
+
+
+# --- Thread Pool (Percona Server) ------------------------------------------
+thread_handling                 = pool-of-threads
+thread_pool_size                = 80                # match physical core count
+thread_pool_max_threads         = 2000
 
 # --- InnoDB - Buffer pool Tier -------------------------------------------------
 innodb_buffer_pool_size         = 12G
@@ -63,7 +69,7 @@ disable_log_bin                 = ON
 
 # --- Slow Query Log ------------------------------------------------------------
 slow_query_log                  = ON
-slow_query_log_file             = /home/bogdan.degtyariov/mysql-nvme/data/percona-server-optimization_8.4.8-8_tier12G/slow.log
+slow_query_log_file             = /home/bogdan.degtyariov/mysql-nvme/data/percona-server-optimization_8.4.8-8_tier12G_threadpool/slow.log
 long_query_time                 = 1
 log_queries_not_using_indexes   = OFF
 min_examined_row_limit          = 1000

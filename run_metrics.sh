@@ -1,4 +1,20 @@
 #!/bin/bash
+# MySQL/Percona Server Benchmark Script with Metrics Collection
+#
+# Usage: ./run_metrics.sh <dbms_name> <dbms_version> <is_read_only> <enable_binlog> [enable_thread_pool]
+#
+# Arguments:
+#   dbms_name          - "percona-server-no-optimization", "percona-server-optimization", or "mysql"
+#   dbms_version       - Version string (e.g., "8.4.8-8", "9.7.0")
+#   is_read_only       - 1 for read-only tests, 0 for read-write tests
+#   enable_binlog      - 1 to enable binary logging, 0 to disable
+#   enable_thread_pool - (Optional) 1 to enable thread pool, 0 to disable (default: 0)
+#
+# Examples:
+#   ./run_metrics.sh percona-server 8.4.8-8 0 0        # Read-write, no binlog, no thread pool
+#   ./run_metrics.sh percona-server 8.4.8-8 0 1        # Read-write, with binlog
+#   ./run_metrics.sh percona-server 8.4.8-8 0 0 1      # Read-write, no binlog, with thread pool
+#   ./run_metrics.sh mysql 9.7.0 1 0                   # Read-only test
 
 # --- VARIABLES ---
 DB_HOST="127.0.0.1"
@@ -15,7 +31,7 @@ DATADIR_BASE="/home/bogdan.degtyariov/mysql-nvme/data"
 POOL_SIZES=(12)
 
 #THREADS=(1 4 16 32 64 128 256 512 1024)
-THREADS=(512)
+THREADS=(32 64 128 256 512)
 
 # --- DEBUG SETTINGS ---
 TABLE_ROWS=5000000
@@ -32,10 +48,12 @@ DBMS_NAME="$1"
 DBMS_VER="$2"
 IS_READ_ONLY="$3"
 ENABLE_BINLOG="$4"
+ENABLE_THREAD_POOL="${5:-0}"  # Optional 5th argument, defaults to 0 (disabled)
 
 sudo cpupower frequency-set -g performance > /dev/null
 
 echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============="
+echo "Thread pool: $([ "$ENABLE_THREAD_POOL" -eq 1 ] && echo "ENABLED" || echo "DISABLED")"
 
 # Determine server directory and binaries
 if [[ "$DBMS_NAME" == "percona-server-no-optimization" ]]; then
@@ -215,6 +233,8 @@ mkdir -p "$LOG_DIR"
 echo "Detected: $RAW_VERSION (Major: $MAJOR_VER)"
 [ "$ENABLE_BINLOG" == "1" ] && echo "Binary logging: ENABLED"
 [ "$ENABLE_BINLOG" != "1" ] && echo "Binary logging: DISABLED"
+[ "$ENABLE_THREAD_POOL" == "1" ] && echo "Thread pool: ENABLED"
+[ "$ENABLE_THREAD_POOL" != "1" ] && echo "Thread pool: DISABLED"
 
 stop_server
 rm -rf "$TMP_DATADIR"
@@ -299,6 +319,15 @@ generate_config() {
     echo "interactive_timeout             = 300" >> "$CFG"
     echo "connect_timeout                 = 60" >> "$CFG"
     echo "" >> "$CFG"
+
+    if [ "$ENABLE_THREAD_POOL" -eq 1 ]; then
+        echo "" >> "$CFG"
+        echo "# --- Thread Pool (Percona Server) ------------------------------------------" >> "$CFG"
+        echo "thread_handling                 = pool-of-threads" >> "$CFG"
+        echo "thread_pool_size                = 80                # match physical core count" >> "$CFG"
+        echo "thread_pool_max_threads         = 2000" >> "$CFG"
+        echo "" >> "$CFG"
+    fi
 
     echo "# --- InnoDB - Buffer pool Tier -------------------------------------------------" >> "$CFG"
     echo "innodb_buffer_pool_size         = ${SIZE}G" >> "$CFG"
@@ -606,6 +635,9 @@ for SIZE in "${POOL_SIZES[@]}"; do
   TIER_DATADIR="${DATADIR_BASE}/${DBMS_NAME}_${RAW_VERSION}_tier${SIZE}G"
   if [ "$ENABLE_BINLOG" == "1" ]; then
       TIER_DATADIR="${TIER_DATADIR}_binlog"
+  fi
+  if [ "$ENABLE_THREAD_POOL" == "1" ]; then
+      TIER_DATADIR="${TIER_DATADIR}_threadpool"
   fi
 
   initialize_datadir "$TIER_DATADIR"

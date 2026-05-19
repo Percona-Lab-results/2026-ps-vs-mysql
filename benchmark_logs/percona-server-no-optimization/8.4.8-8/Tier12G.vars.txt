@@ -75,7 +75,7 @@ connection_memory_limit	18446744073709551615
 core_file	OFF
 create_admin_listener_thread	OFF
 cte_max_recursion_depth	1000
-datadir	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/
+datadir	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G_threadpool/
 default_collation_for_utf8mb4	utf8mb4_0900_ai_ci
 default_password_lifetime	0
 default_storage_engine	InnoDB
@@ -111,7 +111,7 @@ ft_query_expansion_limit	20
 ft_query_extra_word_chars	OFF
 ft_stopword_file	(built-in)
 general_log	OFF
-general_log_file	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/beast-node8.log
+general_log_file	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G_threadpool/beast-node8.log
 generated_random_password_length	20
 global_connection_memory_limit	18446744073709551615
 global_connection_memory_tracking	OFF
@@ -336,7 +336,7 @@ log_bin	OFF
 log_bin_basename	
 log_bin_index	
 log_bin_trust_function_creators	OFF
-log_error	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/mysql-error.log
+log_error	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G_threadpool/mysql-error.log
 log_error_services	log_filter_internal; log_sink_internal
 log_error_suppression_list	
 log_error_verbosity	3
@@ -533,8 +533,8 @@ read_rnd_buffer_size	4194304
 regexp_stack_limit	8000000
 regexp_time_limit	32
 relay_log	beast-node8-relay-bin
-relay_log_basename	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/beast-node8-relay-bin
-relay_log_index	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/beast-node8-relay-bin.index
+relay_log_basename	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G_threadpool/beast-node8-relay-bin
+relay_log_index	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G_threadpool/beast-node8-relay-bin.index
 relay_log_purge	ON
 relay_log_recovery	OFF
 relay_log_space_limit	0
@@ -577,7 +577,7 @@ select_into_disk_sync	OFF
 select_into_disk_sync_delay	0
 server_id	1
 server_id_bits	32
-server_uuid	dc4b3df0-5361-11f1-bd27-ac1f6bc846a9
+server_uuid	28a2a7f0-5380-11f1-a743-ac1f6bc846a9
 session_track_gtids	OFF
 session_track_schema	ON
 session_track_state_change	OFF
@@ -616,7 +616,7 @@ slave_type_conversions
 slow_launch_time	2
 slow_query_log	ON
 slow_query_log_always_write_time	10.000000
-slow_query_log_file	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/slow.log
+slow_query_log_file	/home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G_threadpool/slow.log
 slow_query_log_use_global_control	
 socket	/tmp/mysql_benchmark.sock
 sort_buffer_size	4194304
@@ -668,18 +668,18 @@ temptable_use_mmap	OFF
 terminology_use_previous	NONE
 tf_sequence_table_max_upper_bound	1048576
 thread_cache_size	256
-thread_handling	one-thread-per-connection
+thread_handling	pool-of-threads
 thread_pool_high_prio_mode	transactions
 thread_pool_high_prio_tickets	4294967295
 thread_pool_idle_timeout	60
-thread_pool_max_threads	100000
+thread_pool_max_threads	2000
 thread_pool_oversubscribe	3
 thread_pool_size	80
 thread_pool_stall_limit	500
 thread_stack	524288
 thread_statistics	OFF
 time_zone	SYSTEM
-timestamp	1779181543.853592
+timestamp	1779194555.838603
 tls_certificates_enforced_validation	OFF
 tls_ciphersuites	
 tls_version	TLSv1.2,TLSv1.3
