@@ -1,5 +1,5 @@
 # Percona Toolkit MySQL Summary Report #######################
-              System time | 2026-05-18 17:09:00 UTC (local TZ: UTC +0000)
+              System time | 2026-05-19 09:07:32 UTC (local TZ: UTC +0000)
 # Instances ##################################################
   Port  Data Directory             Nice OOM Socket
   ===== ========================== ==== === ======
@@ -9,11 +9,11 @@
               Has symbols | Yes
 # Report On Port 3306 ########################################
                      User | root@127.0.0.1
-                     Time | 2026-05-18 17:09:00 (UTC)
+                     Time | 2026-05-19 09:07:31 (UTC)
                  Hostname | beast-node8.tp.int.percona.com
                   Version | 8.4.8-8 Percona Server (GPL), Release 8, Revision 1c288264
                  Built On | Linux x86_64
-                  Started | 2026-05-18 17:06 (up 0+00:02:08)
+                  Started | 2026-05-19 09:05 (up 0+00:02:08)
                 Databases | 5
                   Datadir | /home/bogdan.degtyariov/mysql-nvme/data/percona-server-no-optimization_8.4.8-8_tier12G/
                 Processes | 1 connected, 2 running
@@ -87,48 +87,47 @@ Handler_read_next                       4000000          50           6
 Handler_read_rnd_next                   3500000          40         100
 Handler_update                           400000           4            
 Handler_write                       70000000000      800000          60
-Innodb_buffer_pool_bytes_data       8000000000000   100000000      125000
-Innodb_buffer_pool_bytes_dirty       2000000000       22500     -269591
-Innodb_buffer_pool_pages_flushed     1000000000       10000          15
-Innodb_buffer_pool_pages_made_not_young   700000000        9000          20
-Innodb_buffer_pool_pages_made_young     4500000          50           1
-Innodb_buffer_pool_pages_old          200000000        2250           4
+Innodb_buffer_pool_bytes_data       8000000000000   100000000       70000
+Innodb_buffer_pool_pages_flushed     1000000000       10000            
+Innodb_buffer_pool_pages_made_not_young   800000000       10000          20
+Innodb_buffer_pool_pages_made_young     4500000          50            
+Innodb_buffer_pool_pages_old          200000000        2250           3
 Innodb_buffer_pool_read_ahead         500000000        6000            
-Innodb_buffer_pool_read_ahead_evicted       40000                        
+Innodb_buffer_pool_read_ahead_evicted      350000           4            
 Innodb_buffer_pool_read_requests    300000000000     3500000          50
-Innodb_buffer_pool_reads               45000000         500           7
-Innodb_buffer_pool_write_requests   125000000000     1250000          15
-Innodb_checkpoint_age                2500000000       30000     -327036
+Innodb_buffer_pool_reads               45000000         500           4
+Innodb_buffer_pool_write_requests   125000000000     1250000          10
+Innodb_checkpoint_age                2500000000       30000     -337434
 Innodb_checkpoint_max_age           2500000000000    30000000        2250
-Innodb_data_fsyncs                   1250000000       15000           4
-Innodb_data_read                    9000000000000   100000000      125000
-Innodb_data_reads                     800000000        9000           7
-Innodb_data_writes                   9000000000      100000          20
-Innodb_data_written                 45000000000000   500000000      300000
-Innodb_dblwr_pages_written           1000000000       10000          15
+Innodb_data_fsyncs                   1000000000       12500           1
+Innodb_data_read                    9000000000000   100000000       70000
+Innodb_data_reads                     800000000        9000           4
+Innodb_data_writes                  10000000000      100000           1
+Innodb_data_written                 45000000000000   500000000       10000
+Innodb_dblwr_pages_written           1000000000       10000            
 Innodb_dblwr_writes                     8000000          90            
 Innodb_ibuf_segment_size                   1250                        
-Innodb_redo_log_uuid                500000000000     6000000            
+Innodb_redo_log_uuid                1250000000000    15000000            
 Innodb_redo_log_checkpoint_lsn      17500000000000   200000000      350000
-Innodb_redo_log_current_lsn         17500000000000   200000000         300
-Innodb_redo_log_flushed_to_disk_lsn 17500000000000   200000000         300
-Innodb_redo_log_logical_size         2500000000       30000     -327028
+Innodb_redo_log_current_lsn         17500000000000   200000000         250
+Innodb_redo_log_flushed_to_disk_lsn 17500000000000   200000000         250
+Innodb_redo_log_logical_size         2500000000       30000     -337454
 Innodb_redo_log_physical_size       2500000000000    30000000            
 Innodb_redo_log_capacity_resized    3000000000000    35000000            
 Innodb_log_write_requests           125000000000     1500000           3
-Innodb_log_writes                    8000000000       90000            
-Innodb_lsn_current                  17500000000000   200000000         300
-Innodb_lsn_flushed                  17500000000000   200000000         300
+Innodb_log_writes                    8000000000      100000            
+Innodb_lsn_current                  17500000000000   200000000         250
+Innodb_lsn_flushed                  17500000000000   200000000         250
 Innodb_lsn_last_checkpoint          17500000000000   200000000      350000
 Innodb_master_thread_active_loops         70000                        
-Innodb_master_thread_idle_loops           12500                        
+Innodb_master_thread_idle_loops           10000                        
 Innodb_max_trx_id                      25000000         300            
-Innodb_os_log_fsyncs                 1250000000       12500            
-Innodb_os_log_written               17500000000000   225000000         450
+Innodb_os_log_fsyncs                  900000000       10000            
+Innodb_os_log_written               17500000000000   225000000         350
 Innodb_pages_created                 1000000000       12500            
-Innodb_pages_read                     600000000        6000           7
+Innodb_pages_read                     600000000        6000           4
 Innodb_pages0_read                         4500                        
-Innodb_pages_written                 1000000000       12500          15
+Innodb_pages_written                 1000000000       12500            
 Innodb_purge_trx_id                    25000000         300            
 Innodb_rows_inserted                70000000000      800000           8
 Innodb_system_rows_deleted               300000           3            
@@ -148,7 +147,7 @@ Net_buffer_length                      10000000         125
 Open_table_definitions                    45000                        
 Opened_files                                700                        
 Opened_table_definitions                 125000           1            
-Opened_tables                            400000           4           1
+Opened_tables                            400000           4           2
 Performance_schema_session_connect_attrs_longest_seen       90000           1            
 Queries                                25000000         300           5
 Questions                              25000000         300           5
@@ -157,8 +156,8 @@ Ssl_accepts                               50000                       1
 Ssl_finished_accepts                      50000                       1
 Ssl_session_cache_timeout                200000           2            
 Table_locks_immediate                      3500                        
-Table_open_cache_hits                  30000000         350           3
-Table_open_cache_misses                  450000           4           1
+Table_open_cache_hits                  30000000         350           1
+Table_open_cache_misses                  450000           4           2
 Threads_created                           45000                        
 Uptime                                    90000           1           1
 # Table cache ################################################
@@ -212,7 +211,7 @@ Specify --databases or --all-databases to dump and summarize schemas
       Txn Isolation Level | REPEATABLE-READ
         Adaptive Flushing | ON
       Adaptive Checkpoint | 
-           Checkpoint Age | 3M
+           Checkpoint Age | 4M
              InnoDB Queue | 0 queries inside InnoDB, 0 queries in queue
        Oldest Transaction | 0 Seconds
          History List Len | 43
@@ -317,5 +316,5 @@ innodb_change_buffering             = none
 innodb_flush_method                 = O_DIRECT
 innodb_buffer_pool_instances        = 2
 # Memory management library ##################################
-jemalloc is not enabled in mysql config for process with id 711296
+jemalloc is not enabled in mysql config for process with id 482794
 # The End ####################################################
