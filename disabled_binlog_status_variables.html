@@ -162,7 +162,7 @@
         <div class="stats">
             <div class="stat-box">
                 <div class="label">Total Variables</div>
-                <div class="value">550</div>
+                <div class="value">557</div>
             </div>
             <div class="stat-box">
                 <div class="label">Common to All</div>
@@ -183,6 +183,7 @@
             <li><strong>Percona Server 8.4.8-8-patch</strong></li>
             <li><strong>Percona Server No Optimization 8.4.8-8</strong></li>
             <li><strong>Percona Server Optimization 8.4.8-8</strong></li>
+            <li><strong>Percona Server Thread Stat 8.4.9-9</strong></li>
         </ul>
     </div>
 
@@ -199,24 +200,26 @@
     </div>
 
     <div class="section">
-        <h2>All Status Variables <span class="count-badge" id="visibleCount">550 variables</span></h2>
+        <h2>All Status Variables <span class="count-badge" id="visibleCount">557 variables</span></h2>
         <table id="mainTable">
             <thead>
                 <tr>
-                    <th style="width: 12%">Variable Name</th>
-                    <th style="width: 12%">Mysql 8.4.8</th>
-                    <th style="width: 12%">Mysql 8.4.8-lru</th>
-                    <th style="width: 12%">Percona Server 8.4.8-8</th>
-                    <th style="width: 12%">Percona Server 8.4.8-8-orig</th>
-                    <th style="width: 12%">Percona Server 8.4.8-8-patch</th>
-                    <th style="width: 12%">Percona Server No Optimization 8.4.8-8</th>
-                    <th style="width: 12%">Percona Server Optimization 8.4.8-8</th>
+                    <th style="width: 11%">Variable Name</th>
+                    <th style="width: 11%">Mysql 8.4.8</th>
+                    <th style="width: 11%">Mysql 8.4.8-lru</th>
+                    <th style="width: 11%">Percona Server 8.4.8-8</th>
+                    <th style="width: 11%">Percona Server 8.4.8-8-orig</th>
+                    <th style="width: 11%">Percona Server 8.4.8-8-patch</th>
+                    <th style="width: 11%">Percona Server No Optimization 8.4.8-8</th>
+                    <th style="width: 11%">Percona Server Optimization 8.4.8-8</th>
+                    <th style="width: 11%">Percona Server Thread Stat 8.4.9-9</th>
                 </tr>
             </thead>
             <tbody>
 
                 <tr class="var-row " data-var="aborted_clients" data-category="same">
                     <td class="var-name">Aborted_clients</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -235,10 +238,12 @@
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
                 </tr>
 
                 <tr class="var-row " data-var="acl_cache_items_count" data-category="same">
                     <td class="var-name">Acl_cache_items_count</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -257,10 +262,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="binlog_cache_use" data-category="same">
                     <td class="var-name">Binlog_cache_use</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -279,10 +286,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="binlog_snapshot_gtid_executed" data-category="same">
                     <td class="var-name">Binlog_snapshot_gtid_executed</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -301,10 +310,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="binlog_stmt_cache_disk_use" data-category="same">
                     <td class="var-name">Binlog_stmt_cache_disk_use</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -323,6 +334,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="bytes_received" data-category="different">
@@ -334,12 +346,14 @@
                     <td class="value-cell">337</td>
                     <td class="value-cell">336</td>
                     <td class="value-cell">337</td>
+                    <td class="value-cell">336</td>
                 </tr>
 
                 <tr class="var-row different" data-var="bytes_sent" data-category="different">
                     <td class="var-name">Bytes_sent<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">347</td>
                     <td class="value-cell">376</td>
+                    <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
@@ -356,10 +370,12 @@
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvu7aagFXgAeyyxtyI01L\nikYINHmVAXsfnDwwdqKT3Og41lKmlVKzBB3CGaLsWTEOlDKYN3qHEfVxOkT8FvYh\nU2JLaFwlS3m7KP3c1oWv2oyNiY9heZ78HdMhhkAU...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyTOhROgEWRvGgLqQmTPO\nidJevSxjfz862Be8fJjS/ULpv7pkBiAlmLZ37v2rSDHyty5DsdetsVtOC5N0BnvS\n5BekZBs6F4VEIXfFJ6on3j+u4uLRgJc8XZjpX2sv...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr1VAfey4xjZS/Rzqe57J\n/ug/pog2rqaH520wf0H7beKApe7uFVe45vZKjg4uYpLDqZw+uFKC2fKvKBm85FkV\nmebfG6f3ast/UIH4tymBWKajKTOlT3W89t0w8LtB...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn0o8wxNVxH7voIhla1t0\nHXgzyQNUjxL6oSrHbppNjViSfvvf7qJMRSEANK6hBNiZff80hnE5QSmmEiP9AB3E\nKDIXE2ICFbNsiZUVW8BooAgU19wN//1QPZaTqRzQ...</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_admin_commands" data-category="same">
                     <td class="var-name">Com_admin_commands</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -378,10 +394,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_alter_event" data-category="same">
                     <td class="var-name">Com_alter_event</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -400,10 +418,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_alter_instance" data-category="same">
                     <td class="var-name">Com_alter_instance</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -422,10 +442,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_alter_resource_group" data-category="same">
                     <td class="var-name">Com_alter_resource_group</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -444,10 +466,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_alter_table" data-category="same">
                     <td class="var-name">Com_alter_table</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -466,10 +490,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_alter_user" data-category="same">
                     <td class="var-name">Com_alter_user</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -488,10 +514,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_analyze" data-category="same">
                     <td class="var-name">Com_analyze</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -510,10 +538,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_begin" data-category="same">
                     <td class="var-name">Com_begin</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -532,10 +562,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_call_procedure" data-category="same">
                     <td class="var-name">Com_call_procedure</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -554,10 +586,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_change_repl_filter" data-category="same">
                     <td class="var-name">Com_change_repl_filter</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -576,10 +610,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_check" data-category="same">
                     <td class="var-name">Com_check</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -598,10 +634,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_clone" data-category="same">
                     <td class="var-name">Com_clone</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -620,6 +658,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="com_create_compression_dictionary" data-category="different">
@@ -631,10 +670,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_db" data-category="same">
                     <td class="var-name">Com_create_db</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -653,10 +694,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_function" data-category="same">
                     <td class="var-name">Com_create_function</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -675,10 +718,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_procedure" data-category="same">
                     <td class="var-name">Com_create_procedure</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -697,10 +742,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_role" data-category="same">
                     <td class="var-name">Com_create_role</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -719,10 +766,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_spatial_reference_system" data-category="same">
                     <td class="var-name">Com_create_spatial_reference_system</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -741,10 +790,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_trigger" data-category="same">
                     <td class="var-name">Com_create_trigger</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -763,10 +814,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_create_user" data-category="same">
                     <td class="var-name">Com_create_user</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -785,10 +838,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_dealloc_sql" data-category="same">
                     <td class="var-name">Com_dealloc_sql</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -807,10 +862,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_delete_multi" data-category="same">
                     <td class="var-name">Com_delete_multi</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -829,6 +886,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="com_drop_compression_dictionary" data-category="different">
@@ -840,10 +898,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_db" data-category="same">
                     <td class="var-name">Com_drop_db</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -862,10 +922,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_function" data-category="same">
                     <td class="var-name">Com_drop_function</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -884,10 +946,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_procedure" data-category="same">
                     <td class="var-name">Com_drop_procedure</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -906,10 +970,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_role" data-category="same">
                     <td class="var-name">Com_drop_role</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -928,10 +994,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_spatial_reference_system" data-category="same">
                     <td class="var-name">Com_drop_spatial_reference_system</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -950,10 +1018,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_trigger" data-category="same">
                     <td class="var-name">Com_drop_trigger</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -972,10 +1042,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_drop_view" data-category="same">
                     <td class="var-name">Com_drop_view</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -994,10 +1066,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_execute_sql" data-category="same">
                     <td class="var-name">Com_execute_sql</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1016,10 +1090,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_flush" data-category="same">
                     <td class="var-name">Com_flush</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1038,10 +1114,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_grant" data-category="same">
                     <td class="var-name">Com_grant</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1060,10 +1138,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_group_replication_start" data-category="same">
                     <td class="var-name">Com_group_replication_start</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1082,10 +1162,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_ha_close" data-category="same">
                     <td class="var-name">Com_ha_close</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1104,10 +1186,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_ha_read" data-category="same">
                     <td class="var-name">Com_ha_read</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1126,10 +1210,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_import" data-category="same">
                     <td class="var-name">Com_import</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1148,10 +1234,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_insert_select" data-category="same">
                     <td class="var-name">Com_insert_select</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1170,10 +1258,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_install_plugin" data-category="same">
                     <td class="var-name">Com_install_plugin</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1192,10 +1282,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_load" data-category="same">
                     <td class="var-name">Com_load</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1214,10 +1306,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_lock_tables" data-category="same">
                     <td class="var-name">Com_lock_tables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1236,10 +1330,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_optimize" data-category="same">
                     <td class="var-name">Com_optimize</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1258,10 +1354,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_prepare_sql" data-category="same">
                     <td class="var-name">Com_prepare_sql</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1280,10 +1378,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_purge_before_date" data-category="same">
                     <td class="var-name">Com_purge_before_date</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1302,10 +1402,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_rename_table" data-category="same">
                     <td class="var-name">Com_rename_table</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1324,10 +1426,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_repair" data-category="same">
                     <td class="var-name">Com_repair</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1346,10 +1450,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_replace_select" data-category="same">
                     <td class="var-name">Com_replace_select</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1368,10 +1474,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_replica_stop" data-category="same">
                     <td class="var-name">Com_replica_stop</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1390,10 +1498,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_resignal" data-category="same">
                     <td class="var-name">Com_resignal</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1412,10 +1522,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_revoke" data-category="same">
                     <td class="var-name">Com_revoke</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1434,10 +1546,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_revoke_roles" data-category="same">
                     <td class="var-name">Com_revoke_roles</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1456,10 +1570,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_rollback_to_savepoint" data-category="same">
                     <td class="var-name">Com_rollback_to_savepoint</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1478,10 +1594,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_select" data-category="same">
                     <td class="var-name">Com_select</td>
+                    <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
@@ -1500,10 +1618,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_set_password" data-category="same">
                     <td class="var-name">Com_set_password</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1522,10 +1642,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_set_role" data-category="same">
                     <td class="var-name">Com_set_role</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1544,10 +1666,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_binlog_events" data-category="same">
                     <td class="var-name">Com_show_binlog_events</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1566,10 +1690,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_charsets" data-category="same">
                     <td class="var-name">Com_show_charsets</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1588,10 +1714,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_collations" data-category="same">
                     <td class="var-name">Com_show_collations</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1610,10 +1738,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_create_event" data-category="same">
                     <td class="var-name">Com_show_create_event</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1632,10 +1762,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_create_proc" data-category="same">
                     <td class="var-name">Com_show_create_proc</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1654,10 +1786,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_create_trigger" data-category="same">
                     <td class="var-name">Com_show_create_trigger</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1676,10 +1810,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_databases" data-category="same">
                     <td class="var-name">Com_show_databases</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1698,10 +1834,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_engine_mutex" data-category="same">
                     <td class="var-name">Com_show_engine_mutex</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1720,10 +1858,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_errors" data-category="same">
                     <td class="var-name">Com_show_errors</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1742,10 +1882,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_fields" data-category="same">
                     <td class="var-name">Com_show_fields</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1764,10 +1906,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_function_status" data-category="same">
                     <td class="var-name">Com_show_function_status</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1786,6 +1930,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="com_show_index_statistics" data-category="different">
@@ -1797,10 +1942,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_keys" data-category="same">
                     <td class="var-name">Com_show_keys</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1819,10 +1966,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_parse_tree" data-category="same">
                     <td class="var-name">Com_show_parse_tree</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1841,10 +1990,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_privileges" data-category="same">
                     <td class="var-name">Com_show_privileges</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1863,10 +2014,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_procedure_status" data-category="same">
                     <td class="var-name">Com_show_procedure_status</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1885,10 +2038,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_profile" data-category="same">
                     <td class="var-name">Com_show_profile</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1907,10 +2062,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_relaylog_events" data-category="same">
                     <td class="var-name">Com_show_relaylog_events</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1929,10 +2086,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_replicas" data-category="same">
                     <td class="var-name">Com_show_replicas</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1951,10 +2110,12 @@
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_storage_engines" data-category="same">
                     <td class="var-name">Com_show_storage_engines</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1973,10 +2134,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_table_status" data-category="same">
                     <td class="var-name">Com_show_table_status</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1995,6 +2158,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="com_show_thread_statistics" data-category="different">
@@ -2006,10 +2170,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_triggers" data-category="same">
                     <td class="var-name">Com_show_triggers</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2028,10 +2194,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_show_variables" data-category="same">
                     <td class="var-name">Com_show_variables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2050,10 +2218,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_shutdown" data-category="same">
                     <td class="var-name">Com_shutdown</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2072,10 +2242,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_stmt_close" data-category="same">
                     <td class="var-name">Com_stmt_close</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2094,10 +2266,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_stmt_fetch" data-category="same">
                     <td class="var-name">Com_stmt_fetch</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2116,10 +2290,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_stmt_reprepare" data-category="same">
                     <td class="var-name">Com_stmt_reprepare</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2138,10 +2314,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_stmt_send_long_data" data-category="same">
                     <td class="var-name">Com_stmt_send_long_data</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2160,10 +2338,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_uninstall_component" data-category="same">
                     <td class="var-name">Com_uninstall_component</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2182,10 +2362,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_unlock_instance" data-category="same">
                     <td class="var-name">Com_unlock_instance</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2204,10 +2386,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_update" data-category="same">
                     <td class="var-name">Com_update</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2226,10 +2410,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_xa_commit" data-category="same">
                     <td class="var-name">Com_xa_commit</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2248,10 +2434,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_xa_prepare" data-category="same">
                     <td class="var-name">Com_xa_prepare</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2270,10 +2458,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_xa_rollback" data-category="same">
                     <td class="var-name">Com_xa_rollback</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2292,10 +2482,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="compression" data-category="same">
                     <td class="var-name">Compression</td>
+                    <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
@@ -2314,10 +2506,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="compression_level" data-category="same">
                     <td class="var-name">Compression_level</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2336,10 +2530,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="connection_errors_internal" data-category="same">
                     <td class="var-name">Connection_errors_internal</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2358,10 +2554,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="connection_errors_peer_address" data-category="same">
                     <td class="var-name">Connection_errors_peer_address</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2380,10 +2578,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="connection_errors_tcpwrap" data-category="same">
                     <td class="var-name">Connection_errors_tcpwrap</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2402,10 +2602,12 @@
                     <td class="value-cell">16</td>
                     <td class="value-cell">16</td>
                     <td class="value-cell">16</td>
+                    <td class="value-cell">16</td>
                 </tr>
 
                 <tr class="var-row " data-var="created_tmp_disk_tables" data-category="same">
                     <td class="var-name">Created_tmp_disk_tables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2424,10 +2626,12 @@
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
                 </tr>
 
                 <tr class="var-row " data-var="created_tmp_tables" data-category="same">
                     <td class="var-name">Created_tmp_tables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2446,10 +2650,12 @@
                     <td class="value-cell">ca.pem</td>
                     <td class="value-cell">ca.pem</td>
                     <td class="value-cell">ca.pem</td>
+                    <td class="value-cell">ca.pem</td>
                 </tr>
 
                 <tr class="var-row " data-var="current_tls_capath" data-category="same">
                     <td class="var-name">Current_tls_capath</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -2468,10 +2674,12 @@
                     <td class="value-cell">server-cert.pem</td>
                     <td class="value-cell">server-cert.pem</td>
                     <td class="value-cell">server-cert.pem</td>
+                    <td class="value-cell">server-cert.pem</td>
                 </tr>
 
                 <tr class="var-row " data-var="current_tls_cipher" data-category="same">
                     <td class="var-name">Current_tls_cipher</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -2490,10 +2698,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="current_tls_crl" data-category="same">
                     <td class="var-name">Current_tls_crl</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -2512,10 +2722,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="current_tls_key" data-category="same">
                     <td class="var-name">Current_tls_key</td>
+                    <td class="value-cell">server-key.pem</td>
                     <td class="value-cell">server-key.pem</td>
                     <td class="value-cell">server-key.pem</td>
                     <td class="value-cell">server-key.pem</td>
@@ -2534,10 +2746,12 @@
                     <td class="value-cell">TLSv1.2,TLSv1.3</td>
                     <td class="value-cell">TLSv1.2,TLSv1.3</td>
                     <td class="value-cell">TLSv1.2,TLSv1.3</td>
+                    <td class="value-cell">TLSv1.2,TLSv1.3</td>
                 </tr>
 
                 <tr class="var-row " data-var="delayed_errors" data-category="same">
                     <td class="var-name">Delayed_errors</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2556,10 +2770,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="delayed_writes" data-category="same">
                     <td class="var-name">Delayed_writes</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2578,10 +2794,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="deprecated_use_fk_on_non_standard_key_last_timestamp" data-category="same">
                     <td class="var-name">Deprecated_use_fk_on_non_standard_key_last_timestamp</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2600,10 +2818,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="deprecated_use_i_s_processlist_last_timestamp" data-category="same">
                     <td class="var-name">Deprecated_use_i_s_processlist_last_timestamp</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2622,6 +2842,7 @@
                     <td class="value-cell">18568</td>
                     <td class="value-cell">9944</td>
                     <td class="value-cell">9968</td>
+                    <td class="value-cell">9912</td>
                 </tr>
 
                 <tr class="var-row different" data-var="error_log_buffered_events" data-category="different">
@@ -2633,10 +2854,12 @@
                     <td class="value-cell">158</td>
                     <td class="value-cell">81</td>
                     <td class="value-cell">81</td>
+                    <td class="value-cell">81</td>
                 </tr>
 
                 <tr class="var-row " data-var="error_log_expired_events" data-category="same">
                     <td class="var-name">Error_log_expired_events</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2655,6 +2878,7 @@
                     <td class="value-cell">1778079731852450</td>
                     <td class="value-cell">1779194542632062</td>
                     <td class="value-cell">1779188954653281</td>
+                    <td class="value-cell">1779776295930302</td>
                 </tr>
 
                 <tr class="var-row different" data-var="flush_commands" data-category="different">
@@ -2666,10 +2890,12 @@
                     <td class="value-cell">4</td>
                     <td class="value-cell">4</td>
                     <td class="value-cell">4</td>
+                    <td class="value-cell">4</td>
                 </tr>
 
                 <tr class="var-row " data-var="global_connection_memory" data-category="same">
                     <td class="var-name">Global_connection_memory</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2688,10 +2914,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_delete" data-category="same">
                     <td class="var-name">Handler_delete</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2710,10 +2938,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_external_lock" data-category="same">
                     <td class="var-name">Handler_external_lock</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2732,10 +2962,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_prepare" data-category="same">
                     <td class="var-name">Handler_prepare</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2754,10 +2986,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_read_key" data-category="same">
                     <td class="var-name">Handler_read_key</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2776,10 +3010,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_read_next" data-category="same">
                     <td class="var-name">Handler_read_next</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2798,10 +3034,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_read_rnd" data-category="same">
                     <td class="var-name">Handler_read_rnd</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2820,10 +3058,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_rollback" data-category="same">
                     <td class="var-name">Handler_rollback</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2842,10 +3082,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_savepoint_rollback" data-category="same">
                     <td class="var-name">Handler_savepoint_rollback</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2864,10 +3106,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="handler_write" data-category="same">
                     <td class="var-name">Handler_write</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2886,6 +3130,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_bytes_data" data-category="different">
@@ -2897,6 +3142,7 @@
                     <td class="value-cell">16302080</td>
                     <td class="value-cell">16351232</td>
                     <td class="value-cell">16269312</td>
+                    <td class="value-cell">16351232</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_bytes_dirty" data-category="different">
@@ -2908,10 +3154,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">393216</td>
                     <td class="value-cell">393216</td>
+                    <td class="value-cell">344064</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_dump_status" data-category="same">
                     <td class="var-name">Innodb_buffer_pool_dump_status</td>
+                    <td class="value-cell">Dumping of buffer pool not started</td>
                     <td class="value-cell">Dumping of buffer pool not started</td>
                     <td class="value-cell">Dumping of buffer pool not started</td>
                     <td class="value-cell">Dumping of buffer pool not started</td>
@@ -2930,12 +3178,14 @@
                     <td class="value-cell">Loading of buffer pool not started</td>
                     <td class="value-cell">Loading of buffer pool not started</td>
                     <td class="value-cell">Loading of buffer pool not started</td>
+                    <td class="value-cell">Loading of buffer pool not started</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_lru_flushed" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_LRU_flushed<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2952,6 +3202,7 @@
                     <td class="value-cell">995</td>
                     <td class="value-cell">998</td>
                     <td class="value-cell">993</td>
+                    <td class="value-cell">998</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_dirty" data-category="different">
@@ -2963,6 +3214,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">24</td>
                     <td class="value-cell">24</td>
+                    <td class="value-cell">21</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_flushed" data-category="different">
@@ -2972,6 +3224,7 @@
                     <td class="value-cell">239</td>
                     <td class="value-cell">260</td>
                     <td class="value-cell">260</td>
+                    <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
                 </tr>
@@ -2985,6 +3238,7 @@
                     <td class="value-cell">785341</td>
                     <td class="value-cell">785338</td>
                     <td class="value-cell">785343</td>
+                    <td class="value-cell">785338</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_made_not_young" data-category="different">
@@ -2996,6 +3250,7 @@
                     <td class="value-cell">94</td>
                     <td class="value-cell">16</td>
                     <td class="value-cell">10</td>
+                    <td class="value-cell">30</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_made_young" data-category="different">
@@ -3007,12 +3262,14 @@
                     <td class="value-cell">8</td>
                     <td class="value-cell">4</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_misc" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_misc<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">70</td>
                     <td class="value-cell">70</td>
+                    <td class="value-cell">96</td>
                     <td class="value-cell">96</td>
                     <td class="value-cell">96</td>
                     <td class="value-cell">96</td>
@@ -3029,10 +3286,12 @@
                     <td class="value-cell">211</td>
                     <td class="value-cell">205</td>
                     <td class="value-cell">206</td>
+                    <td class="value-cell">207</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_pages_total" data-category="same">
                     <td class="var-name">Innodb_buffer_pool_pages_total</td>
+                    <td class="value-cell">786432</td>
                     <td class="value-cell">786432</td>
                     <td class="value-cell">786432</td>
                     <td class="value-cell">786432</td>
@@ -3051,10 +3310,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_read_ahead_evicted" data-category="same">
                     <td class="var-name">Innodb_buffer_pool_read_ahead_evicted</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3073,6 +3334,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_read_requests" data-category="different">
@@ -3084,6 +3346,7 @@
                     <td class="value-cell">29907</td>
                     <td class="value-cell">30178</td>
                     <td class="value-cell">30044</td>
+                    <td class="value-cell">30045</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_reads" data-category="different">
@@ -3095,10 +3358,12 @@
                     <td class="value-cell">833</td>
                     <td class="value-cell">836</td>
                     <td class="value-cell">830</td>
+                    <td class="value-cell">835</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_resize_status" data-category="same">
                     <td class="var-name">Innodb_buffer_pool_resize_status</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -3117,10 +3382,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_resize_status_progress" data-category="same">
                     <td class="var-name">Innodb_buffer_pool_resize_status_progress</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3139,6 +3406,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_write_requests" data-category="different">
@@ -3150,12 +3418,14 @@
                     <td class="value-cell">6934</td>
                     <td class="value-cell">6957</td>
                     <td class="value-cell">7030</td>
+                    <td class="value-cell">6926</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffered_aio_submitted" data-category="different">
                     <td class="var-name">Innodb_buffered_aio_submitted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3172,12 +3442,14 @@
                     <td class="value-cell">26780</td>
                     <td class="value-cell">27446</td>
                     <td class="value-cell">27582</td>
+                    <td class="value-cell">26885</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_checkpoint_max_age" data-category="different">
                     <td class="var-name">Innodb_checkpoint_max_age<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">3614800384</td>
                     <td class="value-cell">3614800384</td>
                     <td class="value-cell">3614800384</td>
                     <td class="value-cell">3614800384</td>
@@ -3194,10 +3466,12 @@
                     <td class="value-cell">138</td>
                     <td class="value-cell">137</td>
                     <td class="value-cell">123</td>
+                    <td class="value-cell">131</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_data_pending_fsyncs" data-category="same">
                     <td class="var-name">Innodb_data_pending_fsyncs</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3216,10 +3490,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_data_pending_writes" data-category="same">
                     <td class="var-name">Innodb_data_pending_writes</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3238,6 +3514,7 @@
                     <td class="value-cell">13699584</td>
                     <td class="value-cell">13765120</td>
                     <td class="value-cell">13683200</td>
+                    <td class="value-cell">13748736</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_data_reads" data-category="different">
@@ -3249,6 +3526,7 @@
                     <td class="value-cell">859</td>
                     <td class="value-cell">862</td>
                     <td class="value-cell">857</td>
+                    <td class="value-cell">861</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_data_writes" data-category="different">
@@ -3260,6 +3538,7 @@
                     <td class="value-cell">420</td>
                     <td class="value-cell">427</td>
                     <td class="value-cell">384</td>
+                    <td class="value-cell">387</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_data_written" data-category="different">
@@ -3271,6 +3550,7 @@
                     <td class="value-cell">4808704</td>
                     <td class="value-cell">4426752</td>
                     <td class="value-cell">4398080</td>
+                    <td class="value-cell">4432896</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_dblwr_pages_written" data-category="different">
@@ -3280,6 +3560,7 @@
                     <td class="value-cell">98</td>
                     <td class="value-cell">119</td>
                     <td class="value-cell">119</td>
+                    <td class="value-cell">95</td>
                     <td class="value-cell">95</td>
                     <td class="value-cell">95</td>
                 </tr>
@@ -3293,12 +3574,14 @@
                     <td class="value-cell">7</td>
                     <td class="value-cell">6</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_encryption_n_merge_blocks_decrypted" data-category="different">
                     <td class="var-name">Innodb_encryption_n_merge_blocks_decrypted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3315,12 +3598,14 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_encryption_n_rowlog_blocks_decrypted" data-category="different">
                     <td class="var-name">Innodb_encryption_n_rowlog_blocks_decrypted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3337,12 +3622,14 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_ibuf_free_list" data-category="different">
                     <td class="var-name">Innodb_ibuf_free_list<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3359,10 +3646,12 @@
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_log_waits" data-category="same">
                     <td class="var-name">Innodb_log_waits</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3381,6 +3670,7 @@
                     <td class="value-cell">5214</td>
                     <td class="value-cell">5202</td>
                     <td class="value-cell">5206</td>
+                    <td class="value-cell">5205</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_log_writes" data-category="different">
@@ -3392,6 +3682,7 @@
                     <td class="value-cell">125</td>
                     <td class="value-cell">157</td>
                     <td class="value-cell">115</td>
+                    <td class="value-cell">119</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_lsn_current" data-category="different">
@@ -3403,6 +3694,7 @@
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
+                    <td class="value-cell">19419467</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_lsn_flushed" data-category="different">
@@ -3414,6 +3706,7 @@
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
+                    <td class="value-cell">19419467</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_lsn_last_checkpoint" data-category="different">
@@ -3425,12 +3718,14 @@
                     <td class="value-cell">19382692</td>
                     <td class="value-cell">19348624</td>
                     <td class="value-cell">19370073</td>
+                    <td class="value-cell">19392582</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_master_thread_active_loops" data-category="different">
                     <td class="var-name">Innodb_master_thread_active_loops<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
@@ -3447,6 +3742,7 @@
                     <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
+                    <td class="value-cell">9</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_max_trx_id" data-category="different">
@@ -3458,10 +3754,12 @@
                     <td class="value-cell">1559</td>
                     <td class="value-cell">1557</td>
                     <td class="value-cell">1557</td>
+                    <td class="value-cell">1557</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_num_open_files" data-category="same">
                     <td class="var-name">Innodb_num_open_files</td>
+                    <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
@@ -3480,6 +3778,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_os_log_fsyncs" data-category="different">
@@ -3491,10 +3790,12 @@
                     <td class="value-cell">79</td>
                     <td class="value-cell">82</td>
                     <td class="value-cell">70</td>
+                    <td class="value-cell">77</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_os_log_pending_fsyncs" data-category="same">
                     <td class="var-name">Innodb_os_log_pending_fsyncs</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3513,6 +3814,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_os_log_written" data-category="different">
@@ -3524,10 +3826,12 @@
                     <td class="value-cell">452608</td>
                     <td class="value-cell">440320</td>
                     <td class="value-cell">437760</td>
+                    <td class="value-cell">456704</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_page_size" data-category="same">
                     <td class="var-name">Innodb_page_size</td>
+                    <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
@@ -3546,6 +3850,7 @@
                     <td class="value-cell">7</td>
                     <td class="value-cell">7</td>
                     <td class="value-cell">7</td>
+                    <td class="value-cell">7</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_pages_created" data-category="different">
@@ -3557,6 +3862,7 @@
                     <td class="value-cell">167</td>
                     <td class="value-cell">167</td>
                     <td class="value-cell">167</td>
+                    <td class="value-cell">168</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_pages_read" data-category="different">
@@ -3568,6 +3874,7 @@
                     <td class="value-cell">832</td>
                     <td class="value-cell">835</td>
                     <td class="value-cell">830</td>
+                    <td class="value-cell">834</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_pages_written" data-category="different">
@@ -3577,6 +3884,7 @@
                     <td class="value-cell">239</td>
                     <td class="value-cell">260</td>
                     <td class="value-cell">260</td>
+                    <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
                 </tr>
@@ -3590,6 +3898,7 @@
                     <td class="value-cell">1558</td>
                     <td class="value-cell">1556</td>
                     <td class="value-cell">1556</td>
+                    <td class="value-cell">1556</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_purge_undo_no" data-category="different">
@@ -3601,10 +3910,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_redo_log_capacity_resized" data-category="same">
                     <td class="var-name">Innodb_redo_log_capacity_resized</td>
+                    <td class="value-cell">4294967296</td>
                     <td class="value-cell">4294967296</td>
                     <td class="value-cell">4294967296</td>
                     <td class="value-cell">4294967296</td>
@@ -3623,6 +3934,7 @@
                     <td class="value-cell">19382692</td>
                     <td class="value-cell">19348624</td>
                     <td class="value-cell">19370073</td>
+                    <td class="value-cell">19392582</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_redo_log_current_lsn" data-category="different">
@@ -3634,10 +3946,12 @@
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
+                    <td class="value-cell">19419467</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_redo_log_enabled" data-category="same">
                     <td class="var-name">Innodb_redo_log_enabled</td>
+                    <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
@@ -3656,6 +3970,7 @@
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
+                    <td class="value-cell">19419467</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_redo_log_logical_size" data-category="different">
@@ -3667,10 +3982,12 @@
                     <td class="value-cell">27648</td>
                     <td class="value-cell">27648</td>
                     <td class="value-cell">28160</td>
+                    <td class="value-cell">27136</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_redo_log_physical_size" data-category="same">
                     <td class="var-name">Innodb_redo_log_physical_size</td>
+                    <td class="value-cell">3276800</td>
                     <td class="value-cell">3276800</td>
                     <td class="value-cell">3276800</td>
                     <td class="value-cell">3276800</td>
@@ -3689,10 +4006,12 @@
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
+                    <td class="value-cell">OFF</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_redo_log_resize_status" data-category="same">
                     <td class="var-name">Innodb_redo_log_resize_status</td>
+                    <td class="value-cell">OK</td>
                     <td class="value-cell">OK</td>
                     <td class="value-cell">OK</td>
                     <td class="value-cell">OK</td>
@@ -3711,10 +4030,12 @@
                     <td class="value-cell">1656398495</td>
                     <td class="value-cell">3432916459</td>
                     <td class="value-cell">4042141374</td>
+                    <td class="value-cell">1351045773</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_row_lock_current_waits" data-category="same">
                     <td class="var-name">Innodb_row_lock_current_waits</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3733,10 +4054,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_row_lock_time_avg" data-category="same">
                     <td class="var-name">Innodb_row_lock_time_avg</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3755,10 +4078,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_row_lock_waits" data-category="same">
                     <td class="var-name">Innodb_row_lock_waits</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3777,10 +4102,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_rows_inserted" data-category="same">
                     <td class="var-name">Innodb_rows_inserted</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3799,10 +4126,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_rows_updated" data-category="same">
                     <td class="var-name">Innodb_rows_updated</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3821,10 +4150,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_sampled_pages_skipped" data-category="same">
                     <td class="var-name">Innodb_sampled_pages_skipped</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3843,12 +4174,14 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_scan_deleted_recs_size" data-category="different">
                     <td class="var-name">Innodb_scan_deleted_recs_size<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3865,12 +4198,14 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_scan_pages_disjointed" data-category="different">
                     <td class="var-name">Innodb_scan_pages_disjointed<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3887,12 +4222,14 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_secondary_index_triggered_cluster_reads" data-category="different">
                     <td class="var-name">Innodb_secondary_index_triggered_cluster_reads<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
@@ -3909,10 +4246,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_system_rows_deleted" data-category="same">
                     <td class="var-name">Innodb_system_rows_deleted</td>
+                    <td class="value-cell">168</td>
                     <td class="value-cell">168</td>
                     <td class="value-cell">168</td>
                     <td class="value-cell">168</td>
@@ -3931,12 +4270,14 @@
                     <td class="value-cell">486</td>
                     <td class="value-cell">484</td>
                     <td class="value-cell">484</td>
+                    <td class="value-cell">484</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_system_rows_read" data-category="different">
                     <td class="var-name">Innodb_system_rows_read<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">5848</td>
                     <td class="value-cell">5848</td>
+                    <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
@@ -3953,10 +4294,12 @@
                     <td class="value-cell">343</td>
                     <td class="value-cell">343</td>
                     <td class="value-cell">343</td>
+                    <td class="value-cell">343</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_truncated_status_writes" data-category="same">
                     <td class="var-name">Innodb_truncated_status_writes</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3975,10 +4318,12 @@
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_undo_tablespaces_explicit" data-category="same">
                     <td class="var-name">Innodb_undo_tablespaces_explicit</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3997,10 +4342,12 @@
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_undo_tablespaces_total" data-category="same">
                     <td class="var-name">Innodb_undo_tablespaces_total</td>
+                    <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
@@ -4019,10 +4366,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="key_blocks_unused" data-category="same">
                     <td class="var-name">Key_blocks_unused</td>
+                    <td class="value-cell">53585</td>
                     <td class="value-cell">53585</td>
                     <td class="value-cell">53585</td>
                     <td class="value-cell">53585</td>
@@ -4041,10 +4390,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="key_read_requests" data-category="same">
                     <td class="var-name">Key_read_requests</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4063,10 +4414,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="key_write_requests" data-category="same">
                     <td class="var-name">Key_write_requests</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4085,10 +4438,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="last_query_cost" data-category="same">
                     <td class="var-name">Last_query_cost</td>
+                    <td class="value-cell">0.000000</td>
                     <td class="value-cell">0.000000</td>
                     <td class="value-cell">0.000000</td>
                     <td class="value-cell">0.000000</td>
@@ -4107,10 +4462,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="locked_connects" data-category="same">
                     <td class="var-name">Locked_connects</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4129,10 +4486,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="max_execution_time_set" data-category="same">
                     <td class="var-name">Max_execution_time_set</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4151,10 +4510,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="max_used_connections" data-category="same">
                     <td class="var-name">Max_used_connections</td>
+                    <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
@@ -4173,10 +4534,12 @@
                     <td class="value-cell">2026-05-06 15:02:11</td>
                     <td class="value-cell">2026-05-19 12:42:35</td>
                     <td class="value-cell">2026-05-19 11:09:27</td>
+                    <td class="value-cell">2026-05-26 06:18:27</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_aborted_clients" data-category="same">
                     <td class="var-name">Mysqlx_aborted_clients</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4195,10 +4558,12 @@
                     <td class="value-cell">::</td>
                     <td class="value-cell">::</td>
                     <td class="value-cell">::</td>
+                    <td class="value-cell">::</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_bytes_received" data-category="same">
                     <td class="var-name">Mysqlx_bytes_received</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4217,10 +4582,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_bytes_received_uncompressed_frame" data-category="same">
                     <td class="var-name">Mysqlx_bytes_received_uncompressed_frame</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4239,10 +4606,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_bytes_sent_compressed_payload" data-category="same">
                     <td class="var-name">Mysqlx_bytes_sent_compressed_payload</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4261,10 +4630,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_compression_algorithm" data-category="same">
                     <td class="var-name">Mysqlx_compression_algorithm</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -4283,10 +4654,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_connection_accept_errors" data-category="same">
                     <td class="var-name">Mysqlx_connection_accept_errors</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4305,10 +4678,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_connections_accepted" data-category="same">
                     <td class="var-name">Mysqlx_connections_accepted</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4327,10 +4702,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_connections_rejected" data-category="same">
                     <td class="var-name">Mysqlx_connections_rejected</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4349,10 +4726,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_crud_delete" data-category="same">
                     <td class="var-name">Mysqlx_crud_delete</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4371,10 +4750,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_crud_find" data-category="same">
                     <td class="var-name">Mysqlx_crud_find</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4393,10 +4774,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_crud_modify_view" data-category="same">
                     <td class="var-name">Mysqlx_crud_modify_view</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4415,10 +4798,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_cursor_close" data-category="same">
                     <td class="var-name">Mysqlx_cursor_close</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4437,10 +4822,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_cursor_open" data-category="same">
                     <td class="var-name">Mysqlx_cursor_open</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4459,10 +4846,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_errors_unknown_message_type" data-category="same">
                     <td class="var-name">Mysqlx_errors_unknown_message_type</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4481,10 +4870,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_expect_open" data-category="same">
                     <td class="var-name">Mysqlx_expect_open</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4503,10 +4894,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_messages_sent" data-category="same">
                     <td class="var-name">Mysqlx_messages_sent</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4525,10 +4918,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_notice_other_sent" data-category="same">
                     <td class="var-name">Mysqlx_notice_other_sent</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4547,10 +4942,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_notified_by_group_replication" data-category="same">
                     <td class="var-name">Mysqlx_notified_by_group_replication</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4569,10 +4966,12 @@
                     <td class="value-cell">33060</td>
                     <td class="value-cell">33060</td>
                     <td class="value-cell">33060</td>
+                    <td class="value-cell">33060</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_prep_deallocate" data-category="same">
                     <td class="var-name">Mysqlx_prep_deallocate</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4591,10 +4990,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_prep_prepare" data-category="same">
                     <td class="var-name">Mysqlx_prep_prepare</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4613,10 +5014,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_sessions" data-category="same">
                     <td class="var-name">Mysqlx_sessions</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4635,10 +5038,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_sessions_closed" data-category="same">
                     <td class="var-name">Mysqlx_sessions_closed</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4657,10 +5062,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_sessions_killed" data-category="same">
                     <td class="var-name">Mysqlx_sessions_killed</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4679,10 +5086,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_socket" data-category="same">
                     <td class="var-name">Mysqlx_socket</td>
+                    <td class="value-cell">/tmp/mysqlx.sock</td>
                     <td class="value-cell">/tmp/mysqlx.sock</td>
                     <td class="value-cell">/tmp/mysqlx.sock</td>
                     <td class="value-cell">/tmp/mysqlx.sock</td>
@@ -4701,10 +5110,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_ssl_active" data-category="same">
                     <td class="var-name">Mysqlx_ssl_active</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -4723,10 +5134,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_ssl_cipher_list" data-category="same">
                     <td class="var-name">Mysqlx_ssl_cipher_list</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -4745,10 +5158,12 @@
                     <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
+                    <td class="value-cell">18446744073709551615</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_ssl_ctx_verify_mode" data-category="same">
                     <td class="var-name">Mysqlx_ssl_ctx_verify_mode</td>
+                    <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
@@ -4767,6 +5182,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="mysqlx_ssl_server_not_after" data-category="different">
@@ -4778,6 +5194,7 @@
                     <td class="value-cell">May  3 15:01:49 2036 GMT</td>
                     <td class="value-cell">May 16 12:42:13 2036 GMT</td>
                     <td class="value-cell">May 16 11:09:05 2036 GMT</td>
+                    <td class="value-cell">May 23 06:18:05 2036 GMT</td>
                 </tr>
 
                 <tr class="var-row different" data-var="mysqlx_ssl_server_not_before" data-category="different">
@@ -4789,10 +5206,12 @@
                     <td class="value-cell">May  6 15:01:49 2026 GMT</td>
                     <td class="value-cell">May 19 12:42:13 2026 GMT</td>
                     <td class="value-cell">May 19 11:09:05 2026 GMT</td>
+                    <td class="value-cell">May 26 06:18:05 2026 GMT</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_ssl_verify_depth" data-category="same">
                     <td class="var-name">Mysqlx_ssl_verify_depth</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -4811,10 +5230,12 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_ssl_version" data-category="same">
                     <td class="var-name">Mysqlx_ssl_version</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -4833,10 +5254,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_create_collection_index" data-category="same">
                     <td class="var-name">Mysqlx_stmt_create_collection_index</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4855,10 +5278,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_drop_collection" data-category="same">
                     <td class="var-name">Mysqlx_stmt_drop_collection</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4877,10 +5302,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_enable_notices" data-category="same">
                     <td class="var-name">Mysqlx_stmt_enable_notices</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4899,10 +5326,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_execute_mysqlx" data-category="same">
                     <td class="var-name">Mysqlx_stmt_execute_mysqlx</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4921,10 +5350,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_execute_xplugin" data-category="same">
                     <td class="var-name">Mysqlx_stmt_execute_xplugin</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4943,10 +5374,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_kill_client" data-category="same">
                     <td class="var-name">Mysqlx_stmt_kill_client</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4965,10 +5398,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_list_notices" data-category="same">
                     <td class="var-name">Mysqlx_stmt_list_notices</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4987,10 +5422,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_stmt_modify_collection_options" data-category="same">
                     <td class="var-name">Mysqlx_stmt_modify_collection_options</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5009,10 +5446,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_worker_threads" data-category="same">
                     <td class="var-name">Mysqlx_worker_threads</td>
+                    <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
@@ -5031,6 +5470,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="net_buffer_length" data-category="different">
@@ -5042,10 +5482,12 @@
                     <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
+                    <td class="value-cell">16384</td>
                 </tr>
 
                 <tr class="var-row " data-var="not_flushed_delayed_rows" data-category="same">
                     <td class="var-name">Not_flushed_delayed_rows</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5064,10 +5506,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="open_files" data-category="same">
                     <td class="var-name">Open_files</td>
+                    <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
@@ -5086,10 +5530,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="open_table_definitions" data-category="same">
                     <td class="var-name">Open_table_definitions</td>
+                    <td class="value-cell">46</td>
                     <td class="value-cell">46</td>
                     <td class="value-cell">46</td>
                     <td class="value-cell">46</td>
@@ -5108,6 +5554,7 @@
                     <td class="value-cell">111</td>
                     <td class="value-cell">111</td>
                     <td class="value-cell">111</td>
+                    <td class="value-cell">111</td>
                 </tr>
 
                 <tr class="var-row different" data-var="open_tables_with_triggers" data-category="different">
@@ -5119,10 +5566,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="opened_files" data-category="same">
                     <td class="var-name">Opened_files</td>
+                    <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
@@ -5141,10 +5590,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="opened_tables" data-category="same">
                     <td class="var-name">Opened_tables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5163,10 +5614,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_cond_classes_lost" data-category="same">
                     <td class="var-name">Performance_schema_cond_classes_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5185,10 +5638,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_digest_lost" data-category="same">
                     <td class="var-name">Performance_schema_digest_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5207,10 +5662,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_file_handles_lost" data-category="same">
                     <td class="var-name">Performance_schema_file_handles_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5229,10 +5686,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_hosts_lost" data-category="same">
                     <td class="var-name">Performance_schema_hosts_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5251,6 +5710,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_locker_lost" data-category="same">
@@ -5262,10 +5722,24 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="performance_schema_logger_lost" data-category="different">
+                    <td class="var-name">Performance_schema_logger_lost<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_memory_classes_lost" data-category="same">
                     <td class="var-name">Performance_schema_memory_classes_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5284,10 +5758,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_meter_lost" data-category="same">
                     <td class="var-name">Performance_schema_meter_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5306,10 +5782,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_mutex_classes_lost" data-category="same">
                     <td class="var-name">Performance_schema_mutex_classes_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5328,10 +5806,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_nested_statement_lost" data-category="same">
                     <td class="var-name">Performance_schema_nested_statement_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5350,10 +5830,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_program_lost" data-category="same">
                     <td class="var-name">Performance_schema_program_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5372,10 +5854,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_rwlock_instances_lost" data-category="same">
                     <td class="var-name">Performance_schema_rwlock_instances_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5394,10 +5878,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">130</td>
                     <td class="value-cell">131</td>
+                    <td class="value-cell">130</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_session_connect_attrs_lost" data-category="same">
                     <td class="var-name">Performance_schema_session_connect_attrs_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5416,10 +5902,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_socket_instances_lost" data-category="same">
                     <td class="var-name">Performance_schema_socket_instances_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5438,10 +5926,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_statement_classes_lost" data-category="same">
                     <td class="var-name">Performance_schema_statement_classes_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5460,10 +5950,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_table_instances_lost" data-category="same">
                     <td class="var-name">Performance_schema_table_instances_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5482,10 +5974,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_thread_classes_lost" data-category="same">
                     <td class="var-name">Performance_schema_thread_classes_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5504,10 +5998,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_users_lost" data-category="same">
                     <td class="var-name">Performance_schema_users_lost</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5526,10 +6022,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="queries" data-category="same">
                     <td class="var-name">Queries</td>
+                    <td class="value-cell">30</td>
                     <td class="value-cell">30</td>
                     <td class="value-cell">30</td>
                     <td class="value-cell">30</td>
@@ -5548,10 +6046,12 @@
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
+                    <td class="value-cell">3</td>
                 </tr>
 
                 <tr class="var-row " data-var="replica_open_temp_tables" data-category="same">
                     <td class="var-name">Replica_open_temp_tables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5570,6 +6070,7 @@
                     <td class="value-cell">ON</td>
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
+                    <td class="value-cell">OFF</td>
                 </tr>
 
                 <tr class="var-row different" data-var="rsa_public_key" data-category="different">
@@ -5581,10 +6082,12 @@
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvu7aagFXgAeyyxtyI01L\nikYINHmVAXsfnDwwdqKT3Og41lKmlVKzBB3CGaLsWTEOlDKYN3qHEfVxOkT8FvYh\nU2JLaFwlS3m7KP3c1oWv2oyNiY9heZ78HdMhhkAU...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyTOhROgEWRvGgLqQmTPO\nidJevSxjfz862Be8fJjS/ULpv7pkBiAlmLZ37v2rSDHyty5DsdetsVtOC5N0BnvS\n5BekZBs6F4VEIXfFJ6on3j+u4uLRgJc8XZjpX2sv...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr1VAfey4xjZS/Rzqe57J\n/ug/pog2rqaH520wf0H7beKApe7uFVe45vZKjg4uYpLDqZw+uFKC2fKvKBm85FkV\nmebfG6f3ast/UIH4tymBWKajKTOlT3W89t0w8LtB...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn0o8wxNVxH7voIhla1t0\nHXgzyQNUjxL6oSrHbppNjViSfvvf7qJMRSEANK6hBNiZff80hnE5QSmmEiP9AB3E\nKDIXE2ICFbNsiZUVW8BooAgU19wN//1QPZaTqRzQ...</td>
                 </tr>
 
                 <tr class="var-row " data-var="secondary_engine_execution_count" data-category="same">
                     <td class="var-name">Secondary_engine_execution_count</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5603,10 +6106,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="select_full_range_join" data-category="same">
                     <td class="var-name">Select_full_range_join</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5625,10 +6130,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="select_range_check" data-category="same">
                     <td class="var-name">Select_range_check</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5647,10 +6154,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="slave_open_temp_tables" data-category="same">
                     <td class="var-name">Slave_open_temp_tables</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5669,10 +6178,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="slow_queries" data-category="same">
                     <td class="var-name">Slow_queries</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5691,10 +6202,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="sort_range" data-category="same">
                     <td class="var-name">Sort_range</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5713,10 +6226,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="sort_scan" data-category="same">
                     <td class="var-name">Sort_scan</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5735,10 +6250,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_accepts" data-category="same">
                     <td class="var-name">Ssl_accepts</td>
+                    <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
@@ -5757,10 +6274,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_cipher" data-category="same">
                     <td class="var-name">Ssl_cipher</td>
+                    <td class="value-cell">TLS_AES_128_GCM_SHA256</td>
                     <td class="value-cell">TLS_AES_128_GCM_SHA256</td>
                     <td class="value-cell">TLS_AES_128_GCM_SHA256</td>
                     <td class="value-cell">TLS_AES_128_GCM_SHA256</td>
@@ -5779,10 +6298,12 @@
                     <td class="value-cell">TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES2...</td>
                     <td class="value-cell">TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES2...</td>
                     <td class="value-cell">TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES2...</td>
+                    <td class="value-cell">TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES2...</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_client_connects" data-category="same">
                     <td class="var-name">Ssl_client_connects</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5801,10 +6322,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_ctx_verify_depth" data-category="same">
                     <td class="var-name">Ssl_ctx_verify_depth</td>
+                    <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
@@ -5823,10 +6346,12 @@
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_default_timeout" data-category="same">
                     <td class="var-name">Ssl_default_timeout</td>
+                    <td class="value-cell">7200</td>
                     <td class="value-cell">7200</td>
                     <td class="value-cell">7200</td>
                     <td class="value-cell">7200</td>
@@ -5845,10 +6370,12 @@
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">5</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_finished_connects" data-category="same">
                     <td class="var-name">Ssl_finished_connects</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5867,6 +6394,7 @@
                     <td class="value-cell">May  3 15:01:49 2036 GMT</td>
                     <td class="value-cell">May 16 12:42:13 2036 GMT</td>
                     <td class="value-cell">May 16 11:09:05 2036 GMT</td>
+                    <td class="value-cell">May 23 06:18:05 2036 GMT</td>
                 </tr>
 
                 <tr class="var-row different" data-var="ssl_server_not_before" data-category="different">
@@ -5878,10 +6406,12 @@
                     <td class="value-cell">May  6 15:01:49 2026 GMT</td>
                     <td class="value-cell">May 19 12:42:13 2026 GMT</td>
                     <td class="value-cell">May 19 11:09:05 2026 GMT</td>
+                    <td class="value-cell">May 26 06:18:05 2026 GMT</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_session_cache_hits" data-category="same">
                     <td class="var-name">Ssl_session_cache_hits</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5900,10 +6430,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_session_cache_mode" data-category="same">
                     <td class="var-name">Ssl_session_cache_mode</td>
+                    <td class="value-cell">SERVER</td>
                     <td class="value-cell">SERVER</td>
                     <td class="value-cell">SERVER</td>
                     <td class="value-cell">SERVER</td>
@@ -5922,10 +6454,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_session_cache_size" data-category="same">
                     <td class="var-name">Ssl_session_cache_size</td>
+                    <td class="value-cell">128</td>
                     <td class="value-cell">128</td>
                     <td class="value-cell">128</td>
                     <td class="value-cell">128</td>
@@ -5944,10 +6478,12 @@
                     <td class="value-cell">300</td>
                     <td class="value-cell">300</td>
                     <td class="value-cell">300</td>
+                    <td class="value-cell">300</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_session_cache_timeouts" data-category="same">
                     <td class="var-name">Ssl_session_cache_timeouts</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5966,10 +6502,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_used_session_cache_entries" data-category="same">
                     <td class="var-name">Ssl_used_session_cache_entries</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5988,10 +6526,12 @@
                     <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
                     <td class="value-cell">18446744073709551615</td>
+                    <td class="value-cell">18446744073709551615</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_verify_mode" data-category="same">
                     <td class="var-name">Ssl_verify_mode</td>
+                    <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
@@ -6010,10 +6550,12 @@
                     <td class="value-cell">TLSv1.3</td>
                     <td class="value-cell">TLSv1.3</td>
                     <td class="value-cell">TLSv1.3</td>
+                    <td class="value-cell">TLSv1.3</td>
                 </tr>
 
                 <tr class="var-row " data-var="table_locks_immediate" data-category="same">
                     <td class="var-name">Table_locks_immediate</td>
+                    <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
@@ -6032,10 +6574,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="table_open_cache_hits" data-category="same">
                     <td class="var-name">Table_open_cache_hits</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6054,10 +6598,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="table_open_cache_overflows" data-category="same">
                     <td class="var-name">Table_open_cache_overflows</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6076,12 +6622,14 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="table_open_cache_triggers_misses" data-category="different">
                     <td class="var-name">Table_open_cache_triggers_misses<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6098,10 +6646,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="tc_log_max_pages_used" data-category="same">
                     <td class="var-name">Tc_log_max_pages_used</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6120,6 +6670,7 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="tc_log_page_waits" data-category="same">
@@ -6131,10 +6682,24 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="telemetry_logs_supported" data-category="different">
+                    <td class="var-name">Telemetry_logs_supported<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">ON</td>
                 </tr>
 
                 <tr class="var-row " data-var="telemetry_metrics_supported" data-category="same">
                     <td class="var-name">Telemetry_metrics_supported</td>
+                    <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
@@ -6153,6 +6718,31 @@
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
+                    <td class="value-cell">ON</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_average_hp_queue_wait_us" data-category="different">
+                    <td class="var-name">Threadpool_average_hp_queue_wait_us<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">avg: 0.000, min: 0.000, max: 0.000, dev: 0.000, cnt: 0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_average_queue_wait_us" data-category="different">
+                    <td class="var-name">Threadpool_average_queue_wait_us<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">avg: 31.865, min: 0.000, max: 200.000, dev: 64.250, cnt: 37</td>
                 </tr>
 
                 <tr class="var-row different" data-var="threadpool_idle_threads" data-category="different">
@@ -6164,6 +6754,43 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">14</td>
                     <td class="value-cell">14</td>
+                    <td class="value-cell">14</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_requests_starved_in_queue" data-category="different">
+                    <td class="var-name">Threadpool_requests_starved_in_queue<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_requests_waiting_in_hp_queue" data-category="different">
+                    <td class="var-name">Threadpool_requests_waiting_in_hp_queue<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                </tr>
+
+                <tr class="var-row different" data-var="threadpool_requests_waiting_in_queue" data-category="different">
+                    <td class="var-name">Threadpool_requests_waiting_in_queue<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="threadpool_threads" data-category="different">
@@ -6175,10 +6802,12 @@
                     <td class="value-cell">0</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
+                    <td class="value-cell">15</td>
                 </tr>
 
                 <tr class="var-row " data-var="threads_cached" data-category="same">
                     <td class="var-name">Threads_cached</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6197,6 +6826,7 @@
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
+                    <td class="value-cell">1</td>
                 </tr>
 
                 <tr class="var-row different" data-var="threads_created" data-category="different">
@@ -6208,10 +6838,12 @@
                     <td class="value-cell">1</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
+                    <td class="value-cell">15</td>
                 </tr>
 
                 <tr class="var-row " data-var="threads_running" data-category="same">
                     <td class="var-name">Threads_running</td>
+                    <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
@@ -6230,10 +6862,12 @@
                     <td class="value-cell">OpenSSL 3.0.13 30 Jan 2024</td>
                     <td class="value-cell">OpenSSL 3.0.13 30 Jan 2024</td>
                     <td class="value-cell">OpenSSL 3.0.13 30 Jan 2024</td>
+                    <td class="value-cell">OpenSSL 3.0.13 30 Jan 2024</td>
                 </tr>
 
                 <tr class="var-row " data-var="tls_sni_server_name" data-category="same">
                     <td class="var-name">Tls_sni_server_name</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
@@ -6252,10 +6886,12 @@
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
+                    <td class="value-cell">20</td>
                 </tr>
 
                 <tr class="var-row " data-var="uptime_since_flush_status" data-category="same">
                     <td class="var-name">Uptime_since_flush_status</td>
+                    <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>

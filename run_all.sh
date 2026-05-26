@@ -48,16 +48,23 @@ for ENABLE_BINLOG in 0; do
   # ./run_metrics.sh "mysql" "8.4.8" "$IS_READ_ONLY" "$ENABLE_BINLOG"
 
   # Run Percona Server 8.4.8-8 benchmarks
+  # echo ""
+  # echo "=========================================================================="
+  # echo "Starting Percona Server 8.4.8-8 benchmarks With Optimization ($BINLOG_MODE)"
+  # echo "=========================================================================="
+  # ./run_metrics.sh "percona-server-optimization" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG" "$ENABLE_THREAD_POOL"
+  # echo ""
+  # echo "=========================================================================="
+  # echo "Starting Percona Server 8.4.8-8 benchmarks Without Optimization ($BINLOG_MODE)"
+  # echo "=========================================================================="
+  # ./run_metrics.sh "percona-server-no-optimization" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG" "$ENABLE_THREAD_POOL"
+
   echo ""
   echo "=========================================================================="
-  echo "Starting Percona Server 8.4.8-8 benchmarks With Optimization ($BINLOG_MODE)"
+  echo "Starting Percona Server 8.4.9-9 benchmarks With Optimization ($BINLOG_MODE)"
   echo "=========================================================================="
-  ./run_metrics.sh "percona-server-optimization" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG" "$ENABLE_THREAD_POOL"
-  echo ""
-  echo "=========================================================================="
-  echo "Starting Percona Server 8.4.8-8 benchmarks Without Optimization ($BINLOG_MODE)"
-  echo "=========================================================================="
-  ./run_metrics.sh "percona-server-no-optimization" "8.4.8-8" "$IS_READ_ONLY" "$ENABLE_BINLOG" "$ENABLE_THREAD_POOL"
+  ./run_metrics.sh "percona-server-thread-stat" "8.4.9-9" "$IS_READ_ONLY" "$ENABLE_BINLOG" "$ENABLE_THREAD_POOL"
+
 done
 
 

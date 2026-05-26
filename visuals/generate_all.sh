@@ -5,4 +5,5 @@
 ./visuals/generate_throughput_reports.sh
 ./visuals/generate_var_comparisons.sh
 ./visuals/generate_pmp_index.py
+./visuals/generate_thread_report.py ./benchmark_logs/
 ./visuals/generate_index.py

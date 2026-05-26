@@ -62,6 +62,9 @@ if [[ "$DBMS_NAME" == "percona-server-no-optimization" ]]; then
 elif [[ "$DBMS_NAME" == "percona-server-optimization" ]]; then
     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
     ADMIN_TOOL="mysqladmin"
+elif [[ "$DBMS_NAME" == "percona-server-thread-stat" ]]; then
+    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34"
+    ADMIN_TOOL="mysqladmin"
 elif [[ "$DBMS_NAME" == "mysql" ]]; then
     SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64-patch4-62c9244"
     ADMIN_TOOL="mysqladmin"
@@ -326,6 +329,7 @@ generate_config() {
         echo "thread_handling                 = pool-of-threads" >> "$CFG"
         echo "thread_pool_size                = 80                # match physical core count" >> "$CFG"
         echo "thread_pool_max_threads         = 2000" >> "$CFG"
+        echo "thread_pool_oversubscribe       = 3" >> "$CFG"
         echo "" >> "$CFG"
     fi
 
@@ -574,6 +578,32 @@ start_gdb_snapshots() {
     echo $! > /tmp/gdb.pid
 }
 
+start_thread_status() {
+    local PREFIX=$1
+    local OUT_THPOOL="${PREFIX}.stat-thpool.txt"
+    local OUT_THR="${PREFIX}.stat-thr.txt"
+    echo "Thread pool status -> ${OUT_THPOOL}"
+    echo "Threads status -> ${OUT_THR}"
+
+    (
+        while :; do
+            TS=$(date +%s.%3N)
+            "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -e "SHOW GLOBAL STATUS LIKE 'Threadpool%';" 2>/dev/null | awk -v ts="$TS" '{print ts"\t"$0}' >> "$OUT_THPOOL"
+            sleep 1
+        done
+    ) &
+    echo $! > /tmp/thread_status_thpool.pid
+
+    (
+        while :; do
+            TS=$(date +%s.%3N)
+            "$MYSQL_CLIENT" -h "$DB_HOST" --port=$DB_PORT -u "$DB_USER" -p"$DB_PASS" -N -e "SHOW GLOBAL STATUS LIKE 'Threads%';" 2>/dev/null | awk -v ts="$TS" '{print ts"\t"$0}' >> "$OUT_THR"
+            sleep 1
+        done
+    ) &
+    echo $! > /tmp/thread_status_thr.pid
+}
+
 start_metrics() {
     local PREFIX=$1
     echo " --- START METRICS ---"
@@ -587,13 +617,14 @@ start_metrics() {
     start_lru_metrics "$PREFIX"
     start_mutex_metrics "$PREFIX"
     start_gdb_snapshots "$PREFIX"
+    start_thread_status "$PREFIX"
 }
 
 stop_metrics() {
     # Stop all monitoring processes
     local pids_to_kill=""
 
-    for pidfile in /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/mutex_metrics.pid /tmp/gdb.pid; do
+    for pidfile in /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/mutex_metrics.pid /tmp/gdb.pid /tmp/thread_status_thpool.pid /tmp/thread_status_thr.pid; do
         if [ -f "$pidfile" ]; then
             pids_to_kill="$pids_to_kill $(cat $pidfile)"
         fi
@@ -613,7 +644,7 @@ stop_metrics() {
     fi
 
     # Clean up PID files
-    rm -f /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/mutex_metrics.pid /tmp/gdb.pid
+    rm -f /tmp/iostat.pid /tmp/vmstat.pid /tmp/mpstat.pid /tmp/dstat.pid /tmp/innodb.pid /tmp/lru_metrics.pid /tmp/mutex_metrics.pid /tmp/gdb.pid /tmp/thread_status_thpool.pid /tmp/thread_status_thr.pid
 }
 
 trap 'stop_metrics; stop_server' EXIT
