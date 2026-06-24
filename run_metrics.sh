@@ -1,20 +1,22 @@
 #!/bin/bash
 # MySQL/Percona Server Benchmark Script with Metrics Collection
 #
-# Usage: ./run_metrics.sh <dbms_name> <dbms_version> <is_read_only> <enable_binlog> [enable_thread_pool]
+# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>]
 #
 # Arguments:
-#   dbms_name          - "percona-server-no-optimization", "percona-server-optimization", or "mysql"
-#   dbms_version       - Version string (e.g., "8.4.8-8", "9.7.0")
-#   is_read_only       - 1 for read-only tests, 0 for read-write tests
-#   enable_binlog      - 1 to enable binary logging, 0 to disable
-#   enable_thread_pool - (Optional) 1 to enable thread pool, 0 to disable (default: 0)
+#   --dbms-name      Name (e.g., "percona-server-no-optimization", "percona-server-optimization", "mysql")
+#   --dbms-ver       Version string (e.g., "8.4.8-8", "9.7.0")
+#   --read-only      yes for read-only tests, no for read-write tests
+#   --binlog         yes to enable binary logging, no to disable
+#   --thread-pool    (Optional) yes to enable thread pool, no to disable (default: no)
+#   --bp-instances   (Optional) override innodb_buffer_pool_instances; if omitted, computed from buffer pool size
 #
 # Examples:
-#   ./run_metrics.sh percona-server 8.4.8-8 0 0        # Read-write, no binlog, no thread pool
-#   ./run_metrics.sh percona-server 8.4.8-8 0 1        # Read-write, with binlog
-#   ./run_metrics.sh percona-server 8.4.8-8 0 0 1      # Read-write, no binlog, with thread pool
-#   ./run_metrics.sh mysql 9.7.0 1 0                   # Read-only test
+#   ./run_metrics.sh --dbms-name=percona-server --dbms-ver=8.4.8-8 --read-only=no --binlog=no
+#   ./run_metrics.sh --dbms-name=percona-server --dbms-ver=8.4.8-8 --read-only=no --binlog=yes
+#   ./run_metrics.sh --dbms-name=percona-server --dbms-ver=8.4.8-8 --read-only=no --binlog=no --thread-pool=yes
+#   ./run_metrics.sh --dbms-name=percona-server --dbms-ver=8.4.8-8 --read-only=no --binlog=no --bp-instances=4
+#   ./run_metrics.sh --dbms-name=mysql --dbms-ver=9.7.0 --read-only=yes --binlog=no
 
 # --- VARIABLES ---
 DB_HOST="127.0.0.1"
@@ -44,11 +46,55 @@ DURATION=900
 # WARMUP_RW_TIME=10
 # DURATION=15
 
-DBMS_NAME="$1"
-DBMS_VER="$2"
-IS_READ_ONLY="$3"
-ENABLE_BINLOG="$4"
-ENABLE_THREAD_POOL="${5:-0}"  # Optional 5th argument, defaults to 0 (disabled)
+usage() {
+    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>]" >&2
+    exit 1
+}
+
+yesno_to_bool() {
+    case "${1,,}" in
+        yes|y|1|true)  echo 1 ;;
+        no|n|0|false)  echo 0 ;;
+        *) echo "ERROR: invalid yes/no value for $2: '$1'" >&2; exit 1 ;;
+    esac
+}
+
+DBMS_NAME=""
+DBMS_VER=""
+READ_ONLY_ARG=""
+BINLOG_ARG=""
+THREAD_POOL_ARG="no"
+BP_INSTANCES_ARG=""
+
+for arg in "$@"; do
+    case "$arg" in
+        --dbms-name=*)     DBMS_NAME="${arg#*=}" ;;
+        --dbms-ver=*)      DBMS_VER="${arg#*=}" ;;
+        --read-only=*)     READ_ONLY_ARG="${arg#*=}" ;;
+        --binlog=*)        BINLOG_ARG="${arg#*=}" ;;
+        --thread-pool=*)   THREAD_POOL_ARG="${arg#*=}" ;;
+        --bp-instances=*)  BP_INSTANCES_ARG="${arg#*=}" ;;
+        -h|--help)         usage ;;
+        *) echo "ERROR: unknown argument: $arg" >&2; usage ;;
+    esac
+done
+
+[ -z "$DBMS_NAME" ]      && { echo "ERROR: --dbms-name is required" >&2; usage; }
+[ -z "$DBMS_VER" ]       && { echo "ERROR: --dbms-ver is required" >&2; usage; }
+[ -z "$READ_ONLY_ARG" ]  && { echo "ERROR: --read-only is required" >&2; usage; }
+[ -z "$BINLOG_ARG" ]     && { echo "ERROR: --binlog is required" >&2; usage; }
+
+IS_READ_ONLY=$(yesno_to_bool "$READ_ONLY_ARG" --read-only)
+ENABLE_BINLOG=$(yesno_to_bool "$BINLOG_ARG" --binlog)
+ENABLE_THREAD_POOL=$(yesno_to_bool "$THREAD_POOL_ARG" --thread-pool)
+
+if [ -n "$BP_INSTANCES_ARG" ]; then
+    if ! [[ "$BP_INSTANCES_ARG" =~ ^[1-9][0-9]*$ ]]; then
+        echo "ERROR: --bp-instances must be a positive integer (got: '$BP_INSTANCES_ARG')" >&2
+        exit 1
+    fi
+fi
+BP_INSTANCES_OVERRIDE="$BP_INSTANCES_ARG"
 
 sudo cpupower frequency-set -g performance > /dev/null
 
@@ -56,18 +102,18 @@ echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============
 echo "Thread pool: $([ "$ENABLE_THREAD_POOL" -eq 1 ] && echo "ENABLED" || echo "DISABLED")"
 
 # Determine server directory and binaries
-if [[ "$DBMS_NAME" == "percona-server-no-optimization" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch3"
+if [[ "$DBMS_NAME" == "percona-server-lru-6007" ]]; then
+    SERVER_DIR="${SERVERS_BASE}/lru/percona-server-8.4.8-8-linux-x86_64"
     ADMIN_TOOL="mysqladmin"
-elif [[ "$DBMS_NAME" == "percona-server-optimization" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
-    ADMIN_TOOL="mysqladmin"
-elif [[ "$DBMS_NAME" == "percona-server-thread-stat" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34"
-    ADMIN_TOOL="mysqladmin"
-elif [[ "$DBMS_NAME" == "mysql" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64-patch4-62c9244"
-    ADMIN_TOOL="mysqladmin"
+# elif [[ "$DBMS_NAME" == "percona-server-optimization" ]]; then
+#     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
+#     ADMIN_TOOL="mysqladmin"
+# elif [[ "$DBMS_NAME" == "percona-server-thread-stat" ]]; then
+#     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34"
+#     ADMIN_TOOL="mysqladmin"
+# elif [[ "$DBMS_NAME" == "mysql" ]]; then
+#     SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64-patch4-62c9244"
+#     ADMIN_TOOL="mysqladmin"
 else
     echo "Unknown DBMS: ${DBMS_NAME}"
     exit 1
@@ -415,15 +461,29 @@ generate_config() {
     echo "# --- Version specific settings -------------------------------------------------" >> "$CFG"
 
     # 3. VERSION SPECIFIC LOGIC
-    INSTANCES=$(( SIZE / 5 ))
-    [ "$INSTANCES" -lt 1 ] && INSTANCES=1
-    [ "$INSTANCES" -gt 8 ] && INSTANCES=8
+    if [ -n "$BP_INSTANCES_OVERRIDE" ]; then
+        INSTANCES="$BP_INSTANCES_OVERRIDE"
+    else
+        INSTANCES=$(( SIZE / 5 ))
+        [ "$INSTANCES" -lt 1 ] && INSTANCES=1
+        [ "$INSTANCES" -gt 8 ] && INSTANCES=8
+    fi
 
     # MySQL 8.4+ / 9.x
     echo "innodb_redo_log_capacity = 4G" >> "$CFG"
     echo "innodb_change_buffering = none" >> "$CFG"
     echo "innodb_flush_method = O_DIRECT" >> "$CFG"
     echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
+
+    # From PR-6007
+    # This is for deferred make-young promotion (>= 80 should also be fine, perhaps 16 would be enough if we used 8 BP instances ?)
+    echo "innodb_lru_make_young_drain_threshold = 256" >> "$CFG"
+
+    # This is to make "await for pending LRU" conditional on number of pending single page flushes (try 4 if we used 8 BP instances)
+    echo "innodb_single_page_flush_max_concurrent = 16" >> "$CFG"
+
+    # This is for tiny batching in LRU flushing (you could also try setting to 1 to disable- has pros/cons):
+    echo "innodb_lru_flush_batch_size = 10" >> "$CFG"
 
     # Percona Server specific settings
     # if [[ "$DBMS_NAME" == "percona-server" ]]; then
@@ -713,8 +773,8 @@ for SIZE in "${POOL_SIZES[@]}"; do
 
   # 3. MEASUREMENT (three runs per thread count for stability)
   for THREAD in "${THREADS[@]}"; do
-    for RUN in 1; do
-    #for RUN in 1 2 3; do
+    #for RUN in 1; do
+    for RUN in 1 2 3; do
       FILE_PREFIX="${LOG_DIR}/run${RUN}_Tier${SIZE}G_RW_${THREAD}th"
       echo "   >>> Testing ${THREAD} Threads (run ${RUN}/3)..."
 
