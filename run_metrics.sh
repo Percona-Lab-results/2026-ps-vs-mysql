@@ -26,8 +26,8 @@ DB_DATABASE="sbtest"
 DB_PORT="3306"
 
 # Server locations
-SERVERS_BASE="/home/bogdan.degtyariov/mysql-nvme/servers"
-DATADIR_BASE="/home/bogdan.degtyariov/mysql-nvme/data"
+SERVERS_BASE="/home/bogdan.degtyariov/servers"
+DATADIR_BASE="/home/bogdan.degtyariov/servers/data"
 
 # POOL_SIZES=(32 12 2)      # The 3 Tiers (GB)
 POOL_SIZES=(12)
@@ -102,7 +102,7 @@ echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============
 echo "Thread pool: $([ "$ENABLE_THREAD_POOL" -eq 1 ] && echo "ENABLED" || echo "DISABLED")"
 
 # Determine server directory and binaries
-if [[ "$DBMS_NAME" == "percona-server-lru-6007" ]]; then
+if [[ "$DBMS_NAME" == "ps-lru-6007-bp${BP_INSTANCES_ARG}" ]]; then
     SERVER_DIR="${SERVERS_BASE}/lru/percona-server-8.4.8-8-linux-x86_64"
     ADMIN_TOOL="mysqladmin"
 # elif [[ "$DBMS_NAME" == "percona-server-optimization" ]]; then

@@ -162,7 +162,7 @@
         <div class="stats">
             <div class="stat-box">
                 <div class="label">Total Variables</div>
-                <div class="value">557</div>
+                <div class="value">558</div>
             </div>
             <div class="stat-box">
                 <div class="label">Common to All</div>
@@ -170,20 +170,20 @@
             </div>
             <div class="stat-box">
                 <div class="label">Different Values</div>
-                <div class="value">50</div>
+                <div class="value">53</div>
             </div>
         </div>
         <p><strong>Configuration:</strong> Tier 12G (innodb_buffer_pool_size = 12GB)</p>
         <p><strong>Servers:</strong></p>
         <ul>
             <li><strong>Mysql 8.4.8</strong></li>
-            <li><strong>Mysql 8.4.8-lru</strong></li>
-            <li><strong>Percona Server 8.4.8-8</strong></li>
             <li><strong>Percona Server 8.4.8-8-orig</strong></li>
             <li><strong>Percona Server 8.4.8-8-patch</strong></li>
             <li><strong>Percona Server No Optimization 8.4.8-8</strong></li>
             <li><strong>Percona Server Optimization 8.4.8-8</strong></li>
             <li><strong>Percona Server Thread Stat 8.4.9-9</strong></li>
+            <li><strong>Ps Lru 6007 Bp2 8.4.8-8</strong></li>
+            <li><strong>Ps Lru 6007 Bp8 8.4.8-8</strong></li>
         </ul>
     </div>
 
@@ -200,19 +200,19 @@
     </div>
 
     <div class="section">
-        <h2>All Status Variables <span class="count-badge" id="visibleCount">557 variables</span></h2>
+        <h2>All Status Variables <span class="count-badge" id="visibleCount">558 variables</span></h2>
         <table id="mainTable">
             <thead>
                 <tr>
                     <th style="width: 11%">Variable Name</th>
                     <th style="width: 11%">Mysql 8.4.8</th>
-                    <th style="width: 11%">Mysql 8.4.8-lru</th>
-                    <th style="width: 11%">Percona Server 8.4.8-8</th>
                     <th style="width: 11%">Percona Server 8.4.8-8-orig</th>
                     <th style="width: 11%">Percona Server 8.4.8-8-patch</th>
                     <th style="width: 11%">Percona Server No Optimization 8.4.8-8</th>
                     <th style="width: 11%">Percona Server Optimization 8.4.8-8</th>
                     <th style="width: 11%">Percona Server Thread Stat 8.4.9-9</th>
+                    <th style="width: 11%">Ps Lru 6007 Bp2 8.4.8-8</th>
+                    <th style="width: 11%">Ps Lru 6007 Bp8 8.4.8-8</th>
                 </tr>
             </thead>
             <tbody>
@@ -304,7 +304,7 @@
                 <tr class="var-row different" data-var="binlog_snapshot_position" data-category="different">
                     <td class="var-name">Binlog_snapshot_position<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -340,37 +340,37 @@
                 <tr class="var-row different" data-var="bytes_received" data-category="different">
                     <td class="var-name">Bytes_received<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">335</td>
+                    <td class="value-cell">337</td>
+                    <td class="value-cell">337</td>
+                    <td class="value-cell">336</td>
+                    <td class="value-cell">337</td>
+                    <td class="value-cell">336</td>
                     <td class="value-cell">335</td>
-                    <td class="value-cell">336</td>
                     <td class="value-cell">337</td>
-                    <td class="value-cell">337</td>
-                    <td class="value-cell">336</td>
-                    <td class="value-cell">337</td>
-                    <td class="value-cell">336</td>
                 </tr>
 
                 <tr class="var-row different" data-var="bytes_sent" data-category="different">
                     <td class="var-name">Bytes_sent<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">347</td>
-                    <td class="value-cell">376</td>
                     <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
                     <td class="value-cell">371</td>
-                    <td class="value-cell">371</td>
+                    <td class="value-cell">340</td>
+                    <td class="value-cell">340</td>
                 </tr>
 
                 <tr class="var-row different" data-var="caching_sha2_password_rsa_public_key" data-category="different">
                     <td class="var-name">Caching_sha2_password_rsa_public_key<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtJVNHbs8IREHIqwD+Qyg\nvpwFxvC14yfBmysNxME6Jx3pWKy+WyzdpAUsL8k1OrFoS+Az2LFTQK2BI8WRvoD5\nWmPxCZLF/cQkz94Hdv1be2DtlZVav4XT05XqaLp/...</td>
-                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAodH/uiz+k2UCo0JX2cbC\ns32MGJabG93jopAaY2LxJA9531Uf/Yqfojl7pi2yE8iAr1XQB6hCTn/sLRYYas7A\np6rLdNXdTGQ9C31bmJAZjHU+PdhE0wQRTAgBDB+8...</td>
-                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm5473/w48XYc3mLqh2Da\nrjzFPwZsunyJ++4B5w8zdmPhh0lPKdxKY1Y8+phvVLE0Dp0OiC90QrKlmfiAHjOc\nxO34lxTd6SbqZ+qpgnnnsZCZ2i0X/zYRzdxkU7CI...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwFy8ls38vBjWWTidDsXD\nbCN8OzLvnN01FUR57KAaAiqHc3sbLhofTor2WGhJZFGrR635RkvMvd6CCCzq3iEA\nt/cVLsvlqCiTTh+i58PnYDJv0gbJzRojz3TiGNXG...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvu7aagFXgAeyyxtyI01L\nikYINHmVAXsfnDwwdqKT3Og41lKmlVKzBB3CGaLsWTEOlDKYN3qHEfVxOkT8FvYh\nU2JLaFwlS3m7KP3c1oWv2oyNiY9heZ78HdMhhkAU...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyTOhROgEWRvGgLqQmTPO\nidJevSxjfz862Be8fJjS/ULpv7pkBiAlmLZ37v2rSDHyty5DsdetsVtOC5N0BnvS\n5BekZBs6F4VEIXfFJ6on3j+u4uLRgJc8XZjpX2sv...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr1VAfey4xjZS/Rzqe57J\n/ug/pog2rqaH520wf0H7beKApe7uFVe45vZKjg4uYpLDqZw+uFKC2fKvKBm85FkV\nmebfG6f3ast/UIH4tymBWKajKTOlT3W89t0w8LtB...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn0o8wxNVxH7voIhla1t0\nHXgzyQNUjxL6oSrHbppNjViSfvvf7qJMRSEANK6hBNiZff80hnE5QSmmEiP9AB3E\nKDIXE2ICFbNsiZUVW8BooAgU19wN//1QPZaTqRzQ...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2y/Bg9mFKFxo+jImK2fc\npvDtpbvvBJktWkp0MQhPvdMyzr2DRfBFjL6qa1tAZoCmfKgiG7fi9wUD2aJzewEu\nUuM5sqyqsh4BbiI7lYRTbYbJoWhvBvw2mlvxAwR2...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlfvgf0ZTe6g3yFw5UX3a\nYwM66Jj9SIA5QIdgF656wPsYSrrubEM7Do5Flxf5zo4HPecOYssz0unOUX5wjk4N\nF0SkcYyjgdxuO1GwrDkhEJa3hbNvDEiRaUwTkLGr...</td>
                 </tr>
 
                 <tr class="var-row " data-var="com_admin_commands" data-category="same">
@@ -664,7 +664,7 @@
                 <tr class="var-row different" data-var="com_create_compression_dictionary" data-category="different">
                     <td class="var-name">Com_create_compression_dictionary<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -892,7 +892,7 @@
                 <tr class="var-row different" data-var="com_drop_compression_dictionary" data-category="different">
                     <td class="var-name">Com_drop_compression_dictionary<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1324,7 +1324,7 @@
                 <tr class="var-row different" data-var="com_lock_tables_for_backup" data-category="different">
                     <td class="var-name">Com_lock_tables_for_backup<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1708,7 +1708,7 @@
                 <tr class="var-row different" data-var="com_show_client_statistics" data-category="different">
                     <td class="var-name">Com_show_client_statistics<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -1936,7 +1936,7 @@
                 <tr class="var-row different" data-var="com_show_index_statistics" data-category="different">
                     <td class="var-name">Com_show_index_statistics<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2128,7 +2128,7 @@
                 <tr class="var-row different" data-var="com_show_table_statistics" data-category="different">
                     <td class="var-name">Com_show_table_statistics<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2164,7 +2164,7 @@
                 <tr class="var-row different" data-var="com_show_thread_statistics" data-category="different">
                     <td class="var-name">Com_show_thread_statistics<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2188,7 +2188,7 @@
                 <tr class="var-row different" data-var="com_show_user_statistics" data-category="different">
                     <td class="var-name">Com_show_user_statistics<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -2596,13 +2596,13 @@
                 <tr class="var-row different" data-var="connections" data-category="different">
                     <td class="var-name">Connections<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">15</td>
+                    <td class="value-cell">16</td>
+                    <td class="value-cell">16</td>
+                    <td class="value-cell">16</td>
+                    <td class="value-cell">16</td>
+                    <td class="value-cell">16</td>
                     <td class="value-cell">15</td>
-                    <td class="value-cell">16</td>
-                    <td class="value-cell">16</td>
-                    <td class="value-cell">16</td>
-                    <td class="value-cell">16</td>
-                    <td class="value-cell">16</td>
-                    <td class="value-cell">16</td>
+                    <td class="value-cell">15</td>
                 </tr>
 
                 <tr class="var-row " data-var="created_tmp_disk_tables" data-category="same">
@@ -2617,16 +2617,16 @@
                     <td class="value-cell">0</td>
                 </tr>
 
-                <tr class="var-row " data-var="created_tmp_files" data-category="same">
-                    <td class="var-name">Created_tmp_files</td>
+                <tr class="var-row different" data-var="created_tmp_files" data-category="different">
+                    <td class="var-name">Created_tmp_files<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
-                    <td class="value-cell">5</td>
-                    <td class="value-cell">5</td>
+                    <td class="value-cell">4</td>
+                    <td class="value-cell">4</td>
                 </tr>
 
                 <tr class="var-row " data-var="created_tmp_tables" data-category="same">
@@ -2836,25 +2836,25 @@
                 <tr class="var-row different" data-var="error_log_buffered_bytes" data-category="different">
                     <td class="var-name">Error_log_buffered_bytes<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">17648</td>
-                    <td class="value-cell">19768</td>
-                    <td class="value-cell">9920</td>
                     <td class="value-cell">18568</td>
                     <td class="value-cell">18568</td>
                     <td class="value-cell">9944</td>
                     <td class="value-cell">9968</td>
                     <td class="value-cell">9912</td>
+                    <td class="value-cell">9384</td>
+                    <td class="value-cell">9648</td>
                 </tr>
 
                 <tr class="var-row different" data-var="error_log_buffered_events" data-category="different">
                     <td class="var-name">Error_log_buffered_events<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">152</td>
-                    <td class="value-cell">170</td>
-                    <td class="value-cell">80</td>
                     <td class="value-cell">158</td>
                     <td class="value-cell">158</td>
                     <td class="value-cell">81</td>
                     <td class="value-cell">81</td>
                     <td class="value-cell">81</td>
+                    <td class="value-cell">77</td>
+                    <td class="value-cell">79</td>
                 </tr>
 
                 <tr class="var-row " data-var="error_log_expired_events" data-category="same">
@@ -2872,25 +2872,25 @@
                 <tr class="var-row different" data-var="error_log_latest_write" data-category="different">
                     <td class="var-name">Error_log_latest_write<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">1778131437231921</td>
-                    <td class="value-cell">1778579327136591</td>
-                    <td class="value-cell">1778772504516085</td>
                     <td class="value-cell">1778140842455616</td>
                     <td class="value-cell">1778079731852450</td>
                     <td class="value-cell">1779194542632062</td>
                     <td class="value-cell">1779188954653281</td>
                     <td class="value-cell">1779776295930302</td>
+                    <td class="value-cell">1782294482651826</td>
+                    <td class="value-cell">1782309337230653</td>
                 </tr>
 
                 <tr class="var-row different" data-var="flush_commands" data-category="different">
                     <td class="var-name">Flush_commands<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">3</td>
+                    <td class="value-cell">4</td>
+                    <td class="value-cell">4</td>
+                    <td class="value-cell">4</td>
+                    <td class="value-cell">4</td>
+                    <td class="value-cell">4</td>
                     <td class="value-cell">3</td>
-                    <td class="value-cell">4</td>
-                    <td class="value-cell">4</td>
-                    <td class="value-cell">4</td>
-                    <td class="value-cell">4</td>
-                    <td class="value-cell">4</td>
-                    <td class="value-cell">4</td>
+                    <td class="value-cell">3</td>
                 </tr>
 
                 <tr class="var-row " data-var="global_connection_memory" data-category="same">
@@ -3124,7 +3124,7 @@
                 <tr class="var-row different" data-var="innodb_background_log_sync" data-category="different">
                     <td class="var-name">Innodb_background_log_sync<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3136,10 +3136,10 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_bytes_data" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_bytes_data<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">16384000</td>
-                    <td class="value-cell">16384000</td>
-                    <td class="value-cell">16515072</td>
                     <td class="value-cell">16416768</td>
                     <td class="value-cell">16302080</td>
+                    <td class="value-cell">16351232</td>
+                    <td class="value-cell">16269312</td>
                     <td class="value-cell">16351232</td>
                     <td class="value-cell">16269312</td>
                     <td class="value-cell">16351232</td>
@@ -3149,12 +3149,12 @@
                     <td class="var-name">Innodb_buffer_pool_bytes_dirty<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">327680</td>
                     <td class="value-cell">0</td>
-                    <td class="value-cell">344064</td>
-                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">393216</td>
                     <td class="value-cell">393216</td>
                     <td class="value-cell">344064</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_dump_status" data-category="same">
@@ -3184,7 +3184,7 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_lru_flushed" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_LRU_flushed<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3196,10 +3196,10 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_data" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_data<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">1000</td>
-                    <td class="value-cell">1000</td>
-                    <td class="value-cell">1008</td>
                     <td class="value-cell">1002</td>
                     <td class="value-cell">995</td>
+                    <td class="value-cell">998</td>
+                    <td class="value-cell">993</td>
                     <td class="value-cell">998</td>
                     <td class="value-cell">993</td>
                     <td class="value-cell">998</td>
@@ -3209,33 +3209,33 @@
                     <td class="var-name">Innodb_buffer_pool_pages_dirty<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">0</td>
-                    <td class="value-cell">21</td>
-                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">24</td>
                     <td class="value-cell">24</td>
                     <td class="value-cell">21</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_flushed" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_flushed<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">230</td>
-                    <td class="value-cell">251</td>
-                    <td class="value-cell">239</td>
                     <td class="value-cell">260</td>
                     <td class="value-cell">260</td>
                     <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
+                    <td class="value-cell">248</td>
+                    <td class="value-cell">248</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_free" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_free<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">785362</td>
-                    <td class="value-cell">785362</td>
-                    <td class="value-cell">785328</td>
                     <td class="value-cell">785334</td>
                     <td class="value-cell">785341</td>
+                    <td class="value-cell">785338</td>
+                    <td class="value-cell">785343</td>
                     <td class="value-cell">785338</td>
                     <td class="value-cell">785343</td>
                     <td class="value-cell">785338</td>
@@ -3244,31 +3244,31 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_made_not_young" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_made_not_young<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">119</td>
                     <td class="value-cell">141</td>
                     <td class="value-cell">94</td>
                     <td class="value-cell">16</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">30</td>
+                    <td class="value-cell">16</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_made_young" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_made_young<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">8</td>
                     <td class="value-cell">4</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_misc" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_misc<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">70</td>
-                    <td class="value-cell">70</td>
+                    <td class="value-cell">96</td>
                     <td class="value-cell">96</td>
                     <td class="value-cell">96</td>
                     <td class="value-cell">96</td>
@@ -3280,13 +3280,13 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_pages_old" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_pages_old<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">211</td>
                     <td class="value-cell">212</td>
                     <td class="value-cell">211</td>
                     <td class="value-cell">205</td>
                     <td class="value-cell">206</td>
                     <td class="value-cell">207</td>
+                    <td class="value-cell">209</td>
+                    <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_pages_total" data-category="same">
@@ -3340,25 +3340,25 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_read_requests" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_read_requests<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">29529</td>
-                    <td class="value-cell">29392</td>
-                    <td class="value-cell">30054</td>
                     <td class="value-cell">29984</td>
                     <td class="value-cell">29907</td>
                     <td class="value-cell">30178</td>
                     <td class="value-cell">30044</td>
                     <td class="value-cell">30045</td>
+                    <td class="value-cell">29608</td>
+                    <td class="value-cell">29661</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffer_pool_reads" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_reads<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">840</td>
-                    <td class="value-cell">840</td>
-                    <td class="value-cell">847</td>
                     <td class="value-cell">839</td>
                     <td class="value-cell">833</td>
                     <td class="value-cell">836</td>
                     <td class="value-cell">830</td>
                     <td class="value-cell">835</td>
+                    <td class="value-cell">834</td>
+                    <td class="value-cell">839</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_buffer_pool_resize_status" data-category="same">
@@ -3412,19 +3412,19 @@
                 <tr class="var-row different" data-var="innodb_buffer_pool_write_requests" data-category="different">
                     <td class="var-name">Innodb_buffer_pool_write_requests<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">7148</td>
-                    <td class="value-cell">7148</td>
-                    <td class="value-cell">6963</td>
                     <td class="value-cell">6965</td>
                     <td class="value-cell">6934</td>
                     <td class="value-cell">6957</td>
                     <td class="value-cell">7030</td>
                     <td class="value-cell">6926</td>
+                    <td class="value-cell">6900</td>
+                    <td class="value-cell">6900</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_buffered_aio_submitted" data-category="different">
                     <td class="var-name">Innodb_buffered_aio_submitted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3436,19 +3436,19 @@
                 <tr class="var-row different" data-var="innodb_checkpoint_age" data-category="different">
                     <td class="var-name">Innodb_checkpoint_age<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">26778</td>
                     <td class="value-cell">26899</td>
                     <td class="value-cell">26780</td>
                     <td class="value-cell">27446</td>
                     <td class="value-cell">27582</td>
                     <td class="value-cell">26885</td>
+                    <td class="value-cell">27462</td>
+                    <td class="value-cell">27462</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_checkpoint_max_age" data-category="different">
                     <td class="var-name">Innodb_checkpoint_max_age<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">3614800384</td>
                     <td class="value-cell">3614800384</td>
                     <td class="value-cell">3614800384</td>
                     <td class="value-cell">3614800384</td>
@@ -3460,13 +3460,13 @@
                 <tr class="var-row different" data-var="innodb_data_fsyncs" data-category="different">
                     <td class="var-name">Innodb_data_fsyncs<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">123</td>
-                    <td class="value-cell">128</td>
-                    <td class="value-cell">146</td>
                     <td class="value-cell">148</td>
                     <td class="value-cell">138</td>
                     <td class="value-cell">137</td>
                     <td class="value-cell">123</td>
                     <td class="value-cell">131</td>
+                    <td class="value-cell">153</td>
+                    <td class="value-cell">171</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_data_pending_fsyncs" data-category="same">
@@ -3509,78 +3509,78 @@
                     <td class="var-name">Innodb_data_read<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">13830656</td>
                     <td class="value-cell">13830656</td>
-                    <td class="value-cell">13945344</td>
-                    <td class="value-cell">13830656</td>
                     <td class="value-cell">13699584</td>
                     <td class="value-cell">13765120</td>
                     <td class="value-cell">13683200</td>
                     <td class="value-cell">13748736</td>
+                    <td class="value-cell">13732352</td>
+                    <td class="value-cell">13814272</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_data_reads" data-category="different">
                     <td class="var-name">Innodb_data_reads<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">864</td>
-                    <td class="value-cell">864</td>
-                    <td class="value-cell">873</td>
                     <td class="value-cell">866</td>
                     <td class="value-cell">859</td>
                     <td class="value-cell">862</td>
                     <td class="value-cell">857</td>
                     <td class="value-cell">861</td>
+                    <td class="value-cell">859</td>
+                    <td class="value-cell">865</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_data_writes" data-category="different">
                     <td class="var-name">Innodb_data_writes<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">377</td>
-                    <td class="value-cell">399</td>
-                    <td class="value-cell">446</td>
                     <td class="value-cell">429</td>
                     <td class="value-cell">420</td>
                     <td class="value-cell">427</td>
                     <td class="value-cell">384</td>
                     <td class="value-cell">387</td>
+                    <td class="value-cell">415</td>
+                    <td class="value-cell">461</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_data_written" data-category="different">
                     <td class="var-name">Innodb_data_written<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">4323328</td>
-                    <td class="value-cell">4672000</td>
-                    <td class="value-cell">4491776</td>
                     <td class="value-cell">4806656</td>
                     <td class="value-cell">4808704</td>
                     <td class="value-cell">4426752</td>
                     <td class="value-cell">4398080</td>
                     <td class="value-cell">4432896</td>
+                    <td class="value-cell">4653568</td>
+                    <td class="value-cell">4639232</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_dblwr_pages_written" data-category="different">
                     <td class="var-name">Innodb_dblwr_pages_written<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">89</td>
-                    <td class="value-cell">110</td>
-                    <td class="value-cell">98</td>
                     <td class="value-cell">119</td>
                     <td class="value-cell">119</td>
                     <td class="value-cell">95</td>
                     <td class="value-cell">95</td>
                     <td class="value-cell">95</td>
+                    <td class="value-cell">107</td>
+                    <td class="value-cell">107</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_dblwr_writes" data-category="different">
                     <td class="var-name">Innodb_dblwr_writes<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">3</td>
-                    <td class="value-cell">5</td>
-                    <td class="value-cell">5</td>
                     <td class="value-cell">8</td>
                     <td class="value-cell">7</td>
                     <td class="value-cell">6</td>
                     <td class="value-cell">5</td>
                     <td class="value-cell">5</td>
+                    <td class="value-cell">6</td>
+                    <td class="value-cell">16</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_encryption_n_merge_blocks_decrypted" data-category="different">
                     <td class="var-name">Innodb_encryption_n_merge_blocks_decrypted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3592,7 +3592,7 @@
                 <tr class="var-row different" data-var="innodb_encryption_n_merge_blocks_encrypted" data-category="different">
                     <td class="var-name">Innodb_encryption_n_merge_blocks_encrypted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3604,7 +3604,7 @@
                 <tr class="var-row different" data-var="innodb_encryption_n_rowlog_blocks_decrypted" data-category="different">
                     <td class="var-name">Innodb_encryption_n_rowlog_blocks_decrypted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3616,7 +3616,7 @@
                 <tr class="var-row different" data-var="innodb_encryption_n_rowlog_blocks_encrypted" data-category="different">
                     <td class="var-name">Innodb_encryption_n_rowlog_blocks_encrypted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3628,7 +3628,7 @@
                 <tr class="var-row different" data-var="innodb_ibuf_free_list" data-category="different">
                     <td class="var-name">Innodb_ibuf_free_list<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3640,7 +3640,7 @@
                 <tr class="var-row different" data-var="innodb_ibuf_segment_size" data-category="different">
                     <td class="var-name">Innodb_ibuf_segment_size<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
                     <td class="value-cell">2</td>
@@ -3664,97 +3664,97 @@
                 <tr class="var-row different" data-var="innodb_log_write_requests" data-category="different">
                     <td class="var-name">Innodb_log_write_requests<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">5179</td>
-                    <td class="value-cell">5181</td>
-                    <td class="value-cell">5213</td>
                     <td class="value-cell">5212</td>
                     <td class="value-cell">5214</td>
                     <td class="value-cell">5202</td>
                     <td class="value-cell">5206</td>
                     <td class="value-cell">5205</td>
+                    <td class="value-cell">5169</td>
+                    <td class="value-cell">5169</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_log_writes" data-category="different">
                     <td class="var-name">Innodb_log_writes<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">118</td>
-                    <td class="value-cell">117</td>
-                    <td class="value-cell">174</td>
                     <td class="value-cell">134</td>
                     <td class="value-cell">125</td>
                     <td class="value-cell">157</td>
                     <td class="value-cell">115</td>
                     <td class="value-cell">119</td>
+                    <td class="value-cell">134</td>
+                    <td class="value-cell">146</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_lsn_current" data-category="different">
                     <td class="var-name">Innodb_lsn_current<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">19378229</td>
                     <td class="value-cell">19378893</td>
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
                     <td class="value-cell">19419467</td>
+                    <td class="value-cell">19370654</td>
+                    <td class="value-cell">19370575</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_lsn_flushed" data-category="different">
                     <td class="var-name">Innodb_lsn_flushed<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">19378229</td>
                     <td class="value-cell">19378893</td>
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
                     <td class="value-cell">19419467</td>
+                    <td class="value-cell">19370654</td>
+                    <td class="value-cell">19370575</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_lsn_last_checkpoint" data-category="different">
                     <td class="var-name">Innodb_lsn_last_checkpoint<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">19351451</td>
                     <td class="value-cell">19351994</td>
                     <td class="value-cell">19382692</td>
                     <td class="value-cell">19348624</td>
                     <td class="value-cell">19370073</td>
                     <td class="value-cell">19392582</td>
+                    <td class="value-cell">19343192</td>
+                    <td class="value-cell">19343113</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_master_thread_active_loops" data-category="different">
                     <td class="var-name">Innodb_master_thread_active_loops<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
                     <td class="value-cell">3</td>
-                    <td class="value-cell">3</td>
+                    <td class="value-cell">2</td>
+                    <td class="value-cell">2</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_master_thread_idle_loops" data-category="different">
                     <td class="var-name">Innodb_master_thread_idle_loops<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">10</td>
                     <td class="value-cell">9</td>
+                    <td class="value-cell">16</td>
+                    <td class="value-cell">16</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_max_trx_id" data-category="different">
                     <td class="var-name">Innodb_max_trx_id<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">1559</td>
                     <td class="value-cell">1559</td>
                     <td class="value-cell">1559</td>
                     <td class="value-cell">1557</td>
                     <td class="value-cell">1557</td>
                     <td class="value-cell">1557</td>
+                    <td class="value-cell">1552</td>
+                    <td class="value-cell">1552</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_num_open_files" data-category="same">
@@ -3772,7 +3772,7 @@
                 <tr class="var-row different" data-var="innodb_oldest_view_low_limit_trx_id" data-category="different">
                     <td class="var-name">Innodb_oldest_view_low_limit_trx_id<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3784,13 +3784,13 @@
                 <tr class="var-row different" data-var="innodb_os_log_fsyncs" data-category="different">
                     <td class="var-name">Innodb_os_log_fsyncs<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">73</td>
-                    <td class="value-cell">74</td>
-                    <td class="value-cell">93</td>
                     <td class="value-cell">91</td>
                     <td class="value-cell">79</td>
                     <td class="value-cell">82</td>
                     <td class="value-cell">70</td>
                     <td class="value-cell">77</td>
+                    <td class="value-cell">98</td>
+                    <td class="value-cell">103</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_os_log_pending_fsyncs" data-category="same">
@@ -3820,13 +3820,13 @@
                 <tr class="var-row different" data-var="innodb_os_log_written" data-category="different">
                     <td class="var-name">Innodb_os_log_written<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">470528</td>
-                    <td class="value-cell">469504</td>
-                    <td class="value-cell">449024</td>
                     <td class="value-cell">432128</td>
                     <td class="value-cell">452608</td>
                     <td class="value-cell">440320</td>
                     <td class="value-cell">437760</td>
                     <td class="value-cell">456704</td>
+                    <td class="value-cell">428032</td>
+                    <td class="value-cell">433152</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_page_size" data-category="same">
@@ -3844,7 +3844,7 @@
                 <tr class="var-row different" data-var="innodb_pages0_read" data-category="different">
                     <td class="var-name">Innodb_pages0_read<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">7</td>
                     <td class="value-cell">7</td>
                     <td class="value-cell">7</td>
                     <td class="value-cell">7</td>
@@ -3856,55 +3856,55 @@
                 <tr class="var-row different" data-var="innodb_pages_created" data-category="different">
                     <td class="var-name">Innodb_pages_created<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">165</td>
-                    <td class="value-cell">165</td>
-                    <td class="value-cell">166</td>
                     <td class="value-cell">167</td>
                     <td class="value-cell">167</td>
                     <td class="value-cell">167</td>
                     <td class="value-cell">167</td>
                     <td class="value-cell">168</td>
+                    <td class="value-cell">164</td>
+                    <td class="value-cell">164</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_pages_read" data-category="different">
                     <td class="var-name">Innodb_pages_read<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">839</td>
                     <td class="value-cell">839</td>
-                    <td class="value-cell">846</td>
-                    <td class="value-cell">839</td>
                     <td class="value-cell">832</td>
                     <td class="value-cell">835</td>
                     <td class="value-cell">830</td>
                     <td class="value-cell">834</td>
+                    <td class="value-cell">833</td>
+                    <td class="value-cell">838</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_pages_written" data-category="different">
                     <td class="var-name">Innodb_pages_written<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">230</td>
-                    <td class="value-cell">251</td>
-                    <td class="value-cell">239</td>
                     <td class="value-cell">260</td>
                     <td class="value-cell">260</td>
                     <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
                     <td class="value-cell">236</td>
+                    <td class="value-cell">248</td>
+                    <td class="value-cell">248</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_purge_trx_id" data-category="different">
                     <td class="var-name">Innodb_purge_trx_id<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell">1558</td>
                     <td class="value-cell">1558</td>
                     <td class="value-cell">1558</td>
                     <td class="value-cell">1556</td>
                     <td class="value-cell">1556</td>
                     <td class="value-cell">1556</td>
+                    <td class="value-cell">1551</td>
+                    <td class="value-cell">1551</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_purge_undo_no" data-category="different">
                     <td class="var-name">Innodb_purge_undo_no<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -3928,25 +3928,25 @@
                 <tr class="var-row different" data-var="innodb_redo_log_checkpoint_lsn" data-category="different">
                     <td class="var-name">Innodb_redo_log_checkpoint_lsn<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">19309899</td>
-                    <td class="value-cell">19309822</td>
-                    <td class="value-cell">19351451</td>
                     <td class="value-cell">19351994</td>
                     <td class="value-cell">19382692</td>
                     <td class="value-cell">19348624</td>
                     <td class="value-cell">19370073</td>
                     <td class="value-cell">19392582</td>
+                    <td class="value-cell">19343192</td>
+                    <td class="value-cell">19343113</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_redo_log_current_lsn" data-category="different">
                     <td class="var-name">Innodb_redo_log_current_lsn<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">19336641</td>
-                    <td class="value-cell">19336584</td>
-                    <td class="value-cell">19378229</td>
                     <td class="value-cell">19378893</td>
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
                     <td class="value-cell">19419467</td>
+                    <td class="value-cell">19370654</td>
+                    <td class="value-cell">19370575</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_redo_log_enabled" data-category="same">
@@ -3964,25 +3964,25 @@
                 <tr class="var-row different" data-var="innodb_redo_log_flushed_to_disk_lsn" data-category="different">
                     <td class="var-name">Innodb_redo_log_flushed_to_disk_lsn<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">19336641</td>
-                    <td class="value-cell">19336584</td>
-                    <td class="value-cell">19378229</td>
                     <td class="value-cell">19378893</td>
                     <td class="value-cell">19409472</td>
                     <td class="value-cell">19376070</td>
                     <td class="value-cell">19397655</td>
                     <td class="value-cell">19419467</td>
+                    <td class="value-cell">19370654</td>
+                    <td class="value-cell">19370575</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_redo_log_logical_size" data-category="different">
                     <td class="var-name">Innodb_redo_log_logical_size<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">27136</td>
-                    <td class="value-cell">27136</td>
-                    <td class="value-cell">27648</td>
                     <td class="value-cell">27648</td>
                     <td class="value-cell">27648</td>
                     <td class="value-cell">27648</td>
                     <td class="value-cell">28160</td>
                     <td class="value-cell">27136</td>
+                    <td class="value-cell">28160</td>
+                    <td class="value-cell">28160</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_redo_log_physical_size" data-category="same">
@@ -4024,13 +4024,13 @@
                 <tr class="var-row different" data-var="innodb_redo_log_uuid" data-category="different">
                     <td class="var-name">Innodb_redo_log_uuid<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">2770318407</td>
-                    <td class="value-cell">4090731050</td>
-                    <td class="value-cell">2378652585</td>
                     <td class="value-cell">356503194</td>
                     <td class="value-cell">1656398495</td>
                     <td class="value-cell">3432916459</td>
                     <td class="value-cell">4042141374</td>
                     <td class="value-cell">1351045773</td>
+                    <td class="value-cell">777613054</td>
+                    <td class="value-cell">3217515911</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_row_lock_current_waits" data-category="same">
@@ -4168,7 +4168,7 @@
                 <tr class="var-row different" data-var="innodb_scan_data_size" data-category="different">
                     <td class="var-name">Innodb_scan_data_size<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4180,7 +4180,7 @@
                 <tr class="var-row different" data-var="innodb_scan_deleted_recs_size" data-category="different">
                     <td class="var-name">Innodb_scan_deleted_recs_size<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4192,7 +4192,7 @@
                 <tr class="var-row different" data-var="innodb_scan_pages_contiguous" data-category="different">
                     <td class="var-name">Innodb_scan_pages_contiguous<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4204,7 +4204,7 @@
                 <tr class="var-row different" data-var="innodb_scan_pages_disjointed" data-category="different">
                     <td class="var-name">Innodb_scan_pages_disjointed<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4216,7 +4216,7 @@
                 <tr class="var-row different" data-var="innodb_scan_pages_total_seek_distance" data-category="different">
                     <td class="var-name">Innodb_scan_pages_total_seek_distance<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4228,19 +4228,19 @@
                 <tr class="var-row different" data-var="innodb_secondary_index_triggered_cluster_reads" data-category="different">
                     <td class="var-name">Innodb_secondary_index_triggered_cluster_reads<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
                     <td class="value-cell">2477</td>
-                    <td class="value-cell">2477</td>
+                    <td class="value-cell">2415</td>
+                    <td class="value-cell">2415</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_secondary_index_triggered_cluster_reads_avoided" data-category="different">
                     <td class="var-name">Innodb_secondary_index_triggered_cluster_reads_avoided<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -4264,37 +4264,37 @@
                 <tr class="var-row different" data-var="innodb_system_rows_inserted" data-category="different">
                     <td class="var-name">Innodb_system_rows_inserted<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">484</td>
-                    <td class="value-cell">484</td>
                     <td class="value-cell">486</td>
                     <td class="value-cell">486</td>
-                    <td class="value-cell">486</td>
                     <td class="value-cell">484</td>
                     <td class="value-cell">484</td>
                     <td class="value-cell">484</td>
+                    <td class="value-cell">482</td>
+                    <td class="value-cell">482</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_system_rows_read" data-category="different">
                     <td class="var-name">Innodb_system_rows_read<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">5848</td>
-                    <td class="value-cell">5848</td>
                     <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
                     <td class="value-cell">6206</td>
-                    <td class="value-cell">6206</td>
+                    <td class="value-cell">6006</td>
+                    <td class="value-cell">6006</td>
                 </tr>
 
                 <tr class="var-row different" data-var="innodb_system_rows_updated" data-category="different">
                     <td class="var-name">Innodb_system_rows_updated<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">340</td>
+                    <td class="value-cell">343</td>
+                    <td class="value-cell">343</td>
+                    <td class="value-cell">343</td>
+                    <td class="value-cell">343</td>
+                    <td class="value-cell">343</td>
                     <td class="value-cell">340</td>
-                    <td class="value-cell">343</td>
-                    <td class="value-cell">343</td>
-                    <td class="value-cell">343</td>
-                    <td class="value-cell">343</td>
-                    <td class="value-cell">343</td>
-                    <td class="value-cell">343</td>
+                    <td class="value-cell">340</td>
                 </tr>
 
                 <tr class="var-row " data-var="innodb_truncated_status_writes" data-category="same">
@@ -4465,6 +4465,18 @@
                     <td class="value-cell">0</td>
                 </tr>
 
+                <tr class="var-row different" data-var="libcoredumper_enabled" data-category="different">
+                    <td class="var-name">Libcoredumper_enabled<span class="badge badge-diff">DIFFERENT</span></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">OFF</td>
+                    <td class="value-cell">OFF</td>
+                </tr>
+
                 <tr class="var-row " data-var="locked_connects" data-category="same">
                     <td class="var-name">Locked_connects</td>
                     <td class="value-cell">0</td>
@@ -4528,13 +4540,13 @@
                 <tr class="var-row different" data-var="max_used_connections_time" data-category="different">
                     <td class="var-name">Max_used_connections_time<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">2026-05-07 05:23:57</td>
-                    <td class="value-cell">2026-05-12 09:48:46</td>
-                    <td class="value-cell">2026-05-14 15:28:37</td>
                     <td class="value-cell">2026-05-07 08:00:42</td>
                     <td class="value-cell">2026-05-06 15:02:11</td>
                     <td class="value-cell">2026-05-19 12:42:35</td>
                     <td class="value-cell">2026-05-19 11:09:27</td>
                     <td class="value-cell">2026-05-26 06:18:27</td>
+                    <td class="value-cell">2026-06-24 09:48:20</td>
+                    <td class="value-cell">2026-06-24 13:55:55</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_aborted_clients" data-category="same">
@@ -5188,25 +5200,25 @@
                 <tr class="var-row different" data-var="mysqlx_ssl_server_not_after" data-category="different">
                     <td class="var-name">Mysqlx_ssl_server_not_after<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">May  4 05:23:35 2036 GMT</td>
-                    <td class="value-cell">May  9 09:48:25 2036 GMT</td>
-                    <td class="value-cell">May 11 15:28:15 2036 GMT</td>
                     <td class="value-cell">May  4 08:00:19 2036 GMT</td>
                     <td class="value-cell">May  3 15:01:49 2036 GMT</td>
                     <td class="value-cell">May 16 12:42:13 2036 GMT</td>
                     <td class="value-cell">May 16 11:09:05 2036 GMT</td>
                     <td class="value-cell">May 23 06:18:05 2036 GMT</td>
+                    <td class="value-cell">Jun 21 09:47:58 2036 GMT</td>
+                    <td class="value-cell">Jun 21 13:55:32 2036 GMT</td>
                 </tr>
 
                 <tr class="var-row different" data-var="mysqlx_ssl_server_not_before" data-category="different">
                     <td class="var-name">Mysqlx_ssl_server_not_before<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">May  7 05:23:35 2026 GMT</td>
-                    <td class="value-cell">May 12 09:48:25 2026 GMT</td>
-                    <td class="value-cell">May 14 15:28:15 2026 GMT</td>
                     <td class="value-cell">May  7 08:00:19 2026 GMT</td>
                     <td class="value-cell">May  6 15:01:49 2026 GMT</td>
                     <td class="value-cell">May 19 12:42:13 2026 GMT</td>
                     <td class="value-cell">May 19 11:09:05 2026 GMT</td>
                     <td class="value-cell">May 26 06:18:05 2026 GMT</td>
+                    <td class="value-cell">Jun 24 09:47:58 2026 GMT</td>
+                    <td class="value-cell">Jun 24 13:55:32 2026 GMT</td>
                 </tr>
 
                 <tr class="var-row " data-var="mysqlx_ssl_verify_depth" data-category="same">
@@ -5476,7 +5488,7 @@
                 <tr class="var-row different" data-var="net_buffer_length" data-category="different">
                     <td class="var-name">Net_buffer_length<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
                     <td class="value-cell">16384</td>
@@ -5560,7 +5572,7 @@
                 <tr class="var-row different" data-var="open_tables_with_triggers" data-category="different">
                     <td class="var-name">Open_tables_with_triggers<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -5732,9 +5744,9 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">0</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_memory_classes_lost" data-category="same">
@@ -5872,13 +5884,13 @@
                 <tr class="var-row different" data-var="performance_schema_session_connect_attrs_longest_seen" data-category="different">
                     <td class="var-name">Performance_schema_session_connect_attrs_longest_seen<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">0</td>
-                    <td class="value-cell">129</td>
-                    <td class="value-cell">130</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">130</td>
                     <td class="value-cell">131</td>
                     <td class="value-cell">130</td>
+                    <td class="value-cell">129</td>
+                    <td class="value-cell">131</td>
                 </tr>
 
                 <tr class="var-row " data-var="performance_schema_session_connect_attrs_lost" data-category="same">
@@ -6066,8 +6078,8 @@
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
                     <td class="value-cell">ON</td>
-                    <td class="value-cell">ON</td>
-                    <td class="value-cell">ON</td>
+                    <td class="value-cell">OFF</td>
+                    <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
                     <td class="value-cell">OFF</td>
@@ -6076,13 +6088,13 @@
                 <tr class="var-row different" data-var="rsa_public_key" data-category="different">
                     <td class="var-name">Rsa_public_key<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtJVNHbs8IREHIqwD+Qyg\nvpwFxvC14yfBmysNxME6Jx3pWKy+WyzdpAUsL8k1OrFoS+Az2LFTQK2BI8WRvoD5\nWmPxCZLF/cQkz94Hdv1be2DtlZVav4XT05XqaLp/...</td>
-                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAodH/uiz+k2UCo0JX2cbC\ns32MGJabG93jopAaY2LxJA9531Uf/Yqfojl7pi2yE8iAr1XQB6hCTn/sLRYYas7A\np6rLdNXdTGQ9C31bmJAZjHU+PdhE0wQRTAgBDB+8...</td>
-                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm5473/w48XYc3mLqh2Da\nrjzFPwZsunyJ++4B5w8zdmPhh0lPKdxKY1Y8+phvVLE0Dp0OiC90QrKlmfiAHjOc\nxO34lxTd6SbqZ+qpgnnnsZCZ2i0X/zYRzdxkU7CI...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwFy8ls38vBjWWTidDsXD\nbCN8OzLvnN01FUR57KAaAiqHc3sbLhofTor2WGhJZFGrR635RkvMvd6CCCzq3iEA\nt/cVLsvlqCiTTh+i58PnYDJv0gbJzRojz3TiGNXG...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvu7aagFXgAeyyxtyI01L\nikYINHmVAXsfnDwwdqKT3Og41lKmlVKzBB3CGaLsWTEOlDKYN3qHEfVxOkT8FvYh\nU2JLaFwlS3m7KP3c1oWv2oyNiY9heZ78HdMhhkAU...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyTOhROgEWRvGgLqQmTPO\nidJevSxjfz862Be8fJjS/ULpv7pkBiAlmLZ37v2rSDHyty5DsdetsVtOC5N0BnvS\n5BekZBs6F4VEIXfFJ6on3j+u4uLRgJc8XZjpX2sv...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr1VAfey4xjZS/Rzqe57J\n/ug/pog2rqaH520wf0H7beKApe7uFVe45vZKjg4uYpLDqZw+uFKC2fKvKBm85FkV\nmebfG6f3ast/UIH4tymBWKajKTOlT3W89t0w8LtB...</td>
                     <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn0o8wxNVxH7voIhla1t0\nHXgzyQNUjxL6oSrHbppNjViSfvvf7qJMRSEANK6hBNiZff80hnE5QSmmEiP9AB3E\nKDIXE2ICFbNsiZUVW8BooAgU19wN//1QPZaTqRzQ...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2y/Bg9mFKFxo+jImK2fc\npvDtpbvvBJktWkp0MQhPvdMyzr2DRfBFjL6qa1tAZoCmfKgiG7fi9wUD2aJzewEu\nUuM5sqyqsh4BbiI7lYRTbYbJoWhvBvw2mlvxAwR2...</td>
+                    <td class="value-cell">-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlfvgf0ZTe6g3yFw5UX3a\nYwM66Jj9SIA5QIdgF656wPsYSrrubEM7Do5Flxf5zo4HPecOYssz0unOUX5wjk4N\nF0SkcYyjgdxuO1GwrDkhEJa3hbNvDEiRaUwTkLGr...</td>
                 </tr>
 
                 <tr class="var-row " data-var="secondary_engine_execution_count" data-category="same">
@@ -6388,25 +6400,25 @@
                 <tr class="var-row different" data-var="ssl_server_not_after" data-category="different">
                     <td class="var-name">Ssl_server_not_after<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">May  4 05:23:35 2036 GMT</td>
-                    <td class="value-cell">May  9 09:48:25 2036 GMT</td>
-                    <td class="value-cell">May 11 15:28:15 2036 GMT</td>
                     <td class="value-cell">May  4 08:00:19 2036 GMT</td>
                     <td class="value-cell">May  3 15:01:49 2036 GMT</td>
                     <td class="value-cell">May 16 12:42:13 2036 GMT</td>
                     <td class="value-cell">May 16 11:09:05 2036 GMT</td>
                     <td class="value-cell">May 23 06:18:05 2036 GMT</td>
+                    <td class="value-cell">Jun 21 09:47:58 2036 GMT</td>
+                    <td class="value-cell">Jun 21 13:55:32 2036 GMT</td>
                 </tr>
 
                 <tr class="var-row different" data-var="ssl_server_not_before" data-category="different">
                     <td class="var-name">Ssl_server_not_before<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">May  7 05:23:35 2026 GMT</td>
-                    <td class="value-cell">May 12 09:48:25 2026 GMT</td>
-                    <td class="value-cell">May 14 15:28:15 2026 GMT</td>
                     <td class="value-cell">May  7 08:00:19 2026 GMT</td>
                     <td class="value-cell">May  6 15:01:49 2026 GMT</td>
                     <td class="value-cell">May 19 12:42:13 2026 GMT</td>
                     <td class="value-cell">May 19 11:09:05 2026 GMT</td>
                     <td class="value-cell">May 26 06:18:05 2026 GMT</td>
+                    <td class="value-cell">Jun 24 09:47:58 2026 GMT</td>
+                    <td class="value-cell">Jun 24 13:55:32 2026 GMT</td>
                 </tr>
 
                 <tr class="var-row " data-var="ssl_session_cache_hits" data-category="same">
@@ -6616,7 +6628,7 @@
                 <tr class="var-row different" data-var="table_open_cache_triggers_hits" data-category="different">
                     <td class="var-name">Table_open_cache_triggers_hits<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6628,7 +6640,7 @@
                 <tr class="var-row different" data-var="table_open_cache_triggers_misses" data-category="different">
                     <td class="var-name">Table_open_cache_triggers_misses<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6640,7 +6652,7 @@
                 <tr class="var-row different" data-var="table_open_cache_triggers_overflows" data-category="different">
                     <td class="var-name">Table_open_cache_triggers_overflows<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
@@ -6692,9 +6704,9 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">ON</td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
                 <tr class="var-row " data-var="telemetry_metrics_supported" data-category="same">
@@ -6728,8 +6740,8 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">avg: 0.000, min: 0.000, max: 0.000, dev: 0.000, cnt: 0</td>
+                    <td class="value-cell">avg: 0.000, min: 0.000, max: 0.000, dev: 0.000, cnt: 0</td>
                     <td class="value-cell">avg: 0.000, min: 0.000, max: 0.000, dev: 0.000, cnt: 0</td>
                 </tr>
 
@@ -6740,18 +6752,18 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">avg: 31.865, min: 0.000, max: 200.000, dev: 64.250, cnt: 37</td>
+                    <td class="value-cell">avg: 21.351, min: 0.000, max: 119.000, dev: 40.890, cnt: 37</td>
+                    <td class="value-cell">avg: 24.865, min: 0.000, max: 207.000, dev: 50.103, cnt: 37</td>
                 </tr>
 
                 <tr class="var-row different" data-var="threadpool_idle_threads" data-category="different">
                     <td class="var-name">Threadpool_idle_threads<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
-                    <td class="value-cell">0</td>
+                    <td class="value-cell">14</td>
+                    <td class="value-cell">14</td>
                     <td class="value-cell">14</td>
                     <td class="value-cell">14</td>
                     <td class="value-cell">14</td>
@@ -6764,8 +6776,8 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                 </tr>
 
@@ -6776,8 +6788,8 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                 </tr>
 
@@ -6788,18 +6800,18 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
+                    <td class="value-cell">0</td>
+                    <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
                 </tr>
 
                 <tr class="var-row different" data-var="threadpool_threads" data-category="different">
                     <td class="var-name">Threadpool_threads<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
-                    <td class="value-cell"><em style="color:#999">N/A</em></td>
                     <td class="value-cell">0</td>
                     <td class="value-cell">0</td>
-                    <td class="value-cell">0</td>
+                    <td class="value-cell">15</td>
+                    <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
@@ -6834,8 +6846,8 @@
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
                     <td class="value-cell">1</td>
-                    <td class="value-cell">1</td>
-                    <td class="value-cell">1</td>
+                    <td class="value-cell">15</td>
+                    <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
                     <td class="value-cell">15</td>
@@ -6877,27 +6889,27 @@
                     <td class="value-cell"><em style="color:#999">N/A</em></td>
                 </tr>
 
-                <tr class="var-row " data-var="uptime" data-category="same">
-                    <td class="var-name">Uptime</td>
+                <tr class="var-row different" data-var="uptime" data-category="different">
+                    <td class="var-name">Uptime<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
-                    <td class="value-cell">20</td>
+                    <td class="value-cell">21</td>
                     <td class="value-cell">20</td>
                 </tr>
 
-                <tr class="var-row " data-var="uptime_since_flush_status" data-category="same">
-                    <td class="var-name">Uptime_since_flush_status</td>
+                <tr class="var-row different" data-var="uptime_since_flush_status" data-category="different">
+                    <td class="var-name">Uptime_since_flush_status<span class="badge badge-diff">DIFFERENT</span></td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
                     <td class="value-cell">20</td>
-                    <td class="value-cell">20</td>
+                    <td class="value-cell">21</td>
                     <td class="value-cell">20</td>
                 </tr>
 
