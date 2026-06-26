@@ -1,11 +1,12 @@
 #!/bin/bash
 # MySQL/Percona Server Benchmark Script with Metrics Collection
 #
-# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]
+# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --server-dir=<path> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]
 #
 # Arguments:
 #   --dbms-name      Name (e.g., "percona-server-no-optimization", "percona-server-optimization", "mysql")
 #   --dbms-ver       Version string (e.g., "8.4.8-8", "9.7.0")
+#   --server-dir     Path to the unpacked server directory (must contain bin/mysqld, bin/mysql, bin/mysqladmin)
 #   --read-only      yes for read-only tests, no for read-write tests
 #   --binlog         yes to enable binary logging, no to disable
 #   --thread-pool    (Optional) yes to enable thread pool, no to disable (default: no)
@@ -27,7 +28,6 @@ DB_DATABASE="sbtest"
 DB_PORT="3306"
 
 # Server locations
-SERVERS_BASE="/home/bogdan.degtyariov/servers"
 DATADIR_BASE="/home/bogdan.degtyariov/servers/data"
 
 # POOL_SIZES=(32 12 2)      # The 3 Tiers (GB)
@@ -48,7 +48,7 @@ DURATION=900
 # DURATION=15
 
 usage() {
-    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]" >&2
+    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --server-dir=<path> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]" >&2
     exit 1
 }
 
@@ -62,6 +62,7 @@ yesno_to_bool() {
 
 DBMS_NAME=""
 DBMS_VER=""
+SERVER_DIR_ARG=""
 READ_ONLY_ARG=""
 BINLOG_ARG=""
 THREAD_POOL_ARG="no"
@@ -72,6 +73,7 @@ for arg in "$@"; do
     case "$arg" in
         --dbms-name=*)     DBMS_NAME="${arg#*=}" ;;
         --dbms-ver=*)      DBMS_VER="${arg#*=}" ;;
+        --server-dir=*)    SERVER_DIR_ARG="${arg#*=}" ;;
         --read-only=*)     READ_ONLY_ARG="${arg#*=}" ;;
         --binlog=*)        BINLOG_ARG="${arg#*=}" ;;
         --thread-pool=*)   THREAD_POOL_ARG="${arg#*=}" ;;
@@ -84,6 +86,7 @@ done
 
 [ -z "$DBMS_NAME" ]      && { echo "ERROR: --dbms-name is required" >&2; usage; }
 [ -z "$DBMS_VER" ]       && { echo "ERROR: --dbms-ver is required" >&2; usage; }
+[ -z "$SERVER_DIR_ARG" ] && { echo "ERROR: --server-dir is required" >&2; usage; }
 [ -z "$READ_ONLY_ARG" ]  && { echo "ERROR: --read-only is required" >&2; usage; }
 [ -z "$BINLOG_ARG" ]     && { echo "ERROR: --binlog is required" >&2; usage; }
 
@@ -105,23 +108,9 @@ sudo cpupower frequency-set -g performance > /dev/null
 echo "============= Running benchmarks for ${DBMS_NAME}:${DBMS_VER} ============="
 echo "Thread pool: $([ "$ENABLE_THREAD_POOL" -eq 1 ] && echo "ENABLED" || echo "DISABLED")"
 
-# Determine server directory and binaries
-if [[ "$DBMS_NAME" == "ps-lru-6007-bp${BP_INSTANCES_ARG}" ]]; then
-    SERVER_DIR="${SERVERS_BASE}/lru/percona-server-8.4.8-8-linux-x86_64"
-    ADMIN_TOOL="mysqladmin"
-# elif [[ "$DBMS_NAME" == "percona-server-optimization" ]]; then
-#     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34-lru-patch4-62c9244"
-#     ADMIN_TOOL="mysqladmin"
-# elif [[ "$DBMS_NAME" == "percona-server-thread-stat" ]]; then
-#     SERVER_DIR="${SERVERS_BASE}/Percona-Server-${DBMS_VER}-Linux.x86_64.glibc2.34"
-#     ADMIN_TOOL="mysqladmin"
-# elif [[ "$DBMS_NAME" == "mysql" ]]; then
-#     SERVER_DIR="${SERVERS_BASE}/mysql-${DBMS_VER}-linux-glibc2.28-x86_64-patch4-62c9244"
-#     ADMIN_TOOL="mysqladmin"
-else
-    echo "Unknown DBMS: ${DBMS_NAME}"
-    exit 1
-fi
+# Server directory and binaries (passed in via --server-dir)
+SERVER_DIR="$SERVER_DIR_ARG"
+ADMIN_TOOL="mysqladmin"
 
 if [ ! -d "$SERVER_DIR" ]; then
     echo "ERROR: Server directory not found: $SERVER_DIR"

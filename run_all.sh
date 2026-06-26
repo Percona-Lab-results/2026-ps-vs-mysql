@@ -22,12 +22,16 @@ fi
 
 ./run_pt.sh
 
+SERVER_DIR="$1"
+DBMS_NAME="$2"
+BASE_VERSION="$3"
+
 for BP_INSTANCES in 2 8; do
   echo ""
   echo "=========================================================================="
   echo "Starting Percona Server 8.4.8-8 (innodb_buffer_pool_instances=${BP_INSTANCES})"
   echo "=========================================================================="
-  ./run_metrics.sh --dbms-name="ps-lru-6007-bp${BP_INSTANCES}" --dbms-ver="8.4.8-8" --read-only="0" --binlog="0" --thread-pool="1" --bp-instances="$BP_INSTANCES"
+  ./run_metrics.sh  --server-dir="${SERVER_DIR}" --dbms-name="${DBMS_NAME}-bp${BP_INSTANCES}" --dbms-ver="8.4.8-8" --read-only="0" --binlog="0" --thread-pool="1" --bp-instances="$BP_INSTANCES" --base-version="$BASE_VERSION"
 done
 
 
