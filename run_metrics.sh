@@ -1,7 +1,7 @@
 #!/bin/bash
 # MySQL/Percona Server Benchmark Script with Metrics Collection
 #
-# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>]
+# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]
 #
 # Arguments:
 #   --dbms-name      Name (e.g., "percona-server-no-optimization", "percona-server-optimization", "mysql")
@@ -10,6 +10,7 @@
 #   --binlog         yes to enable binary logging, no to disable
 #   --thread-pool    (Optional) yes to enable thread pool, no to disable (default: no)
 #   --bp-instances   (Optional) override innodb_buffer_pool_instances; if omitted, computed from buffer pool size
+#   --base-version   (Optional) yes to omit PR-6007 LRU tuning knobs, no to include them (default: no)
 #
 # Examples:
 #   ./run_metrics.sh --dbms-name=percona-server --dbms-ver=8.4.8-8 --read-only=no --binlog=no
@@ -47,7 +48,7 @@ DURATION=900
 # DURATION=15
 
 usage() {
-    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>]" >&2
+    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]" >&2
     exit 1
 }
 
@@ -65,6 +66,7 @@ READ_ONLY_ARG=""
 BINLOG_ARG=""
 THREAD_POOL_ARG="no"
 BP_INSTANCES_ARG=""
+BASE_VERSION_ARG="no"
 
 for arg in "$@"; do
     case "$arg" in
@@ -74,6 +76,7 @@ for arg in "$@"; do
         --binlog=*)        BINLOG_ARG="${arg#*=}" ;;
         --thread-pool=*)   THREAD_POOL_ARG="${arg#*=}" ;;
         --bp-instances=*)  BP_INSTANCES_ARG="${arg#*=}" ;;
+        --base-version=*)  BASE_VERSION_ARG="${arg#*=}" ;;
         -h|--help)         usage ;;
         *) echo "ERROR: unknown argument: $arg" >&2; usage ;;
     esac
@@ -87,6 +90,7 @@ done
 IS_READ_ONLY=$(yesno_to_bool "$READ_ONLY_ARG" --read-only)
 ENABLE_BINLOG=$(yesno_to_bool "$BINLOG_ARG" --binlog)
 ENABLE_THREAD_POOL=$(yesno_to_bool "$THREAD_POOL_ARG" --thread-pool)
+BASE_VERSION=$(yesno_to_bool "$BASE_VERSION_ARG" --base-version)
 
 if [ -n "$BP_INSTANCES_ARG" ]; then
     if ! [[ "$BP_INSTANCES_ARG" =~ ^[1-9][0-9]*$ ]]; then
@@ -475,15 +479,29 @@ generate_config() {
     echo "innodb_flush_method = O_DIRECT" >> "$CFG"
     echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
 
-    # From PR-6007
-    # This is for deferred make-young promotion (>= 80 should also be fine, perhaps 16 would be enough if we used 8 BP instances ?)
-    echo "innodb_lru_make_young_drain_threshold = 256" >> "$CFG"
-
-    # This is to make "await for pending LRU" conditional on number of pending single page flushes (try 4 if we used 8 BP instances)
-    echo "innodb_single_page_flush_max_concurrent = 16" >> "$CFG"
+    if [ "$BASE_VERSION" -ne 1 ]; then
+        # From PR-6007
+        # This is for deferred make-young promotion
+        # 8 BP instances -> 256; 2 BP instances -> 64; otherwise default to 256
+        if [ "$INSTANCES" -eq 8 ]; then
+            LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
+            SINGLE_PAGE_FLUSH_MAX=16
+            echo "innodb_lru_flush_batch_size = 1" >> "$CFG"
+        elif [ "$INSTANCES" -eq 2 ]; then
+            LRU_MAKE_YOUNG_DRAIN_THRESHOLD=64
+            SINGLE_PAGE_FLUSH_MAX=4
+        else
+            LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
+            SINGLE_PAGE_FLUSH_MAX=16
+        fi
+        echo "innodb_lru_make_young_drain_threshold = $LRU_MAKE_YOUNG_DRAIN_THRESHOLD" >> "$CFG"
+        echo "innodb_single_page_flush_max_concurrent = $SINGLE_PAGE_FLUSH_MAX" >> "$CFG"
+    fi
 
     # This is for tiny batching in LRU flushing (you could also try setting to 1 to disable- has pros/cons):
     echo "innodb_lru_flush_batch_size = 10" >> "$CFG"
+
+    echo "innodb_lru_scan_depth_size = 300" >> "$CFG"
 
     # Percona Server specific settings
     # if [[ "$DBMS_NAME" == "percona-server" ]]; then
