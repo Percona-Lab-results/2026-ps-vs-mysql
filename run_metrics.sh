@@ -487,10 +487,7 @@ generate_config() {
         echo "innodb_single_page_flush_max_concurrent = $SINGLE_PAGE_FLUSH_MAX" >> "$CFG"
     fi
 
-    # This is for tiny batching in LRU flushing (you could also try setting to 1 to disable- has pros/cons):
-    echo "innodb_lru_flush_batch_size = 10" >> "$CFG"
-
-    echo "innodb_lru_scan_depth_size = 300" >> "$CFG"
+    echo "innodb_lru_scan_depth = 300" >> "$CFG"
 
     # Percona Server specific settings
     # if [[ "$DBMS_NAME" == "percona-server" ]]; then
