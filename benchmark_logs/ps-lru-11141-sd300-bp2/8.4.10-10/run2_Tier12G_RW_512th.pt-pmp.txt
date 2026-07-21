@@ -1,0 +1,9 @@
+Waiting 450 seconds before starting pt-pmp profiling...
+
+Starting stack trace collection at Mon Jul 20 11:47:10 AM UTC 2026
+Collecting stack traces using pt-pmp (auto-detecting mysqld)
+================================================
+
+2026_07_20_11_47_11 Can't find eu-stack binary from elfutils package. Exiting
+
+Profiling completed at Mon Jul 20 11:47:11 AM UTC 2026

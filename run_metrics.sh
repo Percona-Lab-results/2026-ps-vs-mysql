@@ -30,8 +30,8 @@ DB_PORT="3306"
 # Server locations
 DATADIR_BASE="/home/bogdan.degtyariov/servers/data"
 
-# POOL_SIZES=(32 12 2)      # The 3 Tiers (GB)
-POOL_SIZES=(12)
+POOL_SIZES=(32 2)      # The 3 Tiers (GB)
+#POOL_SIZES=(12)
 
 #THREADS=(1 4 16 32 64 128 256 512 1024)
 THREADS=(32 64 128 256 512)
@@ -475,7 +475,7 @@ generate_config() {
         if [ "$INSTANCES" -eq 8 ]; then
             LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
             SINGLE_PAGE_FLUSH_MAX=16
-            echo "innodb_lru_flush_batch_size = 1" >> "$CFG"
+            # echo "innodb_lru_flush_batch_size = 1" >> "$CFG"
         elif [ "$INSTANCES" -eq 2 ]; then
             LRU_MAKE_YOUNG_DRAIN_THRESHOLD=64
             SINGLE_PAGE_FLUSH_MAX=4
@@ -484,7 +484,7 @@ generate_config() {
             SINGLE_PAGE_FLUSH_MAX=16
         fi
         echo "innodb_lru_make_young_drain_threshold = $LRU_MAKE_YOUNG_DRAIN_THRESHOLD" >> "$CFG"
-        echo "innodb_single_page_flush_max_concurrent = $SINGLE_PAGE_FLUSH_MAX" >> "$CFG"
+        # echo "innodb_single_page_flush_max_concurrent = $SINGLE_PAGE_FLUSH_MAX" >> "$CFG"
     fi
 
     echo "innodb_lru_scan_depth = 300" >> "$CFG"

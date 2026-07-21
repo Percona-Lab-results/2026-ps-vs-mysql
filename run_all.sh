@@ -26,7 +26,7 @@ SERVER_DIR="$1"
 DBMS_NAME="$2"
 BASE_VERSION="$3"
 
-for BP_INSTANCES in 2 8; do
+for BP_INSTANCES in 2; do
   echo ""
   echo "=========================================================================="
   echo "Starting Percona Server 8.4.8-8 (innodb_buffer_pool_instances=${BP_INSTANCES})"

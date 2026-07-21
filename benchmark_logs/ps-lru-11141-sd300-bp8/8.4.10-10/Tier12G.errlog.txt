@@ -1,0 +1,92 @@
+2026-07-20T16:55:05.293959Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-07-20T16:55:05.580100Z 0 [Note] [MY-010098] [Server] --secure-file-priv is set to NULL. Operations related to importing and exporting data are disabled
+2026-07-20T16:55:05.580108Z 0 [Warning] [MY-010097] [Server] Insecure configuration for --secure-log-path: Current value does not restrict location of generated files. Consider setting it to a valid, non-empty path.
+2026-07-20T16:55:05.580352Z 0 [Note] [MY-013932] [Server] BuildID[sha1]=4418fa25b4d8a40c7f269995bb8d91ff6ff8d4a1
+2026-07-20T16:55:05.580358Z 0 [Note] [MY-010949] [Server] Basedir set to /mnt/nvme/servers/lru/percona-server-8.4.10-10-linux-x86_64/.
+2026-07-20T16:55:05.580367Z 0 [System] [MY-010116] [Server] /home/bogdan.degtyariov/servers/lru/percona-server-8.4.10-10-linux-x86_64/bin/mysqld (mysqld 8.4.10-10) starting as process 4004979
+2026-07-20T16:55:05.595631Z 0 [Note] [MY-010747] [Server] Plugin 'FEDERATED' is disabled.
+2026-07-20T16:55:05.595716Z 0 [Note] [MY-010747] [Server] Plugin 'ndbcluster' is disabled.
+2026-07-20T16:55:05.595735Z 0 [Note] [MY-010747] [Server] Plugin 'ndbinfo' is disabled.
+2026-07-20T16:55:05.595752Z 0 [Note] [MY-010747] [Server] Plugin 'ndb_transid_mysql_connection_map' is disabled.
+2026-07-20T16:55:05.595832Z 0 [Note] [MY-010747] [Server] Plugin 'mysql_native_password' is disabled.
+2026-07-20T16:55:05.597474Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-07-20T16:55:05.597530Z 1 [Note] [MY-013546] [InnoDB] Atomic write enabled
+2026-07-20T16:55:05.597562Z 1 [Note] [MY-012932] [InnoDB] PUNCH HOLE support available
+2026-07-20T16:55:05.597576Z 1 [Note] [MY-012944] [InnoDB] Uses event mutexes
+2026-07-20T16:55:05.597589Z 1 [Note] [MY-012945] [InnoDB] GCC builtin __atomic_thread_fence() is used for memory barrier
+2026-07-20T16:55:05.597596Z 1 [Note] [MY-012948] [InnoDB] Compressed tables use zlib 1.3.2
+2026-07-20T16:55:05.602150Z 1 [Note] [MY-012951] [InnoDB] Using hardware accelerated crc32 and polynomial multiplication.
+2026-07-20T16:55:05.602751Z 1 [Note] [MY-012203] [InnoDB] Directories to scan './'
+2026-07-20T16:55:05.602802Z 1 [Note] [MY-012204] [InnoDB] Scanning './'
+2026-07-20T16:55:05.604509Z 1 [Note] [MY-012208] [InnoDB] Completed space ID check of 4 files.
+2026-07-20T16:55:05.605835Z 1 [Note] [MY-012955] [InnoDB] Initializing buffer pool, total size = 12.000000G, instances = 8, chunk size =128.000000M 
+2026-07-20T16:55:06.484935Z 1 [Note] [MY-012957] [InnoDB] Completed initialization of buffer pool
+2026-07-20T16:55:06.558455Z 0 [Note] [MY-011952] [InnoDB] If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
+2026-07-20T16:55:06.559478Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
+2026-07-20T16:55:06.568357Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
+2026-07-20T16:55:06.592830Z 1 [Note] [MY-013566] [InnoDB] Double write buffer files: 2, --innodb-doublewrite-files=2, segments_per_file=8
+2026-07-20T16:55:06.592860Z 1 [Note] [MY-013565] [InnoDB] Double write buffer pages per instance: 128
+2026-07-20T16:55:06.592884Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_0.dblwr' for doublewrite
+2026-07-20T16:55:06.597780Z 1 [Note] [MY-013549] [InnoDB] ./#ib_16384_0.dblwr size increased to 16777216 bytes from 4194304 bytes
+2026-07-20T16:55:06.597808Z 1 [Note] [MY-013532] [InnoDB] Using './#ib_16384_1.dblwr' for doublewrite
+2026-07-20T16:55:06.602981Z 1 [Note] [MY-013549] [InnoDB] ./#ib_16384_1.dblwr size increased to 25165824 bytes from 12582912 bytes
+2026-07-20T16:55:06.812613Z 1 [Note] [MY-013883] [InnoDB] The latest found checkpoint is at lsn = 18972538 in redo log file ./#innodb_redo/#ib_redo5.
+2026-07-20T16:55:06.812761Z 1 [Note] [MY-013086] [InnoDB] Starting to parse redo log at lsn = 18972206, whereas checkpoint_lsn = 18972538 and start_lsn = 18972160
+2026-07-20T16:55:06.849639Z 1 [Note] [MY-013083] [InnoDB] Log background threads are being started...
+2026-07-20T16:55:06.850485Z 1 [Note] [MY-012532] [InnoDB] Applying a batch of 0 redo log records ...
+2026-07-20T16:55:06.850516Z 1 [Note] [MY-012535] [InnoDB] Apply batch completed!
+2026-07-20T16:55:06.851110Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_001'.
+2026-07-20T16:55:06.851546Z 1 [Note] [MY-013252] [InnoDB] Using undo tablespace './undo_002'.
+2026-07-20T16:55:06.852408Z 1 [Note] [MY-012910] [InnoDB] Opened 2 existing undo tablespaces.
+2026-07-20T16:55:06.852458Z 1 [Note] [MY-011980] [InnoDB] GTID recovery trx_no: 1027
+2026-07-20T16:55:06.877731Z 1 [Note] [MY-013776] [InnoDB] Parallel initialization of rseg complete
+2026-07-20T16:55:06.877758Z 1 [Note] [MY-013777] [InnoDB] Time taken to initialize rseg using 4 thread: 25 ms.
+2026-07-20T16:55:06.877816Z 1 [Note] [MY-012923] [InnoDB] Creating shared tablespace for temporary tables
+2026-07-20T16:55:06.877918Z 1 [Note] [MY-012265] [InnoDB] Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-20T16:55:06.883020Z 1 [Note] [MY-012266] [InnoDB] File './ibtmp1' size is now 12 MB.
+2026-07-20T16:55:06.883103Z 1 [Note] [MY-013627] [InnoDB] Scanning temp tablespace dir:'./#innodb_temp/'
+2026-07-20T16:55:06.888810Z 1 [Note] [MY-013018] [InnoDB] Created 128 and tracked 128 new rollback segment(s) in the temporary tablespace. 128 are now active.
+2026-07-20T16:55:06.889177Z 1 [Note] [MY-012976] [InnoDB] Percona XtraDB (http://www.percona.com) 8.4.10-10 started; log sequence number 18972548
+2026-07-20T16:55:06.889878Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-07-20T16:55:06.899625Z 1 [Note] [MY-011089] [Server] Data dictionary restarting version '80300'.
+2026-07-20T16:55:07.012955Z 1 [Note] [MY-012357] [InnoDB] Reading DD tablespace files
+2026-07-20T16:55:07.013592Z 1 [Note] [MY-012356] [InnoDB] Scanned 6 tablespaces. Validated 6.
+2026-07-20T16:55:07.029479Z 1 [Note] [MY-010006] [Server] Using data dictionary with version '80300'.
+2026-07-20T16:55:07.035526Z 0 [Note] [MY-011332] [Server] Plugin mysqlx reported: 'IPv6 is available'
+2026-07-20T16:55:07.036084Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. bind-address: '::' port: 33060'
+2026-07-20T16:55:07.036108Z 0 [Note] [MY-011323] [Server] Plugin mysqlx reported: 'X Plugin ready for connections. socket: '/tmp/mysqlx.sock''
+2026-07-20T16:55:07.036275Z 0 [Note] [MY-010990] [Server] Resource group feature shall not be available. Incompatible thread handling option.
+2026-07-20T16:55:07.121212Z 0 [Note] [MY-013911] [Server] Crash recovery finished in InnoDB engine. No attempts to commit, rollback or prepare any transactions.
+2026-07-20T16:55:07.124974Z 0 [Note] [MY-012487] [InnoDB] DDL log recovery : begin
+2026-07-20T16:55:07.125226Z 0 [Note] [MY-012488] [InnoDB] DDL log recovery : end
+2026-07-20T16:55:07.128760Z 0 [Note] [MY-012922] [InnoDB] Waiting for purge to start
+2026-07-20T16:55:07.180645Z 0 [Note] [MY-010913] [Server] You have not provided a mandatory server-id. Servers in a replication topology must have unique server-ids. Please refer to the proper server start-up parameters documentation.
+2026-07-20T16:55:07.180811Z 0 [Note] [MY-010182] [Server] Found ca.pem, server-cert.pem and server-key.pem in data directory. Trying to enable SSL support using them.
+2026-07-20T16:55:07.183798Z 0 [Note] [MY-010304] [Server] Skipping generation of SSL certificates as certificate files are present in data directory.
+2026-07-20T16:55:07.188186Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-07-20T16:55:07.188213Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-07-20T16:55:07.188585Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --sha256_password_auto_generate_rsa_keys as key files are present in data directory.
+2026-07-20T16:55:07.188918Z 0 [Note] [MY-010308] [Server] Skipping generation of RSA key pair through --caching_sha2_password_auto_generate_rsa_keys as key files are present in data directory.
+2026-07-20T16:55:07.192970Z 0 [Note] [MY-010252] [Server] Server hostname (bind-address): '0.0.0.0'; port: 3306
+2026-07-20T16:55:07.192996Z 0 [Note] [MY-010264] [Server]   - '0.0.0.0' resolves to '0.0.0.0';
+2026-07-20T16:55:07.193017Z 0 [Note] [MY-010251] [Server] Server socket created on IP: '0.0.0.0'.
+2026-07-20T16:55:07.193440Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-07-20T16:55:07.212808Z 0 [Note] [MY-011025] [Repl] Failed to start replica threads for channel ''.
+2026-07-20T16:55:07.215127Z 5 [Note] [MY-010051] [Server] Event Scheduler: scheduler thread started with id 5
+2026-07-20T16:55:07.215184Z 0 [Note] [MY-011240] [Server] Plugin mysqlx reported: 'Using SSL configuration from MySQL Server'
+2026-07-20T16:55:07.218074Z 0 [Note] [MY-011243] [Server] Plugin mysqlx reported: 'Using OpenSSL for TLS connections'
+2026-07-20T16:55:07.218224Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /tmp/mysqlx.sock
+2026-07-20T16:55:07.218298Z 0 [System] [MY-010931] [Server] /home/bogdan.degtyariov/servers/lru/percona-server-8.4.10-10-linux-x86_64/bin/mysqld: ready for connections. Version: '8.4.10-10'  socket: '/tmp/mysql_benchmark.sock'  port: 3306  Source distribution.
+2026-07-20T16:55:47.221898Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 1154317169. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:55:57.971995Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 3864277181. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:56:09.094591Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 6545229816. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:56:21.747073Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 9710633332. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:56:32.245223Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 12335608758. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:56:44.515047Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 15365804987. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:56:59.003428Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 18993009415. Consider increasing innodb_redo_log_capacity.
+2026-07-20T16:57:11.235291Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 22054214091. Consider increasing innodb_redo_log_capacity.
+2026-07-20T17:21:21.794414Z 0 [Warning] [MY-014089] [InnoDB] Redo log writer is waiting for a new redo log file. Consider increasing innodb_redo_log_capacity. The current log capacity is 4294967296 bytes. The log capacity used is 4294967296 bytes.
+2026-07-20T17:39:14.908364Z 0 [Warning] [MY-014089] [InnoDB] Redo log writer is waiting for a new redo log file. Consider increasing innodb_redo_log_capacity. The current log capacity is 4294967296 bytes. The log capacity used is 4294967296 bytes.
+2026-07-20T17:44:33.828077Z 0 [Warning] [MY-014089] [InnoDB] Redo log writer is waiting for a new redo log file. Consider increasing innodb_redo_log_capacity. The current log capacity is 4294967296 bytes. The log capacity used is 4294967296 bytes.
+2026-07-20T20:40:36.028446Z 0 [Note] [MY-012994] [InnoDB] Truncating UNDO tablespace innodb_undo_001
+2026-07-20T20:40:36.346860Z 0 [Note] [MY-013000] [InnoDB] Completed truncate of undo tablespace innodb_undo_001.
