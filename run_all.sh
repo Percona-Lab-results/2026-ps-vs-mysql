@@ -24,14 +24,18 @@ fi
 
 SERVER_DIR="$1"
 DBMS_NAME="$2"
-BASE_VERSION="$3"
+BASE_VERSION="$3" # Not used in this script, but passed to run_metrics.sh for consistency
 
-for BP_INSTANCES in 2; do
-  echo ""
-  echo "=========================================================================="
-  echo "Starting Percona Server 8.4.8-8 (innodb_buffer_pool_instances=${BP_INSTANCES})"
-  echo "=========================================================================="
-  ./run_metrics.sh  --server-dir="${SERVER_DIR}" --dbms-name="${DBMS_NAME}-bp${BP_INSTANCES}" --dbms-ver="8.4.8-8" --read-only="0" --binlog="0" --thread-pool="1" --bp-instances="$BP_INSTANCES" --base-version="$BASE_VERSION"
+for LRU_THREADS in on off; do
+  for LRU_SCAN_DEPTH in 0 300; do
+    for BP_INSTANCES in 1 2 8; do
+      echo ""
+      echo "=========================================================================="
+      echo "Starting ${SERVER_DIR} (innodb_lru_threads=${LRU_THREADS}, innodb_lru_scan_depth=${LRU_SCAN_DEPTH}, innodb_buffer_pool_instances=${BP_INSTANCES})"
+      echo "=========================================================================="
+      ./run_metrics.sh  --server-dir="${SERVER_DIR}" --dbms-name="${DBMS_NAME}-sd${LRU_SCAN_DEPTH}-bp${BP_INSTANCES}-lruth${LRU_THREADS}" --dbms-ver="8.4.8-8" --read-only="0" --binlog="0" --thread-pool="1" --bp-instances="$BP_INSTANCES" --base-version="$BASE_VERSION" --lru-scan-depth="$LRU_SCAN_DEPTH" --lru-threads="$LRU_THREADS"
+    done
+  done
 done
 
 

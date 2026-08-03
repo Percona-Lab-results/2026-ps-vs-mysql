@@ -1,7 +1,7 @@
 #!/bin/bash
 # MySQL/Percona Server Benchmark Script with Metrics Collection
 #
-# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --server-dir=<path> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]
+# Usage: ./run_metrics.sh --dbms-name=<name> --dbms-ver=<version> --server-dir=<path> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no] [--lru-scan-depth=<n>]
 #
 # Arguments:
 #   --dbms-name      Name (e.g., "percona-server-no-optimization", "percona-server-optimization", "mysql")
@@ -12,6 +12,8 @@
 #   --thread-pool    (Optional) yes to enable thread pool, no to disable (default: no)
 #   --bp-instances   (Optional) override innodb_buffer_pool_instances; if omitted, computed from buffer pool size
 #   --base-version   (Optional) yes to omit PR-6007 LRU tuning knobs, no to include them (default: no)
+#   --lru-scan-depth (Optional) set innodb_lru_scan_depth; if 0 or omitted, the option is not set
+#   --lru-threads    (Optional) on|off to set innodb_lru_threads; if omitted, the option is not set
 #
 # Examples:
 #   ./run_metrics.sh --dbms-name=percona-server --dbms-ver=8.4.8-8 --read-only=no --binlog=no
@@ -48,7 +50,7 @@ DURATION=900
 # DURATION=15
 
 usage() {
-    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --server-dir=<path> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no]" >&2
+    echo "Usage: $0 --dbms-name=<name> --dbms-ver=<version> --server-dir=<path> --read-only=yes|no --binlog=yes|no [--thread-pool=yes|no] [--bp-instances=<n>] [--base-version=yes|no] [--lru-scan-depth=<n>] [--lru-threads=on|off]" >&2
     exit 1
 }
 
@@ -68,18 +70,22 @@ BINLOG_ARG=""
 THREAD_POOL_ARG="no"
 BP_INSTANCES_ARG=""
 BASE_VERSION_ARG="no"
+LRU_SCAN_DEPTH_ARG="0"
+LRU_THREADS_ARG=""
 
 for arg in "$@"; do
     case "$arg" in
-        --dbms-name=*)     DBMS_NAME="${arg#*=}" ;;
-        --dbms-ver=*)      DBMS_VER="${arg#*=}" ;;
-        --server-dir=*)    SERVER_DIR_ARG="${arg#*=}" ;;
-        --read-only=*)     READ_ONLY_ARG="${arg#*=}" ;;
-        --binlog=*)        BINLOG_ARG="${arg#*=}" ;;
-        --thread-pool=*)   THREAD_POOL_ARG="${arg#*=}" ;;
-        --bp-instances=*)  BP_INSTANCES_ARG="${arg#*=}" ;;
-        --base-version=*)  BASE_VERSION_ARG="${arg#*=}" ;;
-        -h|--help)         usage ;;
+        --dbms-name=*)       DBMS_NAME="${arg#*=}" ;;
+        --dbms-ver=*)        DBMS_VER="${arg#*=}" ;;
+        --server-dir=*)      SERVER_DIR_ARG="${arg#*=}" ;;
+        --read-only=*)       READ_ONLY_ARG="${arg#*=}" ;;
+        --binlog=*)          BINLOG_ARG="${arg#*=}" ;;
+        --thread-pool=*)     THREAD_POOL_ARG="${arg#*=}" ;;
+        --bp-instances=*)    BP_INSTANCES_ARG="${arg#*=}" ;;
+        --base-version=*)    BASE_VERSION_ARG="${arg#*=}" ;;
+        --lru-scan-depth=*)  LRU_SCAN_DEPTH_ARG="${arg#*=}" ;;
+        --lru-threads=*)     LRU_THREADS_ARG="${arg#*=}" ;;
+        -h|--help)           usage ;;
         *) echo "ERROR: unknown argument: $arg" >&2; usage ;;
     esac
 done
@@ -102,6 +108,21 @@ if [ -n "$BP_INSTANCES_ARG" ]; then
     fi
 fi
 BP_INSTANCES_OVERRIDE="$BP_INSTANCES_ARG"
+
+if ! [[ "$LRU_SCAN_DEPTH_ARG" =~ ^(0|[1-9][0-9]*)$ ]]; then
+    echo "ERROR: --lru-scan-depth must be a non-negative integer (got: '$LRU_SCAN_DEPTH_ARG')" >&2
+    exit 1
+fi
+LRU_SCAN_DEPTH="$LRU_SCAN_DEPTH_ARG"
+
+LRU_THREADS=""
+if [ -n "$LRU_THREADS_ARG" ]; then
+    case "${LRU_THREADS_ARG,,}" in
+        on|yes|y|1|true)   LRU_THREADS="ON" ;;
+        off|no|n|0|false)  LRU_THREADS="OFF" ;;
+        *) echo "ERROR: --lru-threads must be on|off (got: '$LRU_THREADS_ARG')" >&2; exit 1 ;;
+    esac
+fi
 
 sudo cpupower frequency-set -g performance > /dev/null
 
@@ -468,26 +489,32 @@ generate_config() {
     echo "innodb_flush_method = O_DIRECT" >> "$CFG"
     echo "innodb_buffer_pool_instances    = $INSTANCES" >> "$CFG"
 
-    if [ "$BASE_VERSION" -ne 1 ]; then
-        # From PR-6007
-        # This is for deferred make-young promotion
-        # 8 BP instances -> 256; 2 BP instances -> 64; otherwise default to 256
-        if [ "$INSTANCES" -eq 8 ]; then
-            LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
-            SINGLE_PAGE_FLUSH_MAX=16
-            # echo "innodb_lru_flush_batch_size = 1" >> "$CFG"
-        elif [ "$INSTANCES" -eq 2 ]; then
-            LRU_MAKE_YOUNG_DRAIN_THRESHOLD=64
-            SINGLE_PAGE_FLUSH_MAX=4
-        else
-            LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
-            SINGLE_PAGE_FLUSH_MAX=16
-        fi
-        echo "innodb_lru_make_young_drain_threshold = $LRU_MAKE_YOUNG_DRAIN_THRESHOLD" >> "$CFG"
-        # echo "innodb_single_page_flush_max_concurrent = $SINGLE_PAGE_FLUSH_MAX" >> "$CFG"
+    # if [ "$BASE_VERSION" -ne 1 ]; then
+    #     # From PR-6007
+    #     # This is for deferred make-young promotion
+    #     # 8 BP instances -> 256; 2 BP instances -> 64; otherwise default to 256
+    #     if [ "$INSTANCES" -eq 8 ]; then
+    #         LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
+    #         SINGLE_PAGE_FLUSH_MAX=16
+    #         # echo "innodb_lru_flush_batch_size = 1" >> "$CFG"
+    #     elif [ "$INSTANCES" -eq 2 ]; then
+    #         LRU_MAKE_YOUNG_DRAIN_THRESHOLD=64
+    #         SINGLE_PAGE_FLUSH_MAX=4
+    #     else
+    #         LRU_MAKE_YOUNG_DRAIN_THRESHOLD=256
+    #         SINGLE_PAGE_FLUSH_MAX=16
+    #     fi
+    #     echo "innodb_lru_make_young_drain_threshold = $LRU_MAKE_YOUNG_DRAIN_THRESHOLD" >> "$CFG"
+    #     # echo "innodb_single_page_flush_max_concurrent = $SINGLE_PAGE_FLUSH_MAX" >> "$CFG"
+    # fi
+
+    if [ "$LRU_SCAN_DEPTH" -ne 0 ]; then
+        echo "innodb_lru_scan_depth = $LRU_SCAN_DEPTH" >> "$CFG"
     fi
 
-    echo "innodb_lru_scan_depth = 300" >> "$CFG"
+    if [ -n "$LRU_THREADS" ]; then
+        echo "innodb_lru_threads = $LRU_THREADS" >> "$CFG"
+    fi
 
     # Percona Server specific settings
     # if [[ "$DBMS_NAME" == "percona-server" ]]; then
