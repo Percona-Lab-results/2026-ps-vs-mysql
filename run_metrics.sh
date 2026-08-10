@@ -32,7 +32,7 @@ DB_PORT="3306"
 # Server locations
 DATADIR_BASE="/home/bogdan.degtyariov/servers/data"
 
-POOL_SIZES=(32 2)      # The 3 Tiers (GB)
+POOL_SIZES=(32 12 2)      # The 3 Tiers (GB)
 #POOL_SIZES=(12)
 
 #THREADS=(1 4 16 32 64 128 256 512 1024)
@@ -177,22 +177,66 @@ server_wait() {
   echo "Server is ready!"
 }
 
+wait_for_pid_exit() {
+  local pid=$1
+  local timeout=${2:-60}
+  local waited=0
+  while kill -0 "$pid" 2>/dev/null; do
+    if [ "$waited" -ge "$timeout" ]; then
+      return 1
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
+  return 0
+}
+
+wait_for_port_free() {
+  local port=$1
+  local timeout=${2:-60}
+  local waited=0
+  while ss -tlnH "sport = :${port}" 2>/dev/null | grep -q .; do
+    if [ "$waited" -ge "$timeout" ]; then
+      return 1
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
+  return 0
+}
+
 stop_server() {
   echo "Stopping MySQL server..."
   if [ -f "$PID_FILE" ]; then
     local pid=$(cat "$PID_FILE")
     if kill -0 "$pid" 2>/dev/null; then
       "$MYSQLADMIN" --host=$DB_HOST --port=$DB_PORT -u"$DB_USER" -p"$DB_PASS" shutdown 2>/dev/null
-      sleep 3
-      # Force kill if still running
-      if kill -0 "$pid" 2>/dev/null; then
-        echo "Force killing mysqld (PID: $pid)"
+
+      # Wait up to 60s for graceful shutdown
+      if ! wait_for_pid_exit "$pid" 60; then
+        echo "Force killing mysqld (PID: $pid) after 60s wait"
         kill -9 "$pid" 2>/dev/null
+        wait_for_pid_exit "$pid" 10
       fi
     fi
     rm -f "$PID_FILE"
   fi
-  sleep 2
+
+  # Belt-and-suspenders: kill any stray mysqld still bound to our port
+  if command -v ss >/dev/null 2>&1; then
+    if ! wait_for_port_free "$DB_PORT" 30; then
+      echo "Port ${DB_PORT} still in use after 30s; attempting to kill any listener..."
+      local stray_pids
+      stray_pids=$(ss -tlnpH "sport = :${DB_PORT}" 2>/dev/null | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u)
+      if [ -n "$stray_pids" ]; then
+        echo "  killing stray PID(s): $stray_pids"
+        kill -9 $stray_pids 2>/dev/null
+      fi
+      wait_for_port_free "$DB_PORT" 15 || echo "WARNING: port ${DB_PORT} is still bound"
+    fi
+  else
+    sleep 2
+  fi
 }
 
 start_server() {
@@ -205,21 +249,40 @@ start_server() {
   echo "  Config: $CONFIG"
   echo "  Command: $MYSQLD --defaults-file=$CONFIG --datadir=$DATADIR --pid-file=$PID_FILE --user=$(whoami)"
 
+  # Remove any stale PID file from a previous run
+  rm -f "$PID_FILE"
+
   # Start mysqld in background
   "$MYSQLD" --defaults-file="$CONFIG" --datadir="$DATADIR" --pid-file="$PID_FILE" \
     --user=$(whoami) &
+  local bg_pid=$!
 
-  # Wait a moment for PID file to be created
-  sleep 15
+  # Poll for the PID file up to 120s; bail early if the mysqld process dies
+  local waited=0
+  local timeout=120
+  while [ ! -f "$PID_FILE" ]; do
+    if ! kill -0 "$bg_pid" 2>/dev/null; then
+      echo "ERROR: mysqld process (bg PID $bg_pid) exited before creating PID file"
+      local errlog="${DATADIR}/mysql-error.log"
+      if [ -f "$errlog" ]; then
+        echo "--- Last 60 lines of ${errlog} ---"
+        tail -n 60 "$errlog"
+        echo "--- end of error log ---"
+      else
+        echo "(no error log found at ${errlog})"
+      fi
+      exit 1
+    fi
+    if [ "$waited" -ge "$timeout" ]; then
+      echo "ERROR: mysqld did not create PID file within ${timeout}s"
+      kill "$bg_pid" 2>/dev/null
+      exit 1
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
 
-  cat $PID_FILE
-
-  if [ ! -f "$PID_FILE" ]; then
-    echo "ERROR: Failed to start mysqld (PID file not created)"
-    exit 1
-  fi
-
-  echo "mysqld started with PID: $(cat $PID_FILE)"
+  echo "mysqld started with PID: $(cat $PID_FILE) (after ${waited}s)"
 }
 
 initialize_datadir() {
